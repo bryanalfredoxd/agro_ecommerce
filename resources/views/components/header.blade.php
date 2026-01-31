@@ -8,8 +8,8 @@
                     <span class="material-symbols-outlined text-[24px] sm:text-[28px]">agriculture</span>
                 </div>
                 <div class="flex items-baseline gap-1">
-                    <span class="text-agro-dark text-xl sm:text-2xl font-bold tracking-tight">Corpo</span>
-                    <span class="text-agro-accent text-xl sm:text-2xl font-bold tracking-tight">Agrícola</span>
+                    <span class="text-agro-dark text-xl sm:text-2xl font-black tracking-tight leading-none">Corpo</span>
+                    <span class="text-agro-accent text-xl sm:text-2xl font-black tracking-tight leading-none">Agrícola</span>
                 </div>
             </a>
             
