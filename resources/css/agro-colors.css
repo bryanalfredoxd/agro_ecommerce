@@ -1,0 +1,110 @@
+/* public/css/agro-colors.css */
+:root {
+    /* Paleta principal AGRO */
+    --color-primary: #13ec13;           /* Verde brillante - Énfasis */
+    --color-agro-dark: #1B4332;         /* Verde bosque oscuro - Principal */
+    --color-agro-gold: #D4A373;         /* Dorado cosecha - Secundario */
+    --color-agro-accent: #BC6C25;       /* Terracota - Acento */
+    --color-background-light: #F8F9FA;  /* Fondo claro */
+    --color-background-dark: #102210;   /* Fondo oscuro */
+    
+    /* Textos */
+    --color-text-primary: #1B4332;
+    --color-text-secondary: #4A5568;
+    --color-text-light: #F8F9FA;
+    
+    /* Estados */
+    --color-success: #10B981;
+    --color-warning: #F59E0B;
+    --color-error: #EF4444;
+    --color-info: #3B82F6;
+    
+    /* Variantes de fondo */
+    --color-surface-light: #FFFFFF;
+    --color-surface-dark: #102210;
+    --color-surface-muted: #F0F4F0;
+    
+    /* Bordes */
+    --color-border-light: #E2E8F0;
+    --color-border-dark: #2D3748;
+    
+    /* Sombras */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Clases utilitarias de colores */
+.bg-primary { background-color: var(--color-primary); }
+.text-primary { color: var(--color-primary); }
+.border-primary { border-color: var(--color-primary); }
+
+.bg-agro-dark { background-color: var(--color-agro-dark); }
+.text-agro-dark { color: var(--color-agro-dark); }
+.border-agro-dark { border-color: var(--color-agro-dark); }
+
+.bg-agro-gold { background-color: var(--color-agro-gold); }
+.text-agro-gold { color: var(--color-agro-gold); }
+
+.bg-agro-accent { background-color: var(--color-agro-accent); }
+.text-agro-accent { color: var(--color-agro-accent); }
+
+.bg-background-light { background-color: var(--color-background-light); }
+.bg-background-dark { background-color: var(--color-background-dark); }
+
+/* Estados hover */
+.hover\:bg-primary:hover { background-color: var(--color-primary); }
+.hover\:text-primary:hover { color: var(--color-primary); }
+
+/* Efectos de transición */
+.transition-colors { transition: color 0.2s ease, background-color 0.2s ease; }
+.transition-all { transition: all 0.2s ease; }
+
+/* Utilidades responsivas */
+@media (max-width: 640px) {
+    .mobile\:text-center { text-align: center; }
+    .mobile\:block { display: block; }
+    .mobile\:hidden { display: none; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .tablet\:text-center { text-align: center; }
+    .tablet\:block { display: block; }
+    .tablet\:hidden { display: none; }
+}
+
+/* Estilos para scroll horizontal en móvil */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Mejoras para elementos tappables en móvil */
+@media (max-width: 640px) {
+    button, 
+    a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .mobile-tap-target {
+        padding: 12px;
+    }
+}
+
+/* Transiciones suaves */
+.transition-all {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Mejoras para inputs en móvil */
+@media (max-width: 640px) {
+    input, 
+    select, 
+    textarea {
+        font-size: 16px; /* Previene zoom en iOS */
+    }
+}
