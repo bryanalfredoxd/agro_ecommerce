@@ -7,19 +7,6 @@
     
     <div class="w-full max-w-[680px] animate-fade-in-up">
         
-        @if ($errors->any())
-            <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl shadow-sm animate-shake">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <span class="material-symbols-outlined text-red-500">error</span>
-                    </div>
-                    <div class="ml-3">
-                        <h3 class="text-sm font-bold text-red-800">Ups, algo salió mal</h3>
-                        <p class="text-xs text-red-700 mt-1">Por favor revisa los campos marcados en rojo.</p>
-                    </div>
-                </div>
-            </div>
-        @endif
 
         <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-gray-200/60 border border-gray-100 p-8 sm:p-12 relative overflow-hidden transition-all duration-500 ease-out" id="mainCard">
             
