@@ -1,6 +1,12 @@
 @import 'tailwindcss';
 
 /* =========================================
+   0. LIBRERÍAS EXTERNAS
+   ========================================= */
+/* Estilos para el selector de países (Banderas reales) */
+@import 'intl-tel-input/build/css/intlTelInput.css';
+
+/* =========================================
    1. FUENTES LOCALES (Gestionadas por Vite)
    ========================================= */
 @font-face {
@@ -86,4 +92,23 @@
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;  /* Firefox */
     }
+}
+
+/* =========================================
+   4. OVERRIDES (CORRECCIONES DE LIBRERÍAS)
+   ========================================= */
+
+/* Forzar que el contenedor del teléfono ocupe el 100% del ancho.
+   Por defecto la librería lo pone inline-block y se ve corto.
+*/
+.iti {
+    width: 100%;
+}
+
+/* Ajuste fino para que la bandera no quede pegada al borde redondeado
+   si usas inputs con mucho border-radius
+*/
+.iti__flag-container {
+    border-top-left-radius: 0.75rem; /* Coincide con rounded-xl de Tailwind */
+    border-bottom-left-radius: 0.75rem;
 }

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Agropecuaria Venezuela - Soluciones Integrales para el Campo')
+@section('title', 'Corpo Agrícola - Soluciones Integrales para el Campo')
 
 @section('content')
     @include('components.hero')

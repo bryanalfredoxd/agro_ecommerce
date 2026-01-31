@@ -5,6 +5,10 @@
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
+    @if(session('success_register'))
+        <meta name="success-message" content="{{ session('success_register') }}">
+    @endif
+    
     <title>@yield('title', 'Agropecuaria Venezuela - Soluciones Integrales para el Campo')</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])

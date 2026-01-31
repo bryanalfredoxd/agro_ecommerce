@@ -18,6 +18,8 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
-        "@tailwindcss/postcss": "^4.1.18"
+        "@tailwindcss/postcss": "^4.1.18",
+        "intl-tel-input": "^26.0.9",
+        "sweetalert2": "^11.26.17"
     }
 }
