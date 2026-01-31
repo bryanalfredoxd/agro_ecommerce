@@ -1,8 +1,12 @@
 @php
     use App\Models\TasaCambio;
+    use App\Models\HorarioSemanal;
     
-    // Obtener la tasa directamente en el componente
+    // Obtener la tasa de cambio
     $tasaDolar = TasaCambio::obtenerValorUSD();
+    
+    // Obtener horario de hoy
+    $horarioHoy = HorarioSemanal::obtenerHorarioHoyFormateado();
 @endphp
 
 <div class="bg-agro-dark text-white w-full border-b border-white/10 text-[11px] sm:text-xs md:text-sm">
@@ -49,9 +53,9 @@
                 
                 <div class="h-3 w-px bg-white/20"></div>
                 
-                <div class="flex items-center gap-1.5 text-gray-300 cursor-default">
+                <div class="flex items-center gap-1.5 text-gray-300 cursor-default" title="Horario de atención">
                     <span class="material-symbols-outlined text-[16px]">schedule</span>
-                    <span class="font-medium">8am - 5pm</span>
+                    <span class="font-medium">{{ $horarioHoy }}</span>
                 </div>
             </div>
             
