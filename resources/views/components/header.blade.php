@@ -1,128 +1,104 @@
-<!-- Main Header -->
-<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+<header class="bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm relative z-40 transition-all duration-300">
     <div class="layout-container">
-        <!-- Top Row: Logo, Search, Actions -->
-        <div class="flex items-center justify-between py-4">
-            <!-- Logo -->
-            <div class="flex items-center gap-3">
-                <div class="flex items-center justify-center size-10 bg-agro-dark rounded-lg text-primary">
-                    <span class="material-symbols-outlined text-[28px]">agriculture</span>
-                </div>
-                <div>
-                    <h1 class="text-agro-dark text-lg sm:text-xl font-bold leading-tight tracking-tight">
-                        Agropecuaria<br class="hidden sm:block"/><span class="text-agro-accent">Venezuela</span>
-                    </h1>
-                </div>
-            </div>
+        
+        <div class="flex items-center justify-between py-3 lg:py-4 gap-4">
             
-            <!-- Desktop Search - Centered -->
-            <div class="hidden lg:flex flex-1 max-w-[500px] mx-8">
-                <div class="relative flex items-center w-full h-10 rounded-lg focus-within:ring-2 focus-within:ring-agro-dark/20 bg-gray-50 overflow-hidden border border-transparent transition-all">
-                    <input class="w-full bg-transparent border-none focus:ring-0 text-agro-dark placeholder:text-agro-dark/40 h-full pl-4 pr-12 text-sm" 
-                           placeholder="Buscar productos, marcas o principios activos..." type="text"/>
-                    <button class="absolute right-0 flex items-center justify-center h-full px-4 bg-agro-dark hover:bg-agro-dark/90 text-white transition-colors">
-                        <span class="material-symbols-outlined text-[20px]">search</span>
+            <a href="/" class="flex items-center gap-2.5 flex-shrink-0 group">
+                <div class="flex items-center justify-center size-9 sm:size-10 bg-agro-dark rounded-lg text-primary shadow-sm group-hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined text-[24px] sm:text-[28px]">agriculture</span>
+                </div>
+                <div class="flex flex-col leading-none">
+                    <span class="text-agro-dark text-lg sm:text-xl font-bold tracking-tight">Agropecuaria</span>
+                    <span class="text-agro-accent text-sm sm:text-base font-bold -mt-0.5">Venezuela</span>
+                </div>
+            </a>
+            
+            <div class="hidden lg:flex flex-1 max-w-xl mx-auto px-6">
+                <form action="#" class="relative w-full group">
+                    <input type="text" 
+                           class="w-full h-11 pl-4 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm placeholder:text-gray-400"
+                           placeholder="¿Qué estás buscando para tu campo hoy?">
+                    <button type="button" class="absolute right-0 top-0 h-11 w-12 flex items-center justify-center text-agro-dark hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">search</span>
                     </button>
-                </div>
+                </form>
             </div>
             
-            <!-- Actions -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
                 
-                
-                <!-- Account -->
-                <button class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-agro-dark transition-colors group">
-                    <span class="material-symbols-outlined group-hover:text-agro-accent">person</span>
-                    <div class="flex flex-col items-start leading-none">
-                        <span class="text-[10px] uppercase text-agro-dark/60 font-bold">Mi Cuenta</span>
-                        <span class="text-sm font-bold">Ingresar</span>
+                <button onclick="document.getElementById('mobile-search').classList.toggle('hidden')" 
+                        class="lg:hidden p-2 text-agro-dark hover:bg-gray-100 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">search</span>
+                </button>
+
+                <a href="#" class="hidden sm:flex items-center gap-2 px-3 py-2 text-agro-dark hover:bg-gray-50 rounded-lg transition-colors border border-transparent hover:border-gray-200">
+                    <span class="material-symbols-outlined text-[22px]">account_circle</span>
+                    <div class="flex flex-col items-start leading-none text-xs">
+                        <span class="text-gray-500 font-medium mb-0.5">Bienvenido</span>
+                        <span class="font-bold">Ingresar</span>
                     </div>
-                </button>
+                </a>
                 
-                <!-- Mobile Account Icon -->
-                <button class="sm:hidden flex items-center justify-center size-10 rounded-lg hover:bg-gray-100 text-agro-dark transition-colors">
-                    <span class="material-symbols-outlined">person</span>
-                </button>
+                <a href="#" class="relative p-2 text-agro-dark hover:text-primary hover:bg-gray-50 rounded-lg transition-colors group">
+                    <span class="material-symbols-outlined text-[24px] group-hover:animate-bounce">shopping_cart</span>
+                    <span class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">3</span>
+                </a>
                 
-                <!-- Cart -->
-                <button class="relative flex items-center justify-center size-10 rounded-lg bg-primary hover:bg-primary/90 text-agro-dark transition-colors">
-                    <span class="material-symbols-outlined">shopping_cart</span>
-                    <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full border-2 border-white">3</span>
+                <button class="lg:hidden p-2 text-agro-dark hover:bg-gray-100 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-[26px]">menu</span>
                 </button>
             </div>
         </div>
         
-        <!-- Mobile Search Bar (Hidden by default) -->
-        <div class="lg:hidden mb-3 px-1">
-            <div class="relative flex items-center w-full h-11 rounded-lg focus-within:ring-2 focus-within:ring-agro-dark/20 bg-gray-50 overflow-hidden border border-transparent transition-all">
-                <input class="w-full bg-transparent border-none focus:ring-0 text-agro-dark placeholder:text-agro-dark/40 h-full pl-4 pr-12 text-sm" 
-                       placeholder="Buscar productos, marcas o principios activos..." type="text"/>
-                <button class="absolute right-0 flex items-center justify-center h-full px-4 bg-agro-dark hover:bg-agro-dark/90 text-white transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">search</span>
+        <div id="mobile-search" class="hidden lg:hidden pb-4 animate-fade-in-up">
+            <form class="relative">
+                <input type="text" 
+                       class="w-full h-11 pl-4 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm"
+                       placeholder="Buscar productos...">
+                <button type="submit" class="absolute right-0 top-0 h-11 w-12 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">search</span>
                 </button>
-            </div>
+            </form>
         </div>
-        
-        <!-- Secondary Navigation (Desktop only) -->
-        <div class="hidden lg:flex items-center justify-between py-3 border-t border-gray-100">
-            <!-- Categories -->
-            <nav class="flex items-center gap-6 text-sm font-medium text-agro-dark">
-                <a class="flex items-center gap-1.5 hover:text-agro-accent transition-colors px-2 py-1 rounded-md hover:bg-gray-50" href="#">
-                    <span class="material-symbols-outlined text-[18px]">vaccines</span>
-                    <span>Veterinaria</span>
+
+        <div class="hidden lg:flex items-center justify-between py-1 border-t border-gray-100">
+            <nav class="flex items-center gap-1">
+                @foreach(['Veterinaria', 'Semillas', 'Fertilizantes', 'Nutrición', 'Maquinaria'] as $item)
+                <a href="#" class="px-4 py-3 text-sm font-medium text-agro-dark hover:text-primary border-b-2 border-transparent hover:border-primary transition-all">
+                    {{ $item }}
                 </a>
-                <a class="flex items-center gap-1.5 hover:text-agro-accent transition-colors px-2 py-1 rounded-md hover:bg-gray-50" href="#">
-                    <span class="material-symbols-outlined text-[18px]">grass</span>
-                    <span>Semillas</span>
-                </a>
-                <a class="flex items-center gap-1.5 hover:text-agro-accent transition-colors px-2 py-1 rounded-md hover:bg-gray-50" href="#">
-                    <span class="material-symbols-outlined text-[18px]">compost</span>
-                    <span>Fertilizantes</span>
-                </a>
-                <a class="flex items-center gap-1.5 hover:text-agro-accent transition-colors px-2 py-1 rounded-md hover:bg-gray-50" href="#">
-                    <span class="material-symbols-outlined text-[18px]">nutrition</span>
-                    <span>Nutrición Animal</span>
-                </a>
-                <a class="flex items-center gap-1.5 hover:text-agro-accent transition-colors px-2 py-1 rounded-md hover:bg-gray-50" href="#">
-                    <span class="material-symbols-outlined text-[18px]">precision_manufacturing</span>
-                    <span>Maquinaria</span>
-                </a>
+                @endforeach
             </nav>
             
-            <!-- Special Action -->
-            <a class="flex items-center gap-2 text-agro-accent hover:text-agro-dark font-semibold text-sm transition-colors group" href="#">
-                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">upload_file</span>
-                <span>Subir Recipe Veterinario</span>
+            <a href="#" class="flex items-center gap-2 px-4 py-2 bg-agro-accent/10 text-agro-accent rounded-lg hover:bg-agro-accent hover:text-white transition-all font-medium text-sm">
+                <span class="material-symbols-outlined text-[20px]">upload_file</span>
+                <span>Subir Recipe</span>
             </a>
         </div>
-        
-        <!-- Mobile Categories Menu -->
-        <div class="lg:hidden border-t border-gray-100 pt-3">
-            <div class="flex overflow-x-auto gap-4 pb-2 scrollbar-hide">
-                <a class="flex flex-col items-center gap-1 min-w-[70px] px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors" href="#">
-                    <span class="material-symbols-outlined text-[22px] text-agro-dark">vaccines</span>
-                    <span class="text-xs font-medium text-agro-dark">Veterinaria</span>
+    </div>
+    
+    <div class="lg:hidden border-t border-gray-100 py-3 bg-gray-50/50">
+        <div class="layout-container overflow-x-auto scrollbar-hide">
+            <div class="flex gap-4 min-w-max px-1">
+                @php
+                    $categories = [
+                        ['icon' => 'vaccines', 'name' => 'Veterinaria'],
+                        ['icon' => 'grass', 'name' => 'Semillas'],
+                        ['icon' => 'compost', 'name' => 'Abonos'],
+                        ['icon' => 'nutrition', 'name' => 'Nutrición'],
+                        ['icon' => 'hardware', 'name' => 'Equipos'],
+                        ['icon' => 'pets', 'name' => 'Mascotas'],
+                    ];
+                @endphp
+                
+                @foreach($categories as $cat)
+                <a href="#" class="flex flex-col items-center gap-1.5 min-w-[72px] group">
+                    <div class="size-14 bg-white rounded-full border border-gray-200 flex items-center justify-center shadow-sm group-active:scale-95 transition-all group-hover:border-primary group-hover:text-primary text-gray-600">
+                        <span class="material-symbols-outlined text-[24px]">{{ $cat['icon'] }}</span>
+                    </div>
+                    <span class="text-[11px] font-medium text-gray-700 text-center">{{ $cat['name'] }}</span>
                 </a>
-                <a class="flex flex-col items-center gap-1 min-w-[70px] px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors" href="#">
-                    <span class="material-symbols-outlined text-[22px] text-agro-dark">grass</span>
-                    <span class="text-xs font-medium text-agro-dark">Semillas</span>
-                </a>
-                <a class="flex flex-col items-center gap-1 min-w-[70px] px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors" href="#">
-                    <span class="material-symbols-outlined text-[22px] text-agro-dark">compost</span>
-                    <span class="text-xs font-medium text-agro-dark">Fertilizantes</span>
-                </a>
-                <a class="flex flex-col items-center gap-1 min-w-[70px] px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors" href="#">
-                    <span class="material-symbols-outlined text-[22px] text-agro-dark">nutrition</span>
-                    <span class="text-xs font-medium text-agro-dark">Nutrición</span>
-                </a>
-                <a class="flex flex-col items-center gap-1 min-w-[70px] px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors" href="#">
-                    <span class="material-symbols-outlined text-[22px] text-agro-dark">hardware</span>
-                    <span class="text-xs font-medium text-agro-dark">Ferretería</span>
-                </a>
-                <a class="flex flex-col items-center gap-1 min-w-[70px] px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors" href="#">
-                    <span class="material-symbols-outlined text-[22px] text-agro-accent">upload_file</span>
-                    <span class="text-xs font-medium text-agro-accent">Recipe</span>
-                </a>
+                @endforeach
             </div>
         </div>
     </div>

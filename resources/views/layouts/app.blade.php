@@ -7,9 +7,6 @@
     
     <title>@yield('title', 'Agropecuaria Venezuela - Soluciones Integrales para el Campo')</title>
     
-
-
-    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     @if(file_exists(public_path('css/agro-colors.css')))
@@ -23,6 +20,7 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+        
         /* Animaciones */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -31,24 +29,46 @@
         .animate-fade-in-up {
             animation: fadeInUp 0.6s ease-out;
         }
-        /* Layout Containers */
+        
+        /* Layout Containers - AJUSTADO PARA RESPONSIVE FLUIDO */
         .layout-container {
             max-width: 1440px;
+            width: 100%;
             margin: 0 auto;
         }
-        @media (max-width: 640px) { .layout-container { padding: 0 1rem; } }
-        @media (min-width: 641px) and (max-width: 1024px) { .layout-container { padding: 0 2.5rem; } }
-        @media (min-width: 1025px) { .layout-container { padding: 0 10rem; } }
+        
+        /* Móvil (Pequeño) */
+        @media (max-width: 640px) { 
+            .layout-container { padding: 0 1rem; } /* 16px a los lados */
+        }
+        
+        /* Tablet y Móvil Grande */
+        @media (min-width: 641px) and (max-width: 1024px) { 
+            .layout-container { padding: 0 2rem; } /* 32px a los lados (antes era demasiado ancho) */
+        }
+        
+        /* Laptop (Breakpoint nuevo para evitar que se vea aplastado en pantallas de 13 pulgadas) */
+        @media (min-width: 1025px) and (max-width: 1280px) { 
+            .layout-container { padding: 0 5rem; } /* 80px a los lados (transición suave) */
+        }
+        
+        /* Desktop Grande */
+        @media (min-width: 1281px) { 
+            .layout-container { padding: 0 10rem; } /* 160px a los lados (tu valor original) */
+        }
     </style>
     
     @stack('styles')
 </head>
-<body class="bg-background-light text-agro-dark">
+<body class="bg-background-light text-agro-dark font-sans antialiased">
     <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
-        @include('components.top-bar')
-        @include('components.header')
         
-        <main class="flex-grow">
+        <div class="sticky top-0 z-50 w-full">
+            @include('components.top-bar')
+            @include('components.header')
+        </div>
+        
+        <main class="flex-grow w-full">
             @yield('content')
         </main>
         
