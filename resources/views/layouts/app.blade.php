@@ -80,7 +80,7 @@
                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 block">Navegación</span>
                         <ul class="space-y-1">
                             <li>
-                                <a href="#" onclick="toggleMobileMenu(); window.scrollTo(0,0); return false;" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
+                                <a href="{{ route('home') }}" onclick="toggleMobileMenu(); window.scrollTo(0,0);" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
                                     <span class="material-symbols-outlined text-[22px] text-gray-400">home</span>
                                     Inicio
                                 </a>
@@ -109,18 +109,55 @@
                     <div>
                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 block">Mi Cuenta</span>
                         <ul class="space-y-1">
-                            <li>
-                                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
-                                    <span class="material-symbols-outlined text-[22px] text-gray-400">login</span>
-                                    Ingresar / Registro
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
-                                    <span class="material-symbols-outlined text-[22px] text-gray-400">local_shipping</span>
-                                    Mis Pedidos
-                                </a>
-                            </li>
+                            @guest
+                                <li>
+                                    <a href="{{ route('login') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
+                                        <span class="material-symbols-outlined text-[22px] text-gray-400">login</span>
+                                        Ingresar
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('register') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
+                                        <span class="material-symbols-outlined text-[22px] text-gray-400">person_add</span>
+                                        Registrarse
+                                    </a>
+                                </li>
+                            @endguest
+
+                            @auth
+                                <li class="px-3 pb-2 mb-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-8 rounded-full bg-agro-dark/10 flex items-center justify-center text-agro-dark font-bold text-xs">
+                                            {{ substr(Auth::user()->nombre, 0, 1) }}
+                                        </div>
+                                        <div class="overflow-hidden">
+                                            <p class="text-sm font-bold text-gray-800 truncate">{{ Auth::user()->nombre }}</p>
+                                            <p class="text-[10px] text-gray-500 truncate">{{ Auth::user()->email }}</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
+                                        <span class="material-symbols-outlined text-[22px] text-gray-400">account_circle</span>
+                                        Mi Perfil
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
+                                        <span class="material-symbols-outlined text-[22px] text-gray-400">local_shipping</span>
+                                        Mis Pedidos
+                                    </a>
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 font-medium transition-colors text-left">
+                                            <span class="material-symbols-outlined text-[22px] text-red-400">logout</span>
+                                            Cerrar Sesión
+                                        </button>
+                                    </form>
+                                </li>
+                            @endauth
                         </ul>
                     </div>
                 </div>
