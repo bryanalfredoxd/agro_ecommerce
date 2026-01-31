@@ -29,6 +29,7 @@ class User extends Authenticatable
         'documento_identidad',
         'tipo_cliente',
         'activo',
+        'codigo_pais',
     ];
 
     // 4. Ocultar datos sensibles
