@@ -7,47 +7,17 @@
     
     <title>@yield('title', 'Agropecuaria Venezuela - Soluciones Integrales para el Campo')</title>
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     
-    <!-- Nuestros colores personalizados -->
-    <link href="{{ asset('css/agro-colors.css') }}" rel="stylesheet">
-    
-    <!-- Tailwind Config -->
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#13ec13",
-                        "agro-dark": "#1B4332",
-                        "agro-gold": "#D4A373",
-                        "agro-accent": "#BC6C25",
-                        "background-light": "#F8F9FA",
-                        "background-dark": "#102210",
-                    },
-                    fontFamily: {
-                        "display": ["Work Sans", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                },
-            },
-        }
-    </script>
+    @if(file_exists(public_path('css/agro-colors.css')))
+        <link href="{{ asset('css/agro-colors.css') }}" rel="stylesheet">
+    @endif
     
     <style>
         body {
@@ -58,42 +28,20 @@
         }
         /* Animaciones */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in-up {
             animation: fadeInUp 0.6s ease-out;
         }
-        /* Mejorar responsive */
+        /* Layout Containers */
         .layout-container {
             max-width: 1440px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto;
         }
-        @media (max-width: 640px) {
-            .layout-container {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-        }
-        @media (min-width: 641px) and (max-width: 1024px) {
-            .layout-container {
-                padding-left: 2.5rem;
-                padding-right: 2.5rem;
-            }
-        }
-        @media (min-width: 1025px) {
-            .layout-container {
-                padding-left: 10rem;
-                padding-right: 10rem;
-            }
-        }
+        @media (max-width: 640px) { .layout-container { padding: 0 1rem; } }
+        @media (min-width: 641px) and (max-width: 1024px) { .layout-container { padding: 0 2.5rem; } }
+        @media (min-width: 1025px) { .layout-container { padding: 0 10rem; } }
     </style>
     
     @stack('styles')
