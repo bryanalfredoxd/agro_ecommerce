@@ -8,8 +8,8 @@
                     <span class="material-symbols-outlined text-[24px] sm:text-[28px]">agriculture</span>
                 </div>
                 <div class="flex flex-col leading-none">
-                    <span class="text-agro-dark text-lg sm:text-xl font-bold tracking-tight">Agropecuaria</span>
-                    <span class="text-agro-accent text-sm sm:text-base font-bold -mt-0.5">Venezuela</span>
+                    <span class="text-agro-dark text-lg sm:text-xl font-bold tracking-tight">Corpo</span>
+                    <span class="text-agro-accent text-sm sm:text-base font-bold -mt-0.5">Agricola</span>
                 </div>
             </a>
             
