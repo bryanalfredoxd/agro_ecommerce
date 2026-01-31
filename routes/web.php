@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\TasaCambioController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\CategoriasControlador;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,5 +72,11 @@ Route::get('/horario/hoy', [HorarioController::class, 'obtenerHorarioHoy'])
 Route::get('/horario/abierto-ahora', [HorarioController::class, 'estaAbiertoAhora'])
     ->name('horario.abierto-ahora');
 
+// Ruta para categorías
 
+Route::get('/', [CategoriasControlador::class, 'index'])->name('home');
 
+//pruebas
+
+Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
+Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store');
