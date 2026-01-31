@@ -1,0 +1,25 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-L4rj7SPf.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/fonts/material-symbols.woff2": {
+    "file": "assets/material-symbols-CNwrXEZE.woff2",
+    "src": "resources/fonts/material-symbols.woff2"
+  },
+  "resources/fonts/work-sans.woff2": {
+    "file": "assets/work-sans-Bl-S9Xys.woff2",
+    "src": "resources/fonts/work-sans.woff2"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CAiCLEjY.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
