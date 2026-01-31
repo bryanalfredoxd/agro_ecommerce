@@ -7,7 +7,6 @@
                 <div class="flex items-center justify-center size-9 sm:size-10 bg-agro-dark rounded-lg text-primary shadow-sm group-hover:scale-105 transition-transform">
                     <span class="material-symbols-outlined text-[24px] sm:text-[28px]">agriculture</span>
                 </div>
-                
                 <div class="flex items-baseline gap-1">
                     <span class="text-agro-dark text-xl sm:text-2xl font-bold tracking-tight">Corpo</span>
                     <span class="text-agro-accent text-xl sm:text-2xl font-bold tracking-tight">Agrícola</span>
@@ -26,7 +25,6 @@
             </div>
             
             <div class="flex items-center gap-2 sm:gap-3">
-                
                 <button onclick="document.getElementById('mobile-search').classList.toggle('hidden')" 
                         class="lg:hidden p-2 text-agro-dark hover:bg-gray-100 rounded-lg transition-colors">
                     <span class="material-symbols-outlined text-[24px]">search</span>
@@ -45,7 +43,7 @@
                     <span class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">3</span>
                 </a>
                 
-                <button class="lg:hidden p-2 text-agro-dark hover:bg-gray-100 rounded-lg transition-colors">
+                <button type="button" onclick="toggleMobileMenu()" class="lg:hidden p-2 text-agro-dark hover:bg-gray-100 rounded-lg transition-colors z-50">
                     <span class="material-symbols-outlined text-[26px]">menu</span>
                 </button>
             </div>
@@ -64,24 +62,19 @@
 
         <div class="hidden lg:flex items-center justify-between py-1 border-t border-gray-100">
             <nav class="flex items-center gap-1">
-                @php
-                    $desktopMenu = [
-                        ['name' => 'Veterinaria', 'icon' => 'vaccines'],
-                        ['name' => 'Semillas', 'icon' => 'grass'],
-                        ['name' => 'Fertilizantes', 'icon' => 'compost'],
-                        ['name' => 'Nutrición', 'icon' => 'nutrition'],
-                        ['name' => 'Maquinaria', 'icon' => 'precision_manufacturing'],
-                    ];
-                @endphp
-
-                @foreach($desktopMenu as $item)
+                @foreach([
+                    ['name' => 'Veterinaria', 'icon' => 'vaccines'],
+                    ['name' => 'Semillas', 'icon' => 'grass'],
+                    ['name' => 'Fertilizantes', 'icon' => 'compost'],
+                    ['name' => 'Nutrición', 'icon' => 'nutrition'],
+                    ['name' => 'Maquinaria', 'icon' => 'precision_manufacturing']
+                ] as $item)
                 <a href="#" class="flex items-center gap-2 px-4 py-3 text-sm font-medium text-agro-dark hover:text-primary border-b-2 border-transparent hover:border-primary transition-all group">
                     <span class="material-symbols-outlined text-[20px] text-gray-400 group-hover:text-primary transition-colors">{{ $item['icon'] }}</span>
                     <span>{{ $item['name'] }}</span>
                 </a>
                 @endforeach
             </nav>
-            
             <a href="#" class="flex items-center gap-2 px-4 py-2 bg-agro-accent/10 text-agro-accent rounded-lg hover:bg-agro-accent hover:text-white transition-all font-medium text-sm">
                 <span class="material-symbols-outlined text-[20px]">upload_file</span>
                 <span>Subir Recipe</span>
@@ -92,18 +85,14 @@
     <div class="lg:hidden border-t border-gray-100 py-3 bg-gray-50/50">
         <div class="layout-container overflow-x-auto scrollbar-hide">
             <div class="flex gap-4 min-w-max px-1">
-                @php
-                    $mobileCategories = [
-                        ['icon' => 'vaccines', 'name' => 'Veterinaria'],
-                        ['icon' => 'grass', 'name' => 'Semillas'],
-                        ['icon' => 'compost', 'name' => 'Abonos'],
-                        ['icon' => 'nutrition', 'name' => 'Nutrición'],
-                        ['icon' => 'hardware', 'name' => 'Equipos'],
-                        ['icon' => 'pets', 'name' => 'Mascotas'],
-                    ];
-                @endphp
-                
-                @foreach($mobileCategories as $cat)
+                @foreach([
+                    ['icon' => 'vaccines', 'name' => 'Veterinaria'],
+                    ['icon' => 'grass', 'name' => 'Semillas'],
+                    ['icon' => 'compost', 'name' => 'Abonos'],
+                    ['icon' => 'nutrition', 'name' => 'Nutrición'],
+                    ['icon' => 'hardware', 'name' => 'Equipos'],
+                    ['icon' => 'pets', 'name' => 'Mascotas']
+                ] as $cat)
                 <a href="#" class="flex flex-col items-center gap-1.5 min-w-[72px] group">
                     <div class="size-14 bg-white rounded-full border border-gray-200 flex items-center justify-center shadow-sm group-active:scale-95 transition-all group-hover:border-primary group-hover:text-primary text-gray-600">
                         <span class="material-symbols-outlined text-[24px]">{{ $cat['icon'] }}</span>
