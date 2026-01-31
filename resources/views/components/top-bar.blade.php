@@ -29,12 +29,12 @@
                 
                 <div class="h-3 w-px bg-white/20 sm:hidden"></div>
                 
-                <div class="flex items-center gap-1.5">
+                <!-- CAMBIO: En móvil se muestra el horario -->
+                <div class="flex items-center gap-1.5 sm:hidden">
                     <span class="material-symbols-outlined text-[16px] text-primary">
-                        local_shipping
+                        schedule
                     </span>
-                    <span class="font-medium whitespace-nowrap">
-                        <span class="inline sm:hidden">Envíos</span> <span class="hidden sm:inline">Envíos Nacionales</span> </span>
+                    <span class="font-medium whitespace-nowrap">{{ $horarioHoy }}</span>
                 </div>
             </div>
             
@@ -50,6 +50,16 @@
                     <span class="material-symbols-outlined text-[16px]">support_agent</span>
                     <span class="font-medium group-hover:underline">Soporte</span>
                 </a>
+                
+                <div class="h-3 w-px bg-white/20"></div>
+                
+                <!-- En desktop se muestra "Envíos Nacionales" -->
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] text-primary">
+                        local_shipping
+                    </span>
+                    <span class="font-medium whitespace-nowrap">Envíos Nacionales</span>
+                </div>
                 
                 <div class="h-3 w-px bg-white/20"></div>
                 
