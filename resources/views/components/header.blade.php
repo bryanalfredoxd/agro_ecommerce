@@ -3,13 +3,14 @@
         
         <div class="flex items-center justify-between py-3 lg:py-4 gap-4">
             
-            <a href="/" class="flex items-center gap-2.5 flex-shrink-0 group">
+            <a href="/" class="flex items-center gap-3 flex-shrink-0 group">
                 <div class="flex items-center justify-center size-9 sm:size-10 bg-agro-dark rounded-lg text-primary shadow-sm group-hover:scale-105 transition-transform">
                     <span class="material-symbols-outlined text-[24px] sm:text-[28px]">agriculture</span>
                 </div>
-                <div class="flex flex-col leading-none">
-                    <span class="text-agro-dark text-lg sm:text-xl font-bold tracking-tight">Corpo</span>
-                    <span class="text-agro-accent text-sm sm:text-base font-bold -mt-0.5">Agricola</span>
+                
+                <div class="flex items-baseline gap-1">
+                    <span class="text-agro-dark text-xl sm:text-2xl font-bold tracking-tight">Corpo</span>
+                    <span class="text-agro-accent text-xl sm:text-2xl font-bold tracking-tight">Agrícola</span>
                 </div>
             </a>
             
@@ -63,9 +64,20 @@
 
         <div class="hidden lg:flex items-center justify-between py-1 border-t border-gray-100">
             <nav class="flex items-center gap-1">
-                @foreach(['Veterinaria', 'Semillas', 'Fertilizantes', 'Nutrición', 'Maquinaria'] as $item)
-                <a href="#" class="px-4 py-3 text-sm font-medium text-agro-dark hover:text-primary border-b-2 border-transparent hover:border-primary transition-all">
-                    {{ $item }}
+                @php
+                    $desktopMenu = [
+                        ['name' => 'Veterinaria', 'icon' => 'vaccines'],
+                        ['name' => 'Semillas', 'icon' => 'grass'],
+                        ['name' => 'Fertilizantes', 'icon' => 'compost'],
+                        ['name' => 'Nutrición', 'icon' => 'nutrition'],
+                        ['name' => 'Maquinaria', 'icon' => 'precision_manufacturing'],
+                    ];
+                @endphp
+
+                @foreach($desktopMenu as $item)
+                <a href="#" class="flex items-center gap-2 px-4 py-3 text-sm font-medium text-agro-dark hover:text-primary border-b-2 border-transparent hover:border-primary transition-all group">
+                    <span class="material-symbols-outlined text-[20px] text-gray-400 group-hover:text-primary transition-colors">{{ $item['icon'] }}</span>
+                    <span>{{ $item['name'] }}</span>
                 </a>
                 @endforeach
             </nav>
@@ -81,7 +93,7 @@
         <div class="layout-container overflow-x-auto scrollbar-hide">
             <div class="flex gap-4 min-w-max px-1">
                 @php
-                    $categories = [
+                    $mobileCategories = [
                         ['icon' => 'vaccines', 'name' => 'Veterinaria'],
                         ['icon' => 'grass', 'name' => 'Semillas'],
                         ['icon' => 'compost', 'name' => 'Abonos'],
@@ -91,12 +103,12 @@
                     ];
                 @endphp
                 
-                @foreach($categories as $cat)
+                @foreach($mobileCategories as $cat)
                 <a href="#" class="flex flex-col items-center gap-1.5 min-w-[72px] group">
                     <div class="size-14 bg-white rounded-full border border-gray-200 flex items-center justify-center shadow-sm group-active:scale-95 transition-all group-hover:border-primary group-hover:text-primary text-gray-600">
                         <span class="material-symbols-outlined text-[24px]">{{ $cat['icon'] }}</span>
                     </div>
-                    <span class="text-[11px] font-medium text-gray-700 text-center">{{ $cat['name'] }}</span>
+                    <span class="text-[11px] font-medium text-gray-700 text-center w-full truncate px-0.5">{{ $cat['name'] }}</span>
                 </a>
                 @endforeach
             </div>
