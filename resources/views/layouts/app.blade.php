@@ -7,8 +7,7 @@
     
     <title>@yield('title', 'Agropecuaria Venezuela - Soluciones Integrales para el Campo')</title>
     
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+
 
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
