@@ -30,12 +30,9 @@ Route::middleware('guest')->group(function () {
     // Procesar datos
     Route::post('/registro', [RegisterController::class, 'store']);
 
-    // --- LOGIN (PARCHE TEMPORAL) ---
-    // Definimos la ruta 'login' para que Laravel no de error.
-    // Por ahora, si alguien entra aquí, lo mandamos al registro.
-    Route::get('/login', function () {
-        return redirect()->route('register'); 
-    })->name('login');
+ // --- LOGIN (NUEVO) ---
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
     
     // Aquí agregarías las rutas de Login cuando creemos el LoginController
     // Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
