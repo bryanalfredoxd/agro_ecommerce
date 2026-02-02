@@ -3,51 +3,43 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TasaCambioController;
 use App\Http\Controllers\HorarioController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\CategoriasControlador;
+use App\Http\Controllers\CatalogoController;
+use App\Http\Controllers\HomeController; 
+// Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Aquí registramos las rutas para tu aplicación.
-|
 */
 
 // --- 1. RUTA PRINCIPAL (HOME) ---
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// CORRECCIÓN: Usamos HomeController para que cargue los productos y categorías
+Route::get('/', HomeController::class)->name('home');
 
 
-// --- 2. RUTAS DE REGISTRO (GUEST) ---
-// Solo accesibles si NO estás logueado
+// --- 2. CATÁLOGO ---
+Route::get('/catalogo', [CatalogoController::class, 'index'])->name('catalogo');
+
+
+// --- 3. RUTAS DE GUEST (INVITADOS) ---
 Route::middleware('guest')->group(function () {
-    // Mostrar formulario
+    // Registro
     Route::get('/registro', [RegisterController::class, 'create'])->name('register');
-    
-    // Procesar datos
     Route::post('/registro', [RegisterController::class, 'store']);
 
- // --- LOGIN (NUEVO) ---
+    // Login
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
-    
-    // Aquí agregarías las rutas de Login cuando creemos el LoginController
-    // Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    // Route::post('/login', [LoginController::class, 'login']);
 });
 
 
-// --- 3. RUTAS DE AUTENTICACIÓN (AUTH) ---
-// Solo accesibles si ESTÁS logueado
+// --- 4. RUTAS DE AUTH (USUARIOS LOGUEADOS) ---
 Route::middleware('auth')->group(function () {
-    
-    // Cerrar Sesión (Esta es la que usa tu Header/Menu Móvil)
+    // Cerrar Sesión
     Route::post('/logout', function () {
         Auth::logout();
         request()->session()->invalidate();
@@ -55,28 +47,21 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('logout');
 
-    // Ejemplo de ruta protegida (Panel de Usuario)
+    // Panel de Usuario (Dashboard temporal)
     Route::get('/dashboard', function () {
-        return view('welcome'); // Por ahora redirige al home, luego harás una vista 'dashboard'
+        return view('welcome'); 
     })->name('dashboard');
 });
 
-// Ruta para obtener la tasa actual (si la necesitas para AJAX)
+
+// --- 5. RUTAS UTILITARIAS (AJAX / API INTERNA) ---
+
+// Tasa de cambio
 Route::get('/tasa-cambio/actual', [TasaCambioController::class, 'obtenerTasaActual'])
     ->name('tasa-cambio.actual');
 
-    // Rutas para horarios (si necesitas AJAX)
+// Horarios
 Route::get('/horario/hoy', [HorarioController::class, 'obtenerHorarioHoy'])
     ->name('horario.hoy');
-    
 Route::get('/horario/abierto-ahora', [HorarioController::class, 'estaAbiertoAhora'])
     ->name('horario.abierto-ahora');
-
-// Ruta para categorías
-
-Route::get('/', [CategoriasControlador::class, 'index'])->name('home');
-
-//pruebas
-
-Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
-Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store');

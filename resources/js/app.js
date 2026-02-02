@@ -59,6 +59,24 @@ window.addEventListener('resize', () => {
 
 /**
  * ==========================================
+ * LÓGICA DEL CATÁLOGO (FILTROS)
+ * ==========================================
+ */
+window.toggleFilters = function() {
+    const panel = document.getElementById('filters-panel');
+    if (!panel) return;
+    
+    panel.classList.toggle('hidden');
+    if (!panel.classList.contains('hidden')) {
+        panel.classList.add('animate-fade-in-up');
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        panel.classList.remove('animate-fade-in-up');
+    }
+};
+
+/**
+ * ==========================================
  * LÓGICA DE REGISTRO (GLIDER + LIBRERÍA TEL)
  * ==========================================
  */
@@ -273,5 +291,13 @@ document.addEventListener("DOMContentLoaded", () => {
             background: '#fff',
             backdrop: `rgba(0,0,0,0.4)`
         });
+    }
+
+    // --- H. SCROLL AUTOMÁTICO EN CATÁLOGO (SI HAY FILTROS) ---
+    if (window.location.search.length > 1) {
+        const catalogoSection = document.getElementById('contenido-catalogo');
+        if(catalogoSection) {
+            catalogoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
 });
