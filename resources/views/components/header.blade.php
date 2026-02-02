@@ -107,6 +107,9 @@
             </form>
         </div>
 
+    <!-- Quitar por el momento ya que no creo que sea necesario
+         Si se logra hacer que quede bien, pues se puede reactivar
+
         <div class="hidden lg:flex items-center justify-between py-1 border-t border-gray-100">
             <nav class="flex items-center gap-1">
                 @foreach([
@@ -150,4 +153,6 @@
             </div>
         </div>
     </div>
+
+    -->
 </header>
