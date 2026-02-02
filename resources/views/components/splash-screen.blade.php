@@ -4,7 +4,7 @@
         return;
     }
     
-    // Marcar que se mostró el splash (lo haremos con JavaScript para mejor control)
+    // Marcar que se mostró el splash (con JavaScript para mejor control)
 @endphp
 
 <link rel="stylesheet" href="{{ asset('css/splash.css') }}">
@@ -15,8 +15,8 @@
         <div class="splash-logo-container">
             <div class="splash-logo-glow"></div>
             <div class="splash-logo-inner">
-                <img src="{{ asset('img/ico/Corpo Agricola logo.png') }}" 
-                     alt="AgroEcommerce" 
+                <img src="{{ asset('img/ico/logo0.webp') }}" 
+                     alt="Corpo Agricola" 
                      class="splash-logo-img">
             </div>
         </div>
