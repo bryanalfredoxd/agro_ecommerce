@@ -2,7 +2,13 @@
     
     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    {{-- 
+        CAMBIO CLAVE: 
+        1. Cambié 'container mx-auto' por 'layout-container' (para igualar al hero).
+        2. Cambié el padding 'px-4 sm:px-6 lg:px-8' por 'px-4 sm:px-0'.
+           Esto elimina el hueco extra a la izquierda y lo alinea con el título del Hero.
+    --}}
+    <div class="layout-container w-full relative z-10 px-4 sm:px-0">
         
         <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
             <div class="text-center md:text-left w-full md:w-auto">
@@ -28,7 +34,7 @@
                    class="group relative flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-primary/10 border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full">
                     
                     <div class="aspect-[4/3] w-full bg-gray-100 relative overflow-hidden">
-                        {{-- Fallback de imagen --}}
+                        {{-- Fallback de imagen con lógica segura --}}
                         <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-out" 
                              style="background-image: url('{{ $categoria->imagen_url ?? 'https://placehold.co/400x300/F3F4F6/10B981?text=' . urlencode($categoria->nombre) }}');">
                         </div>
@@ -47,7 +53,6 @@
                         </h4>
                         
                         <p class="text-[10px] uppercase tracking-wide text-gray-400 mt-1 group-hover:text-gray-500">
-                            {{-- Validación segura por si hijos es null --}}
                             {{ $categoria->hijos ? $categoria->hijos->count() : 0 }} Subcategorías
                         </p>
                     </div>
