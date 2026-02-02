@@ -8,6 +8,7 @@ use App\Http\Controllers\TasaCambioController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\HomeController; 
+use App\Http\Controllers\SplashController;
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
@@ -65,3 +66,10 @@ Route::get('/horario/hoy', [HorarioController::class, 'obtenerHorarioHoy'])
     ->name('horario.hoy');
 Route::get('/horario/abierto-ahora', [HorarioController::class, 'estaAbiertoAhora'])
     ->name('horario.abierto-ahora');
+
+// Rutas para splash screen
+Route::post('/splash/mark-shown', [SplashController::class, 'markAsShown'])
+    ->name('splash.mark-shown');
+    
+Route::get('/splash/should-show', [SplashController::class, 'shouldShow'])
+    ->name('splash.should-show');

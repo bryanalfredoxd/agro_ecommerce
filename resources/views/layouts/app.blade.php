@@ -15,6 +15,7 @@
     
     @if(file_exists(public_path('css/agro-colors.css')))
         <link href="{{ asset('css/agro-colors.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('css/splash.css') }}">
     @endif
     
     <style>
@@ -36,7 +37,7 @@
     @stack('styles')
 </head>
 <body class="bg-background-light text-agro-dark font-sans antialiased selection:bg-primary selection:text-agro-dark">
-    
+    <x-splash-screen />
     <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
         
         <div class="sticky top-0 z-40 w-full">
