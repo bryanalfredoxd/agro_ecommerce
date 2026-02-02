@@ -15,7 +15,7 @@
         <div class="splash-logo-container">
             <div class="splash-logo-glow"></div>
             <div class="splash-logo-inner">
-                <img src="{{ asset('img/ico/logo0.webp') }}" 
+                <img src="{{ asset('img/ico/Logo0.webp') }}" 
                      alt="Corpo Agricola" 
                      class="splash-logo-img">
             </div>
