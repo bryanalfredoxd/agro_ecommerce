@@ -7,36 +7,29 @@ use Illuminate\Http\Request;
 
 class HorarioController extends Controller
 {
-    // Obtener horario de hoy
-    public function obtenerHorarioHoy()
+    // Obtener estado completo del horario
+    public function obtenerEstadoHorario()
     {
-        $horarioHoy = HorarioSemanal::obtenerHorarioHoy();
-        
-        if (!$horarioHoy) {
-            return response()->json([
-                'abierto' => false,
-                'mensaje' => 'Cerrado hoy',
-                'horario' => null
-            ]);
-        }
+        $estado = HorarioSemanal::obtenerEstadoHorarioHoy();
         
         return response()->json([
-            'abierto' => $horarioHoy->es_laborable,
-            'mensaje' => $horarioHoy->es_laborable ? 'Abierto' : 'Cerrado hoy',
-            'horario' => [
-                'apertura' => $horarioHoy->hora_apertura,
-                'cierre' => $horarioHoy->hora_cierre,
-                'formateado' => HorarioSemanal::obtenerHorarioHoyFormateado()
-            ]
+            'estado' => $estado['estado'],
+            'mensaje' => $estado['mensaje'],
+            'horario_formateado' => $estado['formateado'],
+            'abierto_ahora' => $estado['estado'] === 'abierto'
         ]);
     }
     
     // Verificar si está abierto ahora
     public function estaAbiertoAhora()
     {
+        $estado = HorarioSemanal::obtenerEstadoHorarioHoy();
+        
         return response()->json([
-            'abierto' => HorarioSemanal::estaAbiertoAhora(),
-            'horario_hoy' => HorarioSemanal::obtenerHorarioHoyFormateado()
+            'abierto' => $estado['estado'] === 'abierto',
+            'estado' => $estado['estado'],
+            'mensaje' => $estado['mensaje'],
+            'horario_hoy' => $estado['formateado']
         ]);
     }
 }

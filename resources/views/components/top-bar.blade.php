@@ -5,8 +5,37 @@
     // Obtener la tasa de cambio
     $tasaDolar = TasaCambio::obtenerValorUSD();
     
-    // Obtener horario de hoy
-    $horarioHoy = HorarioSemanal::obtenerHorarioHoyFormateado();
+    // Obtener estado del horario
+    $estadoHorario = HorarioSemanal::obtenerEstadoHorarioHoy();
+    $textoHorario = $estadoHorario['mostrar']; // Usamos el campo 'mostrar' que ya tiene el texto correcto
+    
+    // Determinar clase de color según estado
+    $claseHorario = 'text-gray-300'; // Por defecto
+    $iconoHorario = 'schedule'; // Por defecto
+    
+    switch($estadoHorario['estado']) {
+        case 'abierto':
+            $claseHorario = 'text-green-400';
+            $iconoHorario = 'schedule';
+            break;
+        case 'antes_horario':
+            $claseHorario = 'text-yellow-400';
+            $iconoHorario = 'lock_clock';
+            break;
+        case 'despues_horario':
+            $claseHorario = 'text-red-400';
+            $iconoHorario = 'lock';
+            break;
+        case 'no_laborable':
+            $claseHorario = 'text-red-500';
+            $iconoHorario = 'event_busy';
+            break;
+        case 'sin_horario_dia':
+        case 'sin_horario':
+            $claseHorario = 'text-orange-400';
+            $iconoHorario = 'info';
+            break;
+    }
 @endphp
 
 <div class="bg-agro-dark text-white w-full border-b border-white/10 text-[11px] sm:text-xs md:text-sm">
@@ -29,12 +58,10 @@
                 
                 <div class="h-3 w-px bg-white/20 sm:hidden"></div>
                 
-                <!-- CAMBIO: En móvil se muestra el horario -->
-                <div class="flex items-center gap-1.5 sm:hidden">
-                    <span class="material-symbols-outlined text-[16px] text-primary">
-                        schedule
-                    </span>
-                    <span class="font-medium whitespace-nowrap">{{ $horarioHoy }}</span>
+                <!-- Para móvil: muestra el horario -->
+                <div class="flex items-center gap-1.5 sm:hidden {{ $claseHorario }}">
+                    <span class="material-symbols-outlined text-[16px]">{{ $iconoHorario }}</span>
+                    <span class="font-medium whitespace-nowrap">{{ $textoHorario }}</span>
                 </div>
             </div>
             
@@ -53,7 +80,7 @@
                 
                 <div class="h-3 w-px bg-white/20"></div>
                 
-                <!-- En desktop se muestra "Envíos Nacionales" -->
+                <!-- Para desktop: muestra "Envíos Nacionales" -->
                 <div class="flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[16px] text-primary">
                         local_shipping
@@ -63,9 +90,10 @@
                 
                 <div class="h-3 w-px bg-white/20"></div>
                 
-                <div class="flex items-center gap-1.5 text-gray-300 cursor-default" title="Horario de atención">
-                    <span class="material-symbols-outlined text-[16px]">schedule</span>
-                    <span class="font-medium">{{ $horarioHoy }}</span>
+                <!-- Para desktop: muestra el horario -->
+                <div class="flex items-center gap-1.5 {{ $claseHorario }} cursor-default" title="Horario de atención">
+                    <span class="material-symbols-outlined text-[16px]">{{ $iconoHorario }}</span>
+                    <span class="font-medium">{{ $textoHorario }}</span>
                 </div>
             </div>
             
