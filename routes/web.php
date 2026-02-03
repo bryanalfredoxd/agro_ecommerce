@@ -9,6 +9,8 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\HomeController; 
 use App\Http\Controllers\SplashController;
+use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\DireccionController;
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
@@ -53,6 +55,27 @@ Route::middleware('auth')->group(function () {
         return view('welcome'); 
     })->name('dashboard');
 });
+
+
+Route::middleware(['auth'])->group(function () {
+    // Vista del perfil
+    Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil');
+    
+    // Actualizar datos personales
+    Route::put('/perfil/actualizar', [PerfilController::class, 'updateDatos'])->name('perfil.update');
+    
+    // Actualizar contraseña (si no usas Fortify/Breeze nativo)
+    Route::put('/perfil/password', [PerfilController::class, 'updatePassword'])->name('password.update');
+
+    Route::post('/perfil/direccion', [DireccionController::class, 'store'])->name('direccion.store');
+
+    // NUEVA RUTA: Cambiar dirección principal
+    Route::patch('/perfil/direccion/{id}/principal', [DireccionController::class, 'setPrincipal'])->name('direccion.principal');
+    
+    // OPCIONAL: Ruta para eliminar (te la dejo lista por si acaso)
+    Route::delete('/perfil/direccion/{id}', [DireccionController::class, 'destroy'])->name('direccion.destroy');
+});
+
 
 
 // --- 5. RUTAS UTILITARIAS (AJAX / API INTERNA) ---

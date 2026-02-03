@@ -1,4 +1,35 @@
 import './bootstrap';
+
+/**
+ * ==========================================
+ * CONFIGURACIÓN LEAFLET (MAPA)
+ * ==========================================
+ */
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Importación manual de imágenes para evitar errores 404 en producción
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Fix para que Leaflet encuentre las imágenes correctamente con Vite
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+});
+
+// Hacemos 'L' global para usarlo en los scripts de Blade (perfil, contacto, etc.)
+window.L = L;
+
+/**
+ * ==========================================
+ * OTRAS LIBRERÍAS
+ * ==========================================
+ */
 import intlTelInput from 'intl-tel-input';
 import Swal from 'sweetalert2';
 

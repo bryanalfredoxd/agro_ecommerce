@@ -65,7 +65,7 @@
                     <p class="text-[10px] text-gray-400 truncate">{{ Auth::user()->email }}</p>
                 </div>
                 
-                <a href="#" class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-primary/10 hover:text-agro-dark rounded-lg transition-colors">
+                <a href="{{ route('perfil') }}" class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-primary/10 hover:text-agro-dark rounded-lg transition-colors">
                     <span class="material-symbols-outlined text-[18px]">account_circle</span> Mi Perfil
                 </a>
                 <a href="#" class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-primary/10 hover:text-agro-dark rounded-lg transition-colors">

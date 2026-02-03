@@ -142,7 +142,7 @@
                                     </div>
                                 </li>
                                 <li>
-                                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
+                                    <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-primary/10 hover:text-agro-dark font-medium transition-colors">
                                         <span class="material-symbols-outlined text-[22px] text-gray-400">account_circle</span>
                                         Mi Perfil
                                     </a>

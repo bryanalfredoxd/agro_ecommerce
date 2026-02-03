@@ -29,7 +29,8 @@ class User extends Authenticatable
         'documento_identidad',
         'tipo_cliente',
         'activo',
-        'codigo_pais',
+        // 'codigo_pais',  <-- OJO: En tu SQL dump NO vi esta columna. 
+        // Si no existe en la BD, quítala para evitar errores de SQL.
     ];
 
     // 4. Ocultar datos sensibles
@@ -44,9 +45,26 @@ class User extends Authenticatable
     ];
 
     // 5. ¡CRUCIAL! Sobrescribir el nombre del campo password
-    // Si no pones esto, Laravel buscará la columna 'password' y fallará.
     public function getAuthPassword()
     {
         return $this->password_hash;
+    }
+
+    /* * ========================================
+     * RELACIONES (LO QUE FALTABA)
+     * ========================================
+     */
+
+    // Relación: Un usuario tiene muchas direcciones
+    // Esto es vital para el foreach($user->direcciones) del perfil
+    public function direcciones()
+    {
+        return $this->hasMany(DireccionUsuario::class, 'usuario_id');
+    }
+
+    // Relación: Un usuario pertenece a un Rol (opcional, pero recomendada)
+    public function rol()
+    {
+        return $this->belongsTo(Role::class, 'rol_id');
     }
 }
