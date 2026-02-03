@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller; 
-// SOLUCIÓN ERROR IMAGEN 1: Importamos los modelos aquí arriba
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Marca;
@@ -34,18 +33,16 @@ class CatalogoController extends Controller
             $query->where('marca_id', $request->marca);
         }
 
-        // 4. Ordenamiento (SOLUCIÓN ERROR IMAGEN 2)
-        // Quitamos 'created_at' que no existe y usamos 'id'
+        // 4. Ordenamiento
         if ($request->orden == 'precio_asc') {
             $query->orderBy('precio_venta_usd', 'asc');
         } elseif ($request->orden == 'precio_desc') {
             $query->orderBy('precio_venta_usd', 'desc');
         } else {
-            $query->orderBy('id', 'desc'); // <--- Aquí estaba el fallo del SQLSTATE
+            $query->orderBy('id', 'desc');
         }
 
-        // 5. Ejecución (SOLUCIÓN ERROR IMAGEN 3)
-        // Ahora que creaste ProductoImagen.php en el Paso 1, esto funcionará
+        // 5. Ejecución
         $productos = $query->with(['categoria', 'imagenes' => function($q) {
                                 $q->where('es_principal', 1);
                            }])
@@ -56,6 +53,12 @@ class CatalogoController extends Controller
         $categorias = Categoria::has('productos')->get();
         $marcas = Marca::where('activo', 1)->get();
 
+        // Si es petición AJAX, devolver solo la vista parcial
+        if ($request->ajax()) {
+            return view('catalogo.partials.products', compact('productos'))->render();
+        }
+
+        // Para petición normal, devolver vista completa
         return view('catalogo.index', compact('productos', 'categorias', 'marcas'));
     }
 }

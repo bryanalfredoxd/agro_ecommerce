@@ -33,13 +33,9 @@
 
                 <div id="filters-panel" class="hidden lg:block bg-white/95 backdrop-blur-md rounded-2xl shadow-xl shadow-gray-200/50 border border-white/50 p-6 sticky top-6 transition-all duration-300">
                     
-                    <form action="{{ route('catalogo') }}" method="GET" class="mb-8 relative group">
-                        {{-- Mantenemos los filtros actuales al buscar --}}
-                        @if(request('categoria')) <input type="hidden" name="categoria" value="{{ request('categoria') }}"> @endif
-                        @if(request('marca')) <input type="hidden" name="marca" value="{{ request('marca') }}"> @endif
-                        @if(request('orden')) <input type="hidden" name="orden" value="{{ request('orden') }}"> @endif
-                        
+                    <form id="search-form" method="GET" class="mb-8 relative group">
                         <input type="text" name="buscar" value="{{ request('buscar') }}" 
+                               id="search-input"
                                class="w-full pl-11 pr-4 py-3 rounded-xl bg-gray-100/80 border-transparent focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all text-sm font-medium text-gray-800 placeholder-gray-400" 
                                placeholder="Buscar insumo...">
                         <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400 group-focus-within:text-primary transition-colors duration-300">search</span>
@@ -50,8 +46,8 @@
                             <span class="material-symbols-outlined text-lg text-primary">category</span> Categorías
                         </h3>
                         <nav class="space-y-2 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
-                            <a href="{{ route('catalogo') }}" 
-                               class="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 group {{ !request('categoria') ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-[1.02]' : 'text-gray-700 bg-gray-50 hover:bg-gray-100 hover:text-primary' }}">
+                            <a href="#" data-filter="categoria" data-value="" 
+                               class="filter-link flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 group {{ !request('categoria') ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-[1.02]' : 'text-gray-700 bg-gray-50 hover:bg-gray-100 hover:text-primary' }}">
                                 <span>Todas</span>
                                 @if(!request('categoria'))
                                     <span class="material-symbols-outlined text-[20px]">check_circle</span>
@@ -59,8 +55,8 @@
                             </a>
 
                             @foreach($categorias as $cat)
-                                <a href="{{ route('catalogo', array_merge(request()->except('page'), ['categoria' => $cat->id])) }}" 
-                                   class="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 group {{ request('categoria') == $cat->id ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-[1.02]' : 'text-gray-700 bg-gray-50 hover:bg-gray-100 hover:text-primary' }}">
+                                <a href="#" data-filter="categoria" data-value="{{ $cat->id }}" 
+                                   class="filter-link flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 group {{ request('categoria') == $cat->id ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-[1.02]' : 'text-gray-700 bg-gray-50 hover:bg-gray-100 hover:text-primary' }}">
                                     <span class="line-clamp-1">{{ $cat->nombre }}</span>
                                     @if(request('categoria') == $cat->id)
                                         <span class="material-symbols-outlined text-[20px]">check_circle</span>
@@ -78,8 +74,8 @@
                         </h3>
                         <div class="flex flex-wrap gap-2">
                             @foreach($marcas as $marca)
-                                <a href="{{ route('catalogo', array_merge(request()->except('page'), ['marca' => $marca->id])) }}" 
-                                   class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 {{ request('marca') == $marca->id ? 'bg-agro-dark text-white border-agro-dark shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:border-primary hover:text-primary hover:bg-primary/5' }}">
+                                <a href="#" data-filter="marca" data-value="{{ $marca->id }}" 
+                                   class="filter-link px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 {{ request('marca') == $marca->id ? 'bg-agro-dark text-white border-agro-dark shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:border-primary hover:text-primary hover:bg-primary/5' }}">
                                     {{ $marca->nombre }}
                                 </a>
                             @endforeach
@@ -87,7 +83,8 @@
                     </div>
 
                     @if(request()->hasAny(['categoria', 'marca', 'buscar']))
-                        <a href="{{ route('catalogo') }}" class="flex items-center justify-center gap-2 w-full py-3 mt-6 text-sm text-red-500 font-bold bg-red-50 rounded-xl hover:bg-red-100 hover:shadow-sm transition-all duration-300 group">
+                        <a href="#" id="clear-filters" 
+                           class="flex items-center justify-center gap-2 w-full py-3 mt-6 text-sm text-red-500 font-bold bg-red-50 rounded-xl hover:bg-red-100 hover:shadow-sm transition-all duration-300 group">
                             <span class="material-symbols-outlined text-[20px] group-hover:rotate-180 transition-transform duration-500">restart_alt</span>
                             Limpiar Filtros
                         </a>
@@ -96,123 +93,18 @@
             </aside>
 
             <main class="flex-1">
-                
-                <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 transition-all hover:shadow-md">
-                    <p class="text-gray-600 text-sm font-medium">
-                        Mostrando <span class="font-black text-agro-dark">{{ $productos->firstItem() ?? 0 }} - {{ $productos->lastItem() ?? 0 }}</span> de <span class="font-black text-agro-dark">{{ $productos->total() }}</span> resultados
-                    </p>
-                    
-                    <div class="flex items-center gap-3">
-                        <label class="text-xs font-bold text-gray-500 uppercase hidden sm:block">Ordenar por:</label>
-                        <div class="relative group">
-                            <select onchange="location = this.value;" class="appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-primary focus:border-primary block w-full p-2.5 pr-10 font-bold cursor-pointer hover:bg-white hover:shadow-sm transition-all">
-                                <option value="{{ route('catalogo', array_merge(request()->all(), ['orden' => 'reciente'])) }}" {{ request('orden') == 'reciente' ? 'selected' : '' }}>Más Nuevos</option>
-                                <option value="{{ route('catalogo', array_merge(request()->all(), ['orden' => 'precio_asc'])) }}" {{ request('orden') == 'precio_asc' ? 'selected' : '' }}>Precio: Bajo a Alto</option>
-                                <option value="{{ route('catalogo', array_merge(request()->all(), ['orden' => 'precio_desc'])) }}" {{ request('orden') == 'precio_desc' ? 'selected' : '' }}>Precio: Alto a Bajo</option>
-                            </select>
-                            <span class="material-symbols-outlined absolute right-3 top-2.5 text-gray-400 pointer-events-none text-[22px] group-hover:text-primary transition-colors">expand_more</span>
-                        </div>
+                <!-- Contenedor para el loader -->
+                <div id="loading-overlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+                    <div class="text-center">
+                        <div class="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+                        <p class="text-agro-dark font-bold text-lg">Cargando productos...</p>
                     </div>
                 </div>
-
-                @if($productos->count() > 0)
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8" style="perspective: 1000px;">
-                        @foreach($productos as $index => $producto)
-                            <div class="group bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,128,0,0.15)] hover:-translate-y-2 transition-all duration-500 flex flex-col overflow-hidden relative animate-fade-in-up" style="animation-delay: {{ $index * 100 }}ms;">
-                                
-                                <div class="absolute top-4 left-4 z-10 flex flex-col gap-2 items-start">
-                                    @if($producto->precio_oferta_usd)
-                                        <span class="bg-red-500 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-sm uppercase tracking-wider flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[14px]">local_offer</span> Oferta
-                                        </span>
-                                    @endif
-                                    @if($producto->stock_total <= $producto->stock_minimo_alerta)
-                                        <span class="bg-amber-500 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-sm uppercase tracking-wider flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[14px]">inventory_2</span> Poco Stock
-                                        </span>
-                                    @endif
-                                </div>
-
-                                <div class="relative aspect-[4/3] bg-gradient-to-b from-gray-50 to-white p-6 overflow-hidden">
-                                    @php
-                                        $img = $producto->imagenes->where('es_principal', 1)->first()?->url_imagen 
-                                               ?? $producto->imagenes->first()?->url_imagen 
-                                               ?? null;
-                                    @endphp
-                                    
-                                    @if($img)
-                                        <img src="{{ $img }}" alt="{{ $producto->nombre }}" class="w-full h-full object-contain mix-blend-multiply filter drop-shadow-sm group-hover:scale-110 transition-transform duration-700 ease-in-out z-0">
-                                    @else
-                                        <div class="w-full h-full flex flex-col items-center justify-center text-gray-300 z-0">
-                                            <span class="material-symbols-outlined text-6xl mb-2">image_not_supported</span>
-                                            <span class="text-xs font-bold uppercase tracking-widest">Sin Imagen</span>
-                                        </div>
-                                    @endif
-                                    
-                                    <div class="absolute inset-0 bg-agro-dark/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-3 backdrop-blur-[1px]">
-                                        <button class="bg-white text-agro-dark p-3 rounded-full hover:bg-primary hover:text-white hover:scale-110 transition-all shadow-lg transform translate-y-8 group-hover:translate-y-0 duration-500 ease-out">
-                                            <span class="material-symbols-outlined">visibility</span>
-                                        </button>
-                                        <button class="bg-primary text-white p-3 rounded-full hover:bg-green-600 hover:scale-110 transition-all shadow-lg transform translate-y-8 group-hover:translate-y-0 duration-500 ease-out delay-100">
-                                            <span class="material-symbols-outlined">add_shopping_cart</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="p-6 flex-1 flex flex-col bg-white relative z-10">
-                                    <div class="mb-3">
-                                        <a href="{{ route('catalogo', ['categoria' => $producto->categoria_id]) }}" class="inline-block text-[11px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-wider hover:bg-primary hover:text-white transition-colors">
-                                            {{ $producto->categoria->nombre ?? 'General' }}
-                                        </a>
-                                    </div>
-                                    
-                                    <h3 class="font-bold text-agro-dark text-xl leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                                        <a href="#" class="focus:outline-none">{{ $producto->nombre }}</a>
-                                    </h3>
-                                    
-                                    <p class="text-sm text-gray-500 mb-6 line-clamp-2 leading-relaxed">{{ $producto->descripcion }}</p>
-
-                                    <div class="mt-auto pt-5 border-t border-gray-100 flex items-end justify-between">
-                                        <div>
-                                            @if($producto->precio_oferta_usd)
-                                                <div class="flex flex-col">
-                                                    <span class="text-xs text-red-400 line-through font-semibold mb-0.5">USD {{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                                    <span class="text-2xl font-black text-agro-dark tracking-tight">USD {{ number_format($producto->precio_oferta_usd, 2) }}</span>
-                                                </div>
-                                            @else
-                                                <span class="text-2xl font-black text-agro-dark tracking-tight">USD {{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                            @endif
-                                            <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-1">{{ $producto->unidad_medida }}</p>
-                                        </div>
-                                        
-                                        <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-primary group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary/30 transition-all duration-300 transform group-hover:rotate-12 cursor-pointer">
-                                             <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div class="mt-16 flex justify-center animate-fade-in-up" style="animation-delay: 300ms;">
-                        {{ $productos->links('pagination::tailwind') }} 
-                    </div>
-
-                @else
-                    <div class="bg-white/80 backdrop-blur-md rounded-3xl shadow-sm border border-gray-100 p-16 text-center animate-fade-in-up">
-                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-                            <span class="material-symbols-outlined text-5xl text-gray-300">travel_explore</span>
-                        </div>
-                        <h3 class="text-2xl font-black text-agro-dark mb-3">No encontramos resultados</h3>
-                        <p class="text-gray-500 text-lg max-w-md mx-auto mb-8 leading-relaxed">
-                            No hay productos para esta búsqueda. Intenta limpiar los filtros.
-                        </p>
-                        <a href="{{ route('catalogo') }}" class="inline-flex items-center justify-center gap-2 px-8 py-4 border border-transparent text-base font-bold rounded-2xl text-white bg-agro-dark hover:bg-primary shadow-lg shadow-agro-dark/20 hover:shadow-primary/40 transform hover:-translate-y-1 transition-all duration-300">
-                            <span class="material-symbols-outlined">restart_alt</span>
-                            Limpiar Filtros
-                        </a>
-                    </div>
-                @endif
+                
+                <!-- Contenedor donde se cargarán los productos -->
+                <div id="products-container">
+                    @include('catalogo.partials.products', ['productos' => $productos])
+                </div>
             </main>
 
         </div>
@@ -248,4 +140,269 @@
         background: #10B981; 
     }
 </style>
+
+<script>
+// Variables globales
+let currentPage = 1;
+let currentFilters = {
+    buscar: "{{ request('buscar') }}",
+    categoria: "{{ request('categoria') }}",
+    marca: "{{ request('marca') }}",
+    orden: "{{ request('orden', 'reciente') }}"
+};
+
+// Función para mostrar/ocultar filtros en móvil
+function toggleFilters() {
+    const panel = document.getElementById('filters-panel');
+    panel.classList.toggle('hidden');
+}
+
+// Función para actualizar URL en el navegador sin recargar
+function updateBrowserURL(filters) {
+    const params = new URLSearchParams();
+    
+    Object.entries(filters).forEach(([key, value]) => {
+        if (value) {
+            params.set(key, value);
+        }
+    });
+    
+    const newURL = params.toString() ? `${window.location.pathname}?${params}` : window.location.pathname;
+    window.history.pushState(filters, '', newURL);
+}
+
+// Función para cargar productos vía AJAX
+function loadProducts(page = 1, filters = {}) {
+    // Mostrar loader
+    const loader = document.getElementById('loading-overlay');
+    const productsContainer = document.getElementById('products-container');
+    
+    loader.classList.remove('hidden');
+    productsContainer.style.opacity = '0.5';
+    productsContainer.style.transition = 'opacity 0.3s';
+    
+    // Actualizar página actual
+    currentPage = page;
+    currentFilters = {...currentFilters, ...filters};
+    
+    // Actualizar URL del navegador
+    updateBrowserURL(currentFilters);
+    
+    // Actualizar estado de los filtros visualmente
+    updateFilterStates(currentFilters);
+    
+    // Construir URL para AJAX
+    const params = new URLSearchParams(currentFilters);
+    if (page > 1) {
+        params.set('page', page);
+    }
+    
+    // Hacer petición AJAX
+    fetch(`{{ route('catalogo') }}?${params.toString()}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Error en la respuesta');
+        return response.text();
+    })
+    .then(html => {
+        // Actualizar contenedor de productos
+        productsContainer.innerHTML = html;
+        
+        // Restaurar opacidad
+        setTimeout(() => {
+            productsContainer.style.opacity = '1';
+        }, 100);
+        
+        // Restaurar scroll al inicio de los productos
+        document.getElementById('contenido-catalogo').scrollIntoView({ behavior: 'smooth' });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        productsContainer.innerHTML = `
+            <div class="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+                <span class="material-symbols-outlined text-red-500 text-4xl mb-4">error</span>
+                <h3 class="text-xl font-bold text-red-700 mb-2">Error al cargar productos</h3>
+                <p class="text-red-600 mb-4">Intenta recargar la página o contactar al soporte.</p>
+                <button onclick="location.reload()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    Recargar Página
+                </button>
+            </div>
+        `;
+    })
+    .finally(() => {
+        // Ocultar loader
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            productsContainer.style.opacity = '1';
+        }, 300);
+    });
+}
+
+// Función para actualizar estados visuales de los filtros
+function updateFilterStates(filters) {
+    // Actualizar enlaces de categorías
+    document.querySelectorAll('[data-filter="categoria"]').forEach(link => {
+        const value = link.getAttribute('data-value');
+        const isActive = filters.categoria === value;
+        
+        link.classList.toggle('bg-primary', isActive);
+        link.classList.toggle('text-white', isActive);
+        link.classList.toggle('shadow-lg', isActive);
+        link.classList.toggle('shadow-primary/30', isActive);
+        link.classList.toggle('scale-[1.02]', isActive);
+        link.classList.toggle('bg-gray-50', !isActive);
+        link.classList.toggle('text-gray-700', !isActive);
+        link.classList.toggle('hover:bg-gray-100', !isActive);
+        link.classList.toggle('hover:text-primary', !isActive);
+    });
+    
+    // Actualizar enlaces de marcas
+    document.querySelectorAll('[data-filter="marca"]').forEach(link => {
+        const value = link.getAttribute('data-value');
+        const isActive = filters.marca === value;
+        
+        link.classList.toggle('bg-agro-dark', isActive);
+        link.classList.toggle('text-white', isActive);
+        link.classList.toggle('border-agro-dark', isActive);
+        link.classList.toggle('shadow-md', isActive);
+        link.classList.toggle('bg-white', !isActive);
+        link.classList.toggle('text-gray-600', !isActive);
+        link.classList.toggle('border-gray-200', !isActive);
+        link.classList.toggle('hover:border-primary', !isActive);
+        link.classList.toggle('hover:text-primary', !isActive);
+        link.classList.toggle('hover:bg-primary/5', !isActive);
+    });
+    
+    // Actualizar input de búsqueda
+    document.getElementById('search-input').value = filters.buscar || '';
+    
+    // Actualizar select de orden
+    document.querySelectorAll('select[name="orden"]').forEach(select => {
+        select.value = filters.orden;
+    });
+    
+    // Mostrar/ocultar botón de limpiar filtros
+    const clearBtn = document.getElementById('clear-filters');
+    const hasActiveFilters = filters.buscar || filters.categoria || filters.marca;
+    
+    if (hasActiveFilters && !clearBtn) {
+        // Crear botón de limpiar filtros si no existe
+        const filtersPanel = document.getElementById('filters-panel');
+        const clearLink = document.createElement('a');
+        clearLink.id = 'clear-filters';
+        clearLink.href = '#';
+        clearLink.className = 'flex items-center justify-center gap-2 w-full py-3 mt-6 text-sm text-red-500 font-bold bg-red-50 rounded-xl hover:bg-red-100 hover:shadow-sm transition-all duration-300 group';
+        clearLink.innerHTML = `
+            <span class="material-symbols-outlined text-[20px] group-hover:rotate-180 transition-transform duration-500">restart_alt</span>
+            Limpiar Filtros
+        `;
+        clearLink.addEventListener('click', clearFilters);
+        filtersPanel.appendChild(clearLink);
+    } else if (!hasActiveFilters && clearBtn) {
+        clearBtn.remove();
+    }
+}
+
+// Función para limpiar todos los filtros
+function clearFilters(e) {
+    e.preventDefault();
+    currentFilters = { orden: currentFilters.orden }; // Mantener solo el orden
+    loadProducts(1, currentFilters);
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Delegación de eventos para los enlaces de filtro
+    document.addEventListener('click', function(e) {
+        // Filtros por categoría y marca
+        if (e.target.matches('.filter-link') || e.target.closest('.filter-link')) {
+            e.preventDefault();
+            const link = e.target.matches('.filter-link') ? e.target : e.target.closest('.filter-link');
+            const filter = link.getAttribute('data-filter');
+            const value = link.getAttribute('data-value');
+            
+            // Si es el mismo valor, deseleccionar
+            if (currentFilters[filter] === value) {
+                currentFilters[filter] = '';
+            } else {
+                currentFilters[filter] = value;
+            }
+            
+            loadProducts(1, currentFilters);
+        }
+        
+        // Paginación (delegación para enlaces dinámicos)
+        if (e.target.matches('.pagination a') || e.target.closest('.pagination a')) {
+            e.preventDefault();
+            const link = e.target.matches('.pagination a') ? e.target : e.target.closest('.pagination a');
+            const url = new URL(link.href);
+            const page = url.searchParams.get('page') || 1;
+            loadProducts(page);
+        }
+    });
+    
+    // Búsqueda con debounce
+    let searchTimeout;
+    document.getElementById('search-input').addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            currentFilters.buscar = e.target.value;
+            loadProducts(1, currentFilters);
+        }, 500); // 500ms de delay
+    });
+    
+    // Ordenamiento
+    document.querySelectorAll('select[name="orden"]').forEach(select => {
+        select.addEventListener('change', function(e) {
+            currentFilters.orden = e.target.value;
+            loadProducts(1, currentFilters);
+        });
+    });
+    
+    // Limpiar filtros
+    const clearBtn = document.getElementById('clear-filters');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearFilters);
+    }
+    
+    // Manejar botón de navegación atrás/adelante
+    window.addEventListener('popstate', function(event) {
+        if (event.state) {
+            currentFilters = event.state;
+            loadProducts(1, currentFilters);
+        }
+    });
+});
+</script>
+
+<style>
+    /* Agrega esto a tu archivo CSS principal */
+#loading-overlay {
+    transition: opacity 0.3s ease;
+}
+
+#loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Transiciones suaves para los productos */
+#products-container {
+    transition: opacity 0.3s ease;
+}
+</style>
+
 @endsection

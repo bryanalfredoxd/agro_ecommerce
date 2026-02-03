@@ -32,7 +32,7 @@
                     <button class="group relative flex items-center justify-center gap-2 h-12 sm:h-14 px-8 rounded-xl bg-primary hover:bg-primary/90 text-agro-dark font-bold text-sm sm:text-base transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/40 w-full sm:w-auto overflow-hidden">
                         <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
                         
-                        <span class="relative z-10">Explorar Catálogo</span>
+                        <a href="{{ route('catalogo') }}" class="relative z-10">Explorar Catálogo</a>
                         <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform relative z-10">
                             arrow_forward
                         </span>
