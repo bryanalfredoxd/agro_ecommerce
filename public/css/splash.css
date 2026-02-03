@@ -247,3 +247,43 @@ body.splash-active #app {
         width: 200px;
     }
 }
+
+/* Texto de progreso */
+.splash-progress-text {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    margin-top: 1rem;
+    animation: fade-in-up 0.8s ease-out 1s both;
+    min-height: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+/* Transición suave para la barra de progreso */
+.splash-progress-bar {
+    transition: width 0.3s ease-out;
+}
+
+/* Animación para el texto de progreso */
+@keyframes fade-in-out {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+.splash-progress-text {
+    animation: fade-in-out 2s ease-in-out infinite;
+}
+
+/* Responsive para texto de progreso */
+@media (max-width: 768px) {
+    .splash-progress-text {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .splash-progress-text {
+        font-size: 0.75rem;
+    }
+}
