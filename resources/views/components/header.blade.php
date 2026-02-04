@@ -1,3 +1,12 @@
+@php
+    // Calculamos la cantidad total de items en el carrito para el usuario actual
+    $cartCount = 0;
+    if(Auth::check()) {
+        // Sumamos la columna 'cantidad' de la tabla 'carrito'
+        $cartCount = (int) \App\Models\Carrito::where('usuario_id', Auth::id())->sum('cantidad');
+    }
+@endphp
+
 <header class="bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm relative z-40 transition-all duration-300">
     <div class="layout-container">
         
@@ -14,11 +23,12 @@
             </a>
             
             <div class="hidden lg:flex flex-1 max-w-xl mx-auto px-6">
-                <form action="#" class="relative w-full group">
+                <form action="{{ route('catalogo') }}" method="GET" class="relative w-full group">
                     <input type="text" 
+                           name="buscar"
                            class="w-full h-11 pl-4 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm placeholder:text-gray-400 group-hover:bg-white"
                            placeholder="¿Qué estás buscando para tu campo hoy?">
-                    <button type="button" class="absolute right-0 top-0 h-11 w-12 flex items-center justify-center text-agro-dark hover:text-primary transition-colors">
+                    <button type="submit" class="absolute right-0 top-0 h-11 w-12 flex items-center justify-center text-agro-dark hover:text-primary transition-colors">
                         <span class="material-symbols-outlined">search</span>
                     </button>
                 </form>
@@ -57,23 +67,18 @@
                         </button>
 
                         <div class="absolute top-full right-0 pt-2 w-56 hidden group-hover:block z-50">
-                            
                             <div class="bg-white rounded-xl shadow-xl border border-gray-100 p-2 animate-fade-in-up">
-                                
                                 <div class="px-3 py-2 border-b border-gray-50 mb-1">
                                     <p class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->nombre }}</p>
                                     <p class="text-[10px] text-gray-400 truncate">{{ Auth::user()->email }}</p>
                                 </div>
-                                
                                 <a href="{{ route('perfil') }}" class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-primary/10 hover:text-agro-dark rounded-lg transition-colors">
                                     <span class="material-symbols-outlined text-[18px]">account_circle</span> Mi Perfil
                                 </a>
-                                <a href="#" class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-primary/10 hover:text-agro-dark rounded-lg transition-colors">
+                                <a href="{{ route('perfil.pedidos') }}" class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-primary/10 hover:text-agro-dark rounded-lg transition-colors">
                                     <span class="material-symbols-outlined text-[18px]">inventory_2</span> Mis Pedidos
                                 </a>
-                                
                                 <div class="border-t border-gray-50 my-1"></div>
-                                
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors text-left">
@@ -85,9 +90,13 @@
                     </div>
                 @endauth
                 
-                <a href="#" class="relative p-2 text-agro-dark hover:text-primary hover:bg-gray-50 rounded-lg transition-colors group">
+                <a href="{{ route('carrito.index') }}" class="relative p-2 text-agro-dark hover:text-primary hover:bg-gray-50 rounded-lg transition-colors group">
                     <span class="material-symbols-outlined text-[24px] group-hover:animate-bounce">shopping_cart</span>
-                    <span class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">3</span>
+                    
+                    <span id="cart-count-badge" 
+                          class="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white transform translate-x-1 -translate-y-1 {{ $cartCount > 0 ? '' : 'hidden' }}">
+                        {{ $cartCount }}
+                    </span>
                 </a>
                 
                 <button type="button" onclick="toggleMobileMenu()" class="lg:hidden p-2 text-agro-dark hover:bg-gray-100 rounded-lg transition-colors z-50">
@@ -97,8 +106,9 @@
         </div>
         
         <div id="mobile-search" class="hidden lg:hidden pb-4 animate-fade-in-up px-1">
-            <form class="relative">
+            <form action="{{ route('catalogo') }}" method="GET" class="relative">
                 <input type="text" 
+                       name="buscar"
                        class="w-full h-11 pl-4 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm shadow-sm"
                        placeholder="Buscar productos...">
                 <button type="submit" class="absolute right-0 top-0 h-11 w-12 flex items-center justify-center text-primary font-bold">
@@ -106,53 +116,5 @@
                 </button>
             </form>
         </div>
-
-    <!-- Quitar por el momento ya que no creo que sea necesario
-         Si se logra hacer que quede bien, pues se puede reactivar
-
-        <div class="hidden lg:flex items-center justify-between py-1 border-t border-gray-100">
-            <nav class="flex items-center gap-1">
-                @foreach([
-                    ['name' => 'Veterinaria', 'icon' => 'vaccines'],
-                    ['name' => 'Semillas', 'icon' => 'grass'],
-                    ['name' => 'Fertilizantes', 'icon' => 'compost'],
-                    ['name' => 'Nutrición', 'icon' => 'nutrition'],
-                    ['name' => 'Maquinaria', 'icon' => 'precision_manufacturing']
-                ] as $item)
-                <a href="#" class="flex items-center gap-2 px-4 py-3 text-sm font-medium text-agro-dark hover:text-primary border-b-2 border-transparent hover:border-primary transition-all group">
-                    <span class="material-symbols-outlined text-[20px] text-gray-400 group-hover:text-primary transition-colors">{{ $item['icon'] }}</span>
-                    <span>{{ $item['name'] }}</span>
-                </a>
-                @endforeach
-            </nav>
-            <a href="#" class="flex items-center gap-2 px-4 py-2 bg-agro-accent/10 text-agro-accent rounded-lg hover:bg-agro-accent hover:text-white transition-all font-medium text-sm">
-                <span class="material-symbols-outlined text-[20px]">upload_file</span>
-                <span>Subir Recipe</span>
-            </a>
-        </div>
     </div>
-    
-    <div class="lg:hidden border-t border-gray-100 py-3 bg-gray-50/50">
-        <div class="layout-container overflow-x-auto scrollbar-hide">
-            <div class="flex gap-4 min-w-max px-1 pb-1">
-                @foreach([
-                    ['icon' => 'vaccines', 'name' => 'Veterinaria'],
-                    ['icon' => 'grass', 'name' => 'Semillas'],
-                    ['icon' => 'compost', 'name' => 'Abonos'],
-                    ['icon' => 'nutrition', 'name' => 'Nutrición'],
-                    ['icon' => 'hardware', 'name' => 'Equipos'],
-                    ['icon' => 'pets', 'name' => 'Mascotas']
-                ] as $cat)
-                <a href="#" class="flex flex-col items-center gap-1.5 min-w-[72px] group">
-                    <div class="size-14 bg-white rounded-full border border-gray-200 flex items-center justify-center shadow-sm group-active:scale-95 transition-all group-hover:border-primary group-hover:text-primary text-gray-600">
-                        <span class="material-symbols-outlined text-[24px]">{{ $cat['icon'] }}</span>
-                    </div>
-                    <span class="text-[11px] font-medium text-gray-700 text-center w-full truncate px-0.5">{{ $cat['name'] }}</span>
-                </a>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
-    -->
 </header>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\Pedido;
 
 class PerfilController extends Controller
 {
@@ -14,6 +15,29 @@ class PerfilController extends Controller
         $user = auth()->user()->load('direcciones');
         return view('perfil.index', compact('user'));
     }
+
+    public function pedidos()
+    {
+        // Obtenemos los pedidos del usuario logueado
+        // Usamos 'with' para cargar relaciones y evitar consultas N+1 (optimización)
+        $pedidos = Pedido::where('usuario_id', auth()->id())
+            ->with(['detalles.producto.imagenes', 'pago']) 
+            ->orderBy('creado_at', 'desc')
+            ->paginate(5); // Paginación de 5 en 5
+
+        return view('perfil.pedidos', compact('pedidos'));
+    }
+
+    public function detallePedido($id)
+{
+    // BUSQUEDA SEGURA: Solo busca pedidos que pertenezcan al usuario actual
+    $pedido = Pedido::where('usuario_id', auth()->id())
+        ->where('id', $id)
+        ->with(['detalles.producto.imagenes', 'pago']) // Cargamos relaciones
+        ->firstOrFail(); // Si no es suyo o no existe, lanza error 404
+
+    return view('perfil.detalle_pedido', compact('pedido'));
+}
 
     public function updateDatos(Request $request)
     {

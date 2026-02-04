@@ -4,12 +4,16 @@
 
 @section('styles')
     <style>
-        /* Ajuste para que el mapa se vea bien y los controles no se rompan */
+        /* Ajuste para que el mapa se vea bien */
         #map-canvas { z-index: 1; width: 100%; height: 100%; }
         .leaflet-container { font-family: inherit; }
-        
-        /* Ajuste fino para scroll en móviles dentro de modales */
         .modal-scroll { -webkit-overflow-scrolling: touch; }
+        
+        /* Animaciones personalizadas */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+        @keyframes pulseSlow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.15; transform: scale(1.1); } }
+        .animate-pulse-slow { animation: pulseSlow 8s infinite ease-in-out; }
     </style>
 @endsection
 
@@ -55,27 +59,35 @@
 
                     {{-- Menú de Navegación --}}
                     <div class="border-t border-gray-100 bg-white">
-                        <nav class="flex flex-col p-2">
-                            <a href="#datos-personales" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-medium group text-sm lg:text-base">
-                                <span class="material-symbols-outlined group-hover:scale-110 transition-transform text-xl">badge</span>
-                                Mis Datos
-                            </a>
-                            <a href="#direcciones" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-medium group text-sm lg:text-base">
-                                <span class="material-symbols-outlined group-hover:scale-110 transition-transform text-xl">location_on</span>
-                                Direcciones de Envío
-                            </a>
-                            <a href="#seguridad" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-medium group text-sm lg:text-base">
-                                <span class="material-symbols-outlined group-hover:scale-110 transition-transform text-xl">lock</span>
-                                Seguridad
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" class="mt-1 lg:mt-2 pt-1 lg:pt-2 border-t border-gray-100">
-                                @csrf
-                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all font-bold text-sm lg:text-base">
-                                    <span class="material-symbols-outlined text-xl">logout</span>
-                                    Cerrar Sesión
-                                </button>
-                            </form>
-                        </nav>
+                    <nav class="flex flex-col p-2">
+                        <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-medium group">
+                            <span class="material-symbols-outlined text-xl">person</span>
+                            Mi Perfil
+                        </a>
+                        
+                        <a href="{{ route('perfil') }}#direcciones" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-medium group">
+                            <span class="material-symbols-outlined text-xl">location_on</span>
+                            Direcciones
+                        </a>
+
+                        <a href="{{ route('perfil') }}#seguridad" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-medium group">
+                            <span class="material-symbols-outlined text-xl">lock</span>
+                            Seguridad
+                        </a>
+
+                        {{-- MODIFICADO: Ahora es un link normal, sin selección verde fija --}}
+                        <a href="{{ route('perfil.pedidos') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-medium group">
+                            <span class="material-symbols-outlined text-xl">receipt_long</span>
+                            Mis Pedidos
+                        </a>
+                        
+                        <div class="h-px bg-gray-100 my-2"></div>
+                        
+                        <a href="{{ route('catalogo') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-medium group">
+                            <span class="material-symbols-outlined text-xl">store</span>
+                            Ir al Catálogo
+                        </a>
+                    </nav>
                     </div>
                 </div>
             </aside>
@@ -241,9 +253,9 @@
                                         @endif
                                         
                                         @if(!$direccion->es_principal)
-                                            <form action="{{ route('direccion.destroy', $direccion->id) }}" method="POST" onsubmit="return confirm('¿Eliminar dirección?')" class="flex-shrink-0">
+                                            <form id="delete-form-{{ $direccion->id }}" action="{{ route('direccion.destroy', $direccion->id) }}" method="POST" class="flex-shrink-0">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="text-[10px] lg:text-xs font-bold text-red-400 hover:text-red-600">Eliminar</button>
+                                                <button type="button" onclick="openDeleteModal({{ $direccion->id }})" class="text-[10px] lg:text-xs font-bold text-red-400 hover:text-red-600">Eliminar</button>
                                             </form>
                                         @endif
                                     </div>
@@ -424,9 +436,10 @@
                                                 Usar
                                             </button>
                                         </form>
-                                        <form action="{{ route('direccion.destroy', $direccion->id) }}" method="POST" onsubmit="return confirm('¿Borrar?')">
+                                        
+                                        <form id="delete-form-modal-{{ $direccion->id }}" action="{{ route('direccion.destroy', $direccion->id) }}" method="POST">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="text-xs font-bold text-red-400 hover:text-red-600 border border-gray-200 hover:border-red-200 px-2 py-1.5 rounded-lg transition-all">
+                                            <button type="button" onclick="openDeleteModal({{ $direccion->id }}, true)" class="text-xs font-bold text-red-400 hover:text-red-600 border border-gray-200 hover:border-red-200 px-2 py-1.5 rounded-lg transition-all">
                                                 <span class="material-symbols-outlined text-sm">delete</span>
                                             </button>
                                         </form>
@@ -441,13 +454,64 @@
     </div>
 </div>
 
-{{-- Scripts --}}
+{{-- MODAL DE CONFIRMACIÓN (ELIMINAR) - ESTILO TAILWIND --}}
+<div id="delete-modal" class="fixed inset-0 z-[150] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="delete-modal-backdrop"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" id="delete-modal-panel">
+                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <span class="material-symbols-outlined text-red-600">warning</span>
+                        </div>
+                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                            <h3 class="text-lg font-bold leading-6 text-gray-900">¿Eliminar dirección?</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">¿Estás seguro de que deseas eliminar esta dirección? Esta acción no se puede deshacer.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="button" onclick="confirmDelete()" class="inline-flex w-full justify-center rounded-xl bg-red-600 px-3 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition-colors">
+                        Sí, eliminar
+                    </button>
+                    <button type="button" onclick="closeDeleteModal()" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-3 py-2.5 text-sm font-bold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- TOAST NOTIFICATION --}}
+<div id="toast-notification" class="fixed bottom-6 right-6 z-[200] transform transition-all duration-500 translate-y-24 opacity-0 pointer-events-none">
+    <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 p-4 flex items-center gap-4 min-w-[320px] max-w-md">
+        <div id="toast-icon-container" class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors">
+            <span id="toast-icon" class="material-symbols-outlined text-2xl">check_circle</span>
+        </div>
+        <div class="flex-1">
+            <h4 id="toast-title" class="font-bold text-gray-900 text-sm">Notificación</h4>
+            <p id="toast-message" class="text-xs font-medium text-gray-500 mt-0.5">Mensaje...</p>
+        </div>
+        <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+    </div>
+</div>
+
 <script>
     // --- VARIABLES MAPA ---
     let map;
     let marker;
     const defaultLat = 8.6226; 
     const defaultLng = -70.2075;
+    
+    // --- VARIABLES PARA ELIMINAR ---
+    let deleteTargetId = null;
+    let isFromModal = false;
 
     document.addEventListener("DOMContentLoaded", () => {
         // Inicializar Teléfono
@@ -460,26 +524,91 @@
             });
         }
 
-        // Alertas Toast
+        // MOSTRAR TOASTS DESDE SESIÓN (ÉXITO O ERROR)
+        @if(session('success'))
+            showToast("{{ session('success') }}", 'success');
+        @endif
+
         @if($errors->any())
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 4000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
-            Toast.fire({
-                icon: "error",
-                title: "Hay errores en el formulario",
-                text: "Por favor revisa los campos marcados en rojo"
-            });
+            showToast("Hay errores en el formulario. Verifica los campos.", 'error');
         @endif
     });
+
+    // --- SISTEMA DE TOASTS ---
+    let toastTimeout;
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast-notification');
+        const iconContainer = document.getElementById('toast-icon-container');
+        const icon = document.getElementById('toast-icon');
+        const title = document.getElementById('toast-title');
+        const msg = document.getElementById('toast-message');
+
+        iconContainer.className = 'w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors';
+        
+        if (type === 'success') {
+            iconContainer.classList.add('bg-green-50', 'text-green-600');
+            icon.innerText = 'check_circle';
+            title.innerText = '¡Éxito!';
+            title.className = 'font-bold text-green-700 text-sm';
+        } else {
+            iconContainer.classList.add('bg-red-50', 'text-red-500');
+            icon.innerText = 'error';
+            title.innerText = 'Error';
+            title.className = 'font-bold text-red-700 text-sm';
+        }
+
+        msg.innerText = message;
+        toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => hideToast(), 4000);
+    }
+
+    function hideToast() {
+        document.getElementById('toast-notification').classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+    }
+
+    // --- SISTEMA DE MODAL ELIMINAR ---
+    function openDeleteModal(id, fromModal = false) {
+        deleteTargetId = id;
+        isFromModal = fromModal;
+        const modal = document.getElementById('delete-modal');
+        const backdrop = document.getElementById('delete-modal-backdrop');
+        const panel = document.getElementById('delete-modal-panel');
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            backdrop.classList.remove('opacity-0');
+            panel.classList.remove('opacity-0', 'translate-y-4', 'sm:translate-y-0', 'sm:scale-95');
+        }, 10);
+    }
+
+    function closeDeleteModal() {
+        deleteTargetId = null;
+        const modal = document.getElementById('delete-modal');
+        const backdrop = document.getElementById('delete-modal-backdrop');
+        const panel = document.getElementById('delete-modal-panel');
+
+        backdrop.classList.add('opacity-0');
+        panel.classList.add('opacity-0', 'translate-y-4', 'sm:translate-y-0', 'sm:scale-95');
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function confirmDelete() {
+        if (!deleteTargetId) return;
+        
+        // Determinar qué formulario enviar (desde la lista principal o el modal de gestión)
+        const formId = isFromModal ? `delete-form-modal-${deleteTargetId}` : `delete-form-${deleteTargetId}`;
+        const form = document.getElementById(formId);
+        
+        if (form) {
+            form.submit();
+        }
+        closeDeleteModal();
+    }
 
     // --- LÓGICA DEL MAPA ---
     function initMap() {
@@ -531,7 +660,7 @@
                         updateCoordinates(lat, lng);
                     }
                 },
-                () => { console.log("Error obteniendo ubicación"); }
+                () => { showToast("Error obteniendo ubicación GPS", "error"); }
             );
         }
     };

@@ -60,7 +60,8 @@
                             <button class="bg-white text-agro-dark p-3 rounded-full hover:bg-primary hover:text-white hover:scale-110 transition-all shadow-lg transform translate-y-8 group-hover:translate-y-0 duration-500 ease-out">
                                 <span class="material-symbols-outlined">visibility</span>
                             </button>
-                            <button class="bg-primary text-white p-3 rounded-full hover:bg-green-600 hover:scale-110 transition-all shadow-lg transform translate-y-8 group-hover:translate-y-0 duration-500 ease-out delay-100">
+                            
+                            <button onclick="addToCart({{ $producto->id }})" class="bg-primary text-white p-3 rounded-full hover:bg-green-600 hover:scale-110 transition-all shadow-lg transform translate-y-8 group-hover:translate-y-0 duration-500 ease-out delay-100" title="Agregar al carrito">
                                 <span class="material-symbols-outlined">add_shopping_cart</span>
                             </button>
                         </div>
@@ -93,7 +94,7 @@
                                 <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-1">{{ $producto->unidad_medida }}</p>
                             </div>
                             
-                            <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-primary group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary/30 transition-all duration-300 transform group-hover:rotate-12 cursor-pointer">
+                            <div onclick="addToCart({{ $producto->id }})" class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-primary group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary/30 transition-all duration-300 transform group-hover:rotate-12 cursor-pointer" title="Agregar al carrito">
                                  <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
                             </div>
                         </div>
@@ -124,25 +125,28 @@
 </div>
 
 <script>
-// Script para la vista parcial - Versión simplificada
+// Script para la vista parcial
 document.addEventListener('DOMContentLoaded', function() {
     // Configurar el select de ordenamiento en la vista parcial
     document.querySelectorAll('.order-select').forEach(select => {
         select.addEventListener('change', function(e) {
-            // Enviar evento al script principal
+            // Enviar evento al script principal (index.blade.php)
             window.dispatchEvent(new CustomEvent('catalogo:orden-change', {
                 detail: { value: e.target.value }
             }));
         });
     });
     
-    // Botón de limpiar filtros en "no resultados" - Versión directa
+    // Botón de limpiar filtros en "no resultados"
     document.addEventListener('click', function(e) {
         if (e.target.matches('.clear-filters-btn') || e.target.closest('.clear-filters-btn')) {
             e.preventDefault();
-            // Llamar directamente a la función global
+            // Llamar directamente a la función global definida en index.blade.php
             if (window.catalogoClearFilters) {
                 window.catalogoClearFilters(e);
+            } else if (typeof clearFilters === 'function') {
+                // Fallback por si la función se llama diferente en el scope global
+                clearFilters(e);
             }
         }
     });

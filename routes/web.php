@@ -11,6 +11,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SplashController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DireccionController;
+use App\Http\Controllers\CarritoController;
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
@@ -74,6 +75,18 @@ Route::middleware(['auth'])->group(function () {
     
     // OPCIONAL: Ruta para eliminar (te la dejo lista por si acaso)
     Route::delete('/perfil/direccion/{id}', [DireccionController::class, 'destroy'])->name('direccion.destroy');
+
+    Route::get('/perfil/pedidos', [App\Http\Controllers\PerfilController::class, 'pedidos'])->name('perfil.pedidos');
+    Route::get('/perfil/pedidos/{id}', [App\Http\Controllers\PerfilController::class, 'detallePedido'])->name('perfil.pedido.detalle');
+
+    // Rutas del Carrito
+    Route::get('/carrito', [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito.index');
+    Route::post('/carrito/add', [App\Http\Controllers\CarritoController::class, 'add'])->name('carrito.add');
+    Route::post('/carrito/update', [App\Http\Controllers\CarritoController::class, 'update'])->name('carrito.update');
+    Route::post('/carrito/remove', [App\Http\Controllers\CarritoController::class, 'remove'])->name('carrito.remove');
+
+    Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
 });
 
 
