@@ -12,7 +12,8 @@ use App\Http\Controllers\SplashController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DireccionController;
 use App\Http\Controllers\CarritoController;
-// Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PedidoController; // <-- Añadido el controlador de Pedidos del Admin
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +22,6 @@ use App\Http\Controllers\CarritoController;
 */
 
 // --- 1. RUTA PRINCIPAL (HOME) ---
-// CORRECCIÓN: Usamos HomeController para que cargue los productos y categorías
 Route::get('/', HomeController::class)->name('home');
 
 
@@ -65,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
     // Actualizar datos personales
     Route::put('/perfil/actualizar', [PerfilController::class, 'updateDatos'])->name('perfil.update');
     
-    // Actualizar contraseña (si no usas Fortify/Breeze nativo)
+    // Actualizar contraseña
     Route::put('/perfil/password', [PerfilController::class, 'updatePassword'])->name('password.update');
 
     Route::post('/perfil/direccion', [DireccionController::class, 'store'])->name('direccion.store');
@@ -73,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
     // NUEVA RUTA: Cambiar dirección principal
     Route::patch('/perfil/direccion/{id}/principal', [DireccionController::class, 'setPrincipal'])->name('direccion.principal');
     
-    // OPCIONAL: Ruta para eliminar (te la dejo lista por si acaso)
+    // OPCIONAL: Ruta para eliminar
     Route::delete('/perfil/direccion/{id}', [DireccionController::class, 'destroy'])->name('direccion.destroy');
 
     Route::get('/perfil/pedidos', [App\Http\Controllers\PerfilController::class, 'pedidos'])->name('perfil.pedidos');
@@ -89,6 +89,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkout', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
 });
 
+
+// --- RUTAS DEL PANEL ADMINISTRATIVO ---
+// Fíjate que en un futuro cercano deberíamos proteger esto con un middleware como 'auth' y 'es_admin'
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+// Rutas de Pedidos
+    Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
+    Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show');
+    Route::put('/pedidos/{id}', [PedidoController::class, 'update'])->name('pedidos.update');
+});
 
 
 // --- 5. RUTAS UTILITARIAS (AJAX / API INTERNA) ---
