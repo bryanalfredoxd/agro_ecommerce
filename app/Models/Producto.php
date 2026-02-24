@@ -4,12 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Producto extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'productos'; // Definimos la tabla explícitamente
+
+    // Configurar SoftDeletes para usar 'eliminado_at' en lugar de 'deleted_at'
+    const DELETED_AT = 'eliminado_at';
+
+    public $timestamps = false;
 
     protected $fillable = [
         'categoria_id',

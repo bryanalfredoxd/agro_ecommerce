@@ -8,4 +8,5 @@ class Marca extends Model
 {
     protected $table = 'marcas';
     protected $fillable = ['nombre', 'pais_origen', 'activo'];
+    public $timestamps = false;
 }

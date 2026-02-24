@@ -13,7 +13,10 @@ use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DireccionController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\PedidoController; // <-- Añadido el controlador de Pedidos del Admin
+use App\Http\Controllers\Admin\PedidoController;
+use App\Http\Controllers\Admin\InventarioController;
+use App\Http\Controllers\Admin\RecetaVetController;
+use App\Http\Controllers\Admin\ClienteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,10 +27,8 @@ use App\Http\Controllers\Admin\PedidoController; // <-- Añadido el controlador 
 // --- 1. RUTA PRINCIPAL (HOME) ---
 Route::get('/', HomeController::class)->name('home');
 
-
 // --- 2. CATÁLOGO ---
 Route::get('/catalogo', [CatalogoController::class, 'index'])->name('catalogo');
-
 
 // --- 3. RUTAS DE GUEST (INVITADOS) ---
 Route::middleware('guest')->group(function () {
@@ -39,7 +40,6 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
 });
-
 
 // --- 4. RUTAS DE AUTH (USUARIOS LOGUEADOS) ---
 Route::middleware('auth')->group(function () {
@@ -56,7 +56,6 @@ Route::middleware('auth')->group(function () {
         return view('welcome'); 
     })->name('dashboard');
 });
-
 
 Route::middleware(['auth'])->group(function () {
     // Vista del perfil
@@ -89,18 +88,48 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkout', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
 });
 
-
 // --- RUTAS DEL PANEL ADMINISTRATIVO ---
-// Fíjate que en un futuro cercano deberíamos proteger esto con un middleware como 'auth' y 'es_admin'
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-// Rutas de Pedidos
+    // Rutas de Pedidos
     Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
     Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show');
     Route::put('/pedidos/{id}', [PedidoController::class, 'update'])->name('pedidos.update');
-});
 
+    // Rutas de Inventario
+    Route::get('/inventario', [InventarioController::class, 'index'])->name('inventario.index');
+    Route::get('/inventario/{id}', [InventarioController::class, 'show'])->name('inventario.show');
+    Route::get('/inventario/{id}/edit', [InventarioController::class, 'edit'])->name('inventario.edit');
+    Route::put('/inventario/{id}', [InventarioController::class, 'update'])->name('inventario.update');
+    Route::post('/inventario/{id}/agregar-stock', [InventarioController::class, 'agregarStock'])->name('inventario.agregar-stock');
+    Route::patch('/inventario/{id}/archivar', [InventarioController::class, 'archivar'])->name('inventario.archivar');
+
+    // Rutas de Clientes
+    Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
+    Route::get('/clientes/create', [ClienteController::class, 'create'])->name('clientes.create');
+    Route::post('/clientes', [ClienteController::class, 'store'])->name('clientes.store');
+    Route::get('/clientes/{id}', [ClienteController::class, 'show'])->name('clientes.show');
+    Route::get('/clientes/{id}/edit', [ClienteController::class, 'edit'])->name('clientes.edit');
+    Route::put('/clientes/{id}', [ClienteController::class, 'update'])->name('clientes.update');
+    Route::patch('/clientes/{id}/toggle-status', [ClienteController::class, 'toggleStatus'])->name('clientes.toggle-status');
+    Route::patch('/clientes/{id}/password', [ClienteController::class, 'updatePassword'])->name('clientes.update-password');
+    Route::delete('/clientes/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
+
+    // Rutas de Recetas Veterinarias
+    Route::get('/recetas', [RecetaVetController::class, 'index'])->name('recetas.index');
+    Route::get('/recetas/create', [RecetaVetController::class, 'create'])->name('recetas.create');
+    Route::post('/recetas', [RecetaVetController::class, 'store'])->name('recetas.store');
+    Route::get('/recetas/{id}', [RecetaVetController::class, 'show'])->name('recetas.show');
+    Route::get('/recetas/{id}/edit', [RecetaVetController::class, 'edit'])->name('recetas.edit');
+    Route::put('/recetas/{id}', [RecetaVetController::class, 'update'])->name('recetas.update');
+    Route::patch('/recetas/{id}/aprobar', [RecetaVetController::class, 'aprobar'])->name('recetas.aprobar');
+    
+    // CORRECCIÓN AQUÍ: Cambiamos POST a PATCH para que coincida con la vista
+    Route::patch('/recetas/{id}/rechazar', [RecetaVetController::class, 'rechazar'])->name('recetas.rechazar');
+    
+    Route::delete('/recetas/{id}', [RecetaVetController::class, 'destroy'])->name('recetas.destroy');
+});
 
 // --- 5. RUTAS UTILITARIAS (AJAX / API INTERNA) ---
 

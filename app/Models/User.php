@@ -29,8 +29,6 @@ class User extends Authenticatable
         'documento_identidad',
         'tipo_cliente',
         'activo',
-        // 'codigo_pais',  <-- OJO: En tu SQL dump NO vi esta columna. 
-        // Si no existe en la BD, quítala para evitar errores de SQL.
     ];
 
     // 4. Ocultar datos sensibles
@@ -50,21 +48,38 @@ class User extends Authenticatable
         return $this->password_hash;
     }
 
+    // 6. Sobrescribir el identificador de autenticación
+    public function getAuthIdentifierName()
+    {
+        return 'id';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->getKey();
+    }
+
     /* * ========================================
-     * RELACIONES (LO QUE FALTABA)
+     * RELACIONES
      * ========================================
      */
 
     // Relación: Un usuario tiene muchas direcciones
-    // Esto es vital para el foreach($user->direcciones) del perfil
     public function direcciones()
     {
         return $this->hasMany(DireccionUsuario::class, 'usuario_id');
     }
 
-    // Relación: Un usuario pertenece a un Rol (opcional, pero recomendada)
+    // Relación: Un usuario pertenece a un Rol
     public function rol()
     {
+        // Si tu modelo de roles se llama Role, déjalo así. Si se llama Rol, cámbialo a Rol::class
         return $this->belongsTo(Role::class, 'rol_id');
+    }
+
+    // ¡NUEVA RELACIÓN! Un usuario (cliente) tiene muchos pedidos
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class, 'usuario_id');
     }
 }
