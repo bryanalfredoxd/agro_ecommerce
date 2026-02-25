@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class HorarioSemanal extends Model
 {
     protected $table = 'horarios_semanales';
+
+    public $timestamps = false;
     
     protected $fillable = [
         'dia_semana',

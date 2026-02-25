@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\Admin\MarcaController;
 use App\Http\Controllers\Admin\ProductoController;
+use App\Http\Controllers\Admin\HorarioadminController;
+
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
@@ -166,5 +168,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/productos/{id}', [ProductoController::class, 'update'])->name('productos.update'); 
     Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
     Route::post('/productos/{id}/destacado', [ProductoController::class, 'toggleDestacado']);
+
+//Seccion - Sistema y Ajustes
+
+    //Pantalla - Horarios
+    Route::get('/horarios', [HorarioadminController::class, 'index'])->name('horarios.index');
+    Route::post('/horarios/actualizar', [HorarioadminController::class, 'updateAll'])->name('horarios.updateAll');
 
 });

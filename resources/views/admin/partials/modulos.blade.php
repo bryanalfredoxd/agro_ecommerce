@@ -276,7 +276,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_horarios'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 font-bold text-xs">
+                    <a href="{{ route('admin.horarios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">schedule</span> Horarios Físicos
                     </a>
                     @endif
