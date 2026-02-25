@@ -119,7 +119,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_roles_permisos'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-indigo-50 text-gray-600 hover:text-indigo-700 transition-colors border border-transparent hover:border-indigo-100 font-bold text-xs">
+                    <a href="{{ route('admin.roles.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-indigo-50 text-gray-600 hover:text-indigo-700 transition-colors border border-transparent hover:border-indigo-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span> Roles y Permisos
                     </a>
                     @endif

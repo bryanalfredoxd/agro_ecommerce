@@ -13,6 +13,7 @@ use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DireccionController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\RoleController;
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
@@ -122,4 +123,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Ruta principal del Dashboard
     // Genera la URL: /admin/dashboard y el nombre de ruta: admin.dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit']);
+
 });
