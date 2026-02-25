@@ -1,6 +1,7 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8 lg:mb-10">
     
-    {{-- 1. KPI: Ventas del Día (Muestra USD y VES según requerimiento) --}}
+    {{-- 1. KPI: Ventas del Día --}}
+    @if(Auth::user()->tienePermiso('ver_kpis_financieros'))
     <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
@@ -15,8 +16,10 @@
             </p>
         </div>
     </div>
+    @endif
 
     {{-- 2. KPI: Pedidos Pendientes --}}
+    @if(Auth::user()->tienePermiso('ver_kpis_operativos') || Auth::user()->tienePermiso('ver_pedidos'))
     <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
@@ -30,8 +33,10 @@
             </p>
         </div>
     </div>
+    @endif
 
-    {{-- 3. KPI: Pagos en Revisión (Nuevo) --}}
+    {{-- 3. KPI: Pagos en Revisión --}}
+    @if(Auth::user()->tienePermiso('ver_kpis_financieros') || Auth::user()->tienePermiso('gestionar_pagos'))
     <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
@@ -45,8 +50,10 @@
             </p>
         </div>
     </div>
+    @endif
 
-    {{-- 4. KPI: Tasa de Cambio Actual (Nuevo) --}}
+    {{-- 4. KPI: Tasa de Cambio Actual --}}
+    @if(Auth::user()->tienePermiso('ver_kpis_financieros') || Auth::user()->tienePermiso('gestionar_tasas_cambio'))
     <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-teal-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
@@ -60,8 +67,10 @@
             </p>
         </div>
     </div>
+    @endif
 
     {{-- 5. KPI: Alertas de Stock Crítico --}}
+    @if(Auth::user()->tienePermiso('ver_kpis_operativos') || Auth::user()->tienePermiso('ver_productos'))
     <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
@@ -75,8 +84,10 @@
             </p>
         </div>
     </div>
+    @endif
 
-    {{-- 6. KPI: Lotes por Vencer (Nuevo e Importante para Agro) --}}
+    {{-- 6. KPI: Lotes por Vencer --}}
+    @if(Auth::user()->tienePermiso('ver_kpis_operativos') || Auth::user()->tienePermiso('gestionar_inventario_lotes'))
     <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-rose-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
@@ -90,8 +101,10 @@
             </p>
         </div>
     </div>
+    @endif
 
     {{-- 7. KPI: Recetas Pendientes --}}
+    @if(Auth::user()->tienePermiso('ver_kpis_operativos') || Auth::user()->tienePermiso('ver_recetas'))
     <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
@@ -105,8 +118,10 @@
             </p>
         </div>
     </div>
+    @endif
 
-    {{-- 8. KPI: Usuarios y Clientes (Nuevo) --}}
+    {{-- 8. KPI: Usuarios y Clientes --}}
+    @if(Auth::user()->tienePermiso('ver_usuarios'))
     <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
@@ -120,5 +135,6 @@
             </p>
         </div>
     </div>
+    @endif
 
 </div>

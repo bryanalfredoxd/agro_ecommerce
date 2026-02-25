@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB; // <-- IMPORTANTE: Agregado para hacer consultas crudas rápidas
 
 class User extends Authenticatable
 {
@@ -29,8 +30,6 @@ class User extends Authenticatable
         'documento_identidad',
         'tipo_cliente',
         'activo',
-        // 'codigo_pais',  <-- OJO: En tu SQL dump NO vi esta columna. 
-        // Si no existe en la BD, quítala para evitar errores de SQL.
     ];
 
     // 4. Ocultar datos sensibles
@@ -51,20 +50,59 @@ class User extends Authenticatable
     }
 
     /* * ========================================
-     * RELACIONES (LO QUE FALTABA)
+     * RELACIONES
      * ========================================
      */
 
     // Relación: Un usuario tiene muchas direcciones
-    // Esto es vital para el foreach($user->direcciones) del perfil
     public function direcciones()
     {
         return $this->hasMany(DireccionUsuario::class, 'usuario_id');
     }
 
-    // Relación: Un usuario pertenece a un Rol (opcional, pero recomendada)
+    // Relación: Un usuario pertenece a un Rol
     public function rol()
     {
-        return $this->belongsTo(Role::class, 'rol_id');
+        return $this->belongsTo(Role::class, 'rol_id'); // Asegúrate que tu modelo se llame Role o Rol
+    }
+
+    /* * ========================================
+     * SEGURIDAD Y PERMISOS (RBAC)
+     * ========================================
+     */
+
+    /**
+     * Valida si el usuario actual tiene un permiso específico.
+     * Evalúa primero excepciones (permisos_extra_usuario) y luego su Rol general.
+     */
+    public function tienePermiso($nombre_permiso)
+    {
+        // 1. Buscamos el ID del permiso solicitado
+        $permiso = DB::table('permisos')
+                    ->where('nombre', $nombre_permiso)
+                    ->first();
+
+        if (!$permiso) {
+            return false; // El permiso no existe en la tabla
+        }
+
+        // 2. Revisamos si el usuario tiene una EXCEPCIÓN manual
+        $permisoExtra = DB::table('permisos_extra_usuario')
+                        ->where('usuario_id', $this->id)
+                        ->where('permiso_id', $permiso->id)
+                        ->first();
+
+        if ($permisoExtra) {
+            // Si la acción dice 'permitir', devuelve true. Si dice 'denegar', devuelve false.
+            return $permisoExtra->accion === 'permitir';
+        }
+
+        // 3. Si no hay excepciones, verificamos si su ROL tiene asignado el permiso
+        $tienePermisoPorRol = DB::table('rol_permisos')
+                                ->where('rol_id', $this->rol_id)
+                                ->where('permiso_id', $permiso->id)
+                                ->exists();
+
+        return $tienePermisoPorRol;
     }
 }
