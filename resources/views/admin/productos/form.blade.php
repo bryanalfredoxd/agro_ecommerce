@@ -10,7 +10,7 @@
     <main class="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto">
         @include('admin.partials.topbar')
 
-        <div class="p-4 sm:p-8 animate-fade-in-up pb-24">
+        <div class="p-4 sm:p-8 animate-fade-in-up">
             
             {{-- Encabezado con botón de regreso --}}
             <div class="flex items-center gap-4 mb-8">
@@ -49,7 +49,7 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Categoría</label>
-                                        <select name="categoria_id" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none cursor-pointer">
+                                       <select name="categoria_id" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none cursor-pointer">
                                             <option value="">Seleccione...</option>
                                             @foreach($categorias as $cat)
                                                 <option value="{{ $cat->id }}" {{ (old('categoria_id', $producto->categoria_id ?? '') == $cat->id) ? 'selected' : '' }}>{{ $cat->nombre }}</option>
@@ -90,7 +90,10 @@
                                     <input type="text" name="codigo_barras" value="{{ old('codigo_barras', $producto->codigo_barras ?? '') }}" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-mono font-bold text-agro-dark outline-none">
                                 </div>
                                 
-                                {{-- Unidades y Alertas --}}
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Stock Total</label>
+                                    <input type="number" step="0.001" name="stock_total" value="{{ old('stock_total', $producto->stock_total ?? 0) }}" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none">
+                                </div>
                                 <div>
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Unidad de Medida de Venta</label>
                                     <select name="unidad_medida" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white outline-none font-bold text-gray-700">
@@ -162,7 +165,7 @@
                         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-4">
                             <label class="relative flex items-center p-3 bg-purple-50 rounded-xl border border-purple-100 cursor-pointer">
                                 <input type="checkbox" name="es_controlado" class="sr-only peer" {{ old('es_controlado', $producto->es_controlado ?? false) ? 'checked' : '' }}>
-                                <div class="w-11 h-6 bg-purple-200 rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[14px] after:left-[14px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                <div class="relative w-11 h-6 bg-purple-200 rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                                 <div class="ml-3">
                                     <span class="text-sm font-black text-purple-900 block">Venta Controlada</span>
                                     <span class="text-[9px] font-bold text-purple-600 uppercase">Requiere Receta Médica</span>
@@ -172,6 +175,9 @@
 
                     </div>
                 </div>
+
+                {{-- Espaciador para que la barra fija no tape el contenido final --}}
+                <div class="h-28 w-full"></div>
 
                 {{-- Barra Fija Abajo para Guardar --}}
                 <div class="fixed bottom-0 left-0 lg:left-72 right-0 bg-white/80 backdrop-blur-md border-t border-gray-200 p-4 sm:px-8 flex justify-end gap-4 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">

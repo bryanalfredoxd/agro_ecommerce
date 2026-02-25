@@ -97,7 +97,8 @@ class ProductoController extends Controller
             'nombre' => 'required|string|max:255',
             'sku' => 'nullable|string|unique:productos,sku',
             'precio_venta_usd' => 'required|numeric|min:0',
-            'imagen' => 'nullable|image|max:2048'
+            'imagen' => 'nullable|image|max:2048',
+            'stock_total' => 'nullable|numeric|min:0'
         ]);
 
         $data = $request->except(['imagen', '_token']);
@@ -135,7 +136,8 @@ class ProductoController extends Controller
             'nombre' => 'required|string|max:255',
             'sku' => 'nullable|string|unique:productos,sku,'.$id,
             'precio_venta_usd' => 'required|numeric|min:0',
-            'imagen' => 'nullable|image|max:2048'
+            'imagen' => 'nullable|image|max:2048',
+            'stock_total' => 'nullable|numeric|min:0'
         ]);
 
         $data = $request->except(['imagen', '_token', '_method']);
