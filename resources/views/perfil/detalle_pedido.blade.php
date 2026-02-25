@@ -92,10 +92,15 @@
                                 
                                 {{-- Imagen --}}
                                 <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-50 rounded-2xl flex-shrink-0 overflow-hidden border border-gray-200 relative p-1.5">
-                                    @if($detalle->producto && $detalle->producto->imagenes->first())
-                                        <img src="{{ $detalle->producto->imagenes->first()->url_imagen }}" class="w-full h-full object-contain mix-blend-multiply">
+                                    @if($detalle->producto && $detalle->producto->imagenes->first() && $detalle->producto->imagenes->first()->url_imagen)
+                                        <img src="{{ asset('storage/' . $detalle->producto->imagenes->first()->url_imagen) }}" 
+                                            alt="{{ $detalle->producto->nombre ?? 'Producto' }}"
+                                            class="w-full h-full object-contain mix-blend-multiply">
                                     @else
-                                        <div class="w-full h-full flex items-center justify-center text-gray-300"><span class="material-symbols-outlined text-[28px]">image_not_supported</span></div>
+                                        <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                                            <span class="material-symbols-outlined text-[28px] mb-1">image_not_supported</span>
+                                            <span class="text-[10px] font-bold uppercase tracking-widest">Sin Imagen</span>
+                                        </div>
                                     @endif
                                 </div>
                                 

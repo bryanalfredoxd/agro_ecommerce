@@ -50,11 +50,14 @@
                                 
                                 <div class="col-span-6 flex items-center gap-4 sm:gap-6 w-full">
                                     <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 relative p-2">
-                                        @if($item->producto->imagenes->first())
-                                            <img src="{{ $item->producto->imagenes->first()->url_imagen }}" alt="{{ $item->producto->nombre }}" class="w-full h-full object-contain mix-blend-multiply drop-shadow-sm group-hover:scale-105 transition-transform duration-500">
+                                        @if($item->producto->imagenes->first() && $item->producto->imagenes->first()->url_imagen)
+                                            <img src="{{ asset('storage/' . $item->producto->imagenes->first()->url_imagen) }}" 
+                                                alt="{{ $item->producto->nombre }}" 
+                                                class="w-full h-full object-contain mix-blend-multiply drop-shadow-sm group-hover:scale-105 transition-transform duration-500">
                                         @else
                                             <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
                                                 <span class="material-symbols-outlined text-3xl mb-1">image_not_supported</span>
+                                                <span class="text-[8px] font-bold uppercase tracking-widest">Sin Imagen</span>
                                             </div>
                                         @endif
                                     </div>

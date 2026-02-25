@@ -154,11 +154,16 @@
                                             <div class="space-y-3">
                                                 @foreach($pedido->detalles->take(3) as $detalle)
                                                     <div class="flex items-center gap-4 group/item">
-                                                        <div class="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 relative p-1">
-                                                            @if($detalle->producto && $detalle->producto->imagenes->first())
-                                                                <img src="{{ $detalle->producto->imagenes->first()->url_imagen }}" class="w-full h-full object-contain mix-blend-multiply">
+                                                        <div class="w-14 h-14 bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 relative p-1">
+                                                            @if($detalle->producto && $detalle->producto->imagenes->first() && $detalle->producto->imagenes->first()->url_imagen)
+                                                                <img src="{{ asset('storage/' . $detalle->producto->imagenes->first()->url_imagen) }}" 
+                                                                    alt="{{ $detalle->producto->nombre ?? 'Producto' }}"
+                                                                    class="w-full h-full object-contain mix-blend-multiply">
                                                             @else
-                                                                <div class="w-full h-full flex items-center justify-center text-gray-300"><span class="material-symbols-outlined text-[20px]">image</span></div>
+                                                                <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                                                                    <span class="material-symbols-outlined text-[20px] mb-1">image</span>
+                                                                    <span class="text-[8px] font-bold uppercase tracking-widest">Sin Imagen</span>
+                                                                </div>
                                                             @endif
                                                             <div class="absolute -top-1 -right-1 bg-agro-dark text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
                                                                 {{ (int)$detalle->cantidad_solicitada }}

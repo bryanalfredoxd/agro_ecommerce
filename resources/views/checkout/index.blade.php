@@ -251,10 +251,15 @@
                                 @foreach($carrito as $item)
                                     <div class="flex gap-4 items-center">
                                         <div class="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0 p-1">
-                                            @if($item->producto->imagenes->first())
-                                                <img src="{{ $item->producto->imagenes->first()->url_imagen }}" class="w-full h-full object-contain mix-blend-multiply">
+                                            @if($item->producto->imagenes->first() && $item->producto->imagenes->first()->url_imagen)
+                                                <img src="{{ asset('storage/' . $item->producto->imagenes->first()->url_imagen) }}" 
+                                                    alt="{{ $item->producto->nombre ?? 'Producto' }}"
+                                                    class="w-full h-full object-contain mix-blend-multiply">
                                             @else
-                                                <div class="w-full h-full flex items-center justify-center text-gray-300"><span class="material-symbols-outlined text-[20px]">image</span></div>
+                                                <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                                                    <span class="material-symbols-outlined text-[20px] mb-1">image</span>
+                                                    <span class="text-[8px] font-bold uppercase tracking-widest">Sin Imagen</span>
+                                                </div>
                                             @endif
                                         </div>
                                         <div class="flex-1 min-w-0">

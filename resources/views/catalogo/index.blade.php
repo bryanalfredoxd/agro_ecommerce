@@ -27,7 +27,7 @@
         
         <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
 
-            {{-- 2. SIDEBAR DE FILTROS --}}
+            {{-- 2. SIDEBAR DE FILTROS (DISEÑO LIMPIO Y MODERNO) --}}
             <aside class="w-full lg:w-64 xl:w-72 flex-shrink-0">
                 
                 <button id="mobile-filter-btn" onclick="toggleFilters()" 
@@ -38,7 +38,7 @@
 
                 <div id="filters-panel" class="hidden lg:block bg-white rounded-2xl border border-gray-200 p-5 sticky top-24 transition-all duration-300 z-30 shadow-sm">
                     
-                    {{-- Buscador --}}
+                    {{-- Buscador integrado en el panel --}}
                     <form id="search-form" method="GET" class="mb-6 relative group" onsubmit="event.preventDefault();">
                         <input type="text" name="buscar" value="{{ request('buscar') }}" 
                                id="search-input"
@@ -49,7 +49,7 @@
 
                     <hr class="border-gray-100 mb-6">
 
-                    {{-- Categorías --}}
+                    {{-- Categorías con diseño de lista elegante --}}
                     <div class="mb-6">
                         <h3 class="font-bold text-agro-dark text-sm uppercase tracking-wider mb-3">Departamentos</h3>
                         <nav class="space-y-1 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
@@ -71,7 +71,7 @@
 
                     <hr class="border-gray-100 mb-6">
 
-                    {{-- Marcas --}}
+                    {{-- Marcas con diseño de Pills (Responsive y centradas) --}}
                     <div class="mb-4">
                         <h3 class="font-bold text-agro-dark text-sm uppercase tracking-wider mb-3">Marcas</h3>
                         <div class="flex flex-wrap gap-2">
@@ -84,7 +84,7 @@
                         </div>
                     </div>
 
-                    {{-- Botón Limpiar --}}
+                    {{-- Botón de Limpiar centrado y minimalista (Siempre en el DOM, controlado por JS/Blade) --}}
                     <div id="clear-filters-container" class="{{ request()->hasAny(['categoria', 'marca', 'buscar']) ? 'block' : 'hidden' }}">
                         <a href="#" onclick="catalogoClearFilters(event)" 
                            class="flex items-center justify-center gap-1.5 w-full py-2.5 mt-6 text-xs text-red-500 font-bold hover:bg-red-50 rounded-lg transition-all duration-300 group border border-transparent hover:border-red-100">
@@ -92,10 +92,9 @@
                             Borrar Filtros
                         </a>
                     </div>
-                </div>
             </aside>
 
-            {{-- 3. CONTENEDOR DE PRODUCTOS (Inyecta el parcial) --}}
+            {{-- CONTENEDOR DE PRODUCTOS --}}
             <main class="flex-1 relative">
                 <div id="loading-overlay" class="absolute inset-0 bg-gray-50/80 backdrop-blur-[2px] z-40 flex items-start justify-center pt-20 hidden rounded-2xl">
                     <div class="bg-white p-5 rounded-2xl shadow-lg border border-gray-100 flex items-center gap-3">
@@ -105,6 +104,7 @@
                 </div>
                 
                 <div id="products-container">
+                    {{-- Aquí se inyecta el parcial --}}
                     @include('catalogo.partials.products', ['productos' => $productos])
                 </div>
             </main>
@@ -113,7 +113,7 @@
     </div>
 </div>
 
-{{-- TOAST NOTIFICATION --}}
+{{-- TOAST NOTIFICATION (Se mantiene igual, funciona perfecto) --}}
 <div id="toast-notification" class="fixed bottom-6 right-6 z-[100] transform transition-all duration-500 translate-y-24 opacity-0 pointer-events-none">
     <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 p-4 flex items-center gap-4 min-w-[320px] max-w-md">
         <div id="toast-icon-container" class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors">
@@ -132,7 +132,6 @@
 
 @push('scripts')
     <script>
-        // Configuración Global del Catálogo
         window.CatalogoConfig = {
             routes: {
                 addCart: "{{ route('carrito.add') }}",
@@ -148,69 +147,6 @@
             isAuth: {{ Auth::check() ? 'true' : 'false' }},
             csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
         };
-
-        // Lógica AJAX para Añadir al Carrito
-        function agregarAlCarrito(productoId, btnElement) {
-            const iconNormal = btnElement.querySelector('.btn-icon');
-            const iconSpinner = btnElement.querySelector('.btn-spinner');
-            const iconSuccess = btnElement.querySelector('.btn-success');
-
-            // Estado de carga
-            btnElement.disabled = true;
-            btnElement.classList.add('bg-primary', 'text-white', 'pointer-events-none');
-            iconNormal.classList.add('hidden');
-            iconSpinner.classList.remove('hidden');
-
-            fetch(window.CatalogoConfig.routes.addCart, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': window.CatalogoConfig.csrfToken
-                },
-                body: JSON.stringify({
-                    producto_id: productoId,
-                    cantidad: 1 
-                })
-            })
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || 'Error al añadir al carrito');
-                return data;
-            })
-            .then(data => {
-                // Éxito
-                iconSpinner.classList.add('hidden');
-                iconSuccess.classList.remove('hidden');
-                btnElement.classList.replace('bg-primary', 'bg-green-500'); 
-                
-                // Disparar evento personalizado por si el Header necesita actualizar el número del carrito
-                window.dispatchEvent(new CustomEvent('carrito-actualizado', { detail: { total: data.total_items } }));
-
-                if (typeof showToast === 'function') {
-                    showToast('Producto añadido al carrito', 'success');
-                }
-            })
-            .catch(error => {
-                // Error
-                iconSpinner.classList.add('hidden');
-                iconNormal.classList.remove('hidden');
-                if (typeof showToast === 'function') {
-                    showToast(error.message, 'error');
-                } else {
-                    alert(error.message);
-                }
-            })
-            .finally(() => {
-                // Restaurar botón
-                setTimeout(() => {
-                    iconSuccess.classList.add('hidden');
-                    iconNormal.classList.remove('hidden');
-                    btnElement.classList.remove('bg-green-500', 'bg-primary', 'text-white', 'pointer-events-none');
-                    btnElement.disabled = false;
-                }, 2000);
-            });
-        }
     </script>
     <script src="{{ asset('js/catalogo.js') }}"></script>
 @endpush
