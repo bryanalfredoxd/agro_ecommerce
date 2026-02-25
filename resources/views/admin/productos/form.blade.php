@@ -195,7 +195,7 @@
 
 @push('scripts')
 <script>
-    // JS para la previsualización de la imagen antes de subirla
+    // JS para la previsualización de la imagen antes de subirla 
     function previewImage(event) {
         const input = event.target;
         if (input.files && input.files[0]) {

@@ -127,7 +127,7 @@ class ProductoController extends Controller
         return view('admin.productos.form', compact('producto', 'categorias', 'marcas'));
     }
 
-    // Actualizar producto existente
+    // Actualizar producto existente 
     public function update(Request $request, $id)
     {
         $producto = Producto::findOrFail($id);
