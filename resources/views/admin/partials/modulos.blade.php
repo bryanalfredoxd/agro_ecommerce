@@ -78,7 +78,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_categorias_marcas'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
+                    <a href="{{ route('admin.categorias.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">category</span> Categorías
                     </a>
                     <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
