@@ -167,7 +167,7 @@ class CheckoutController extends Controller
             // 7. Limpiar Carrito
             Carrito::where('usuario_id', $usuario->id)->delete();
 
-            return redirect()->route('perfil')->with('success', '¡Pedido #' . $pedido->id . ' registrado correctamente! En breve verificaremos tu pago.');
+            return redirect()->route('perfil.pedidos')->with('success', '¡Pedido #' . $pedido->id . ' registrado correctamente! En breve verificaremos tu pago.');
 
         });
     }

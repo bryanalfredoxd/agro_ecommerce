@@ -110,6 +110,16 @@
                             </div>
 
                             <ul class="space-y-1">
+                                {{-- VALIDACIÓN PARA ADMIN EN MÓVIL (rol_id == 1) --}}
+                                @if(Auth::user()->rol_id == 1)
+                                    <li>
+                                        <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/5 text-primary font-bold transition-colors">
+                                            <span class="material-symbols-outlined text-[22px]">admin_panel_settings</span>
+                                            Panel de Control
+                                        </a>
+                                    </li>
+                                @endif
+
                                 <li>
                                     <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
                                         <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">account_circle</span>

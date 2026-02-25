@@ -12,6 +12,7 @@ use App\Http\Controllers\SplashController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DireccionController;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\Admin\DashboardController;
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
@@ -109,3 +110,16 @@ Route::post('/splash/mark-shown', [SplashController::class, 'markAsShown'])
     
 Route::get('/splash/should-show', [SplashController::class, 'shouldShow'])
     ->name('splash.should-show');
+
+
+
+
+// ==========================================
+// RUTAS DE ADMINISTRACIÓN (Solo para rol_id = 1)
+// ==========================================
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Ruta principal del Dashboard
+    // Genera la URL: /admin/dashboard y el nombre de ruta: admin.dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});

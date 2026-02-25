@@ -56,7 +56,7 @@
                     </a>
                 @endguest
 
-                {{-- 3. PERFIL DE USUARIO: AUTENTICADO (Tarjeta y Menú Mejorados) --}}
+                {{-- 3. PERFIL DE USUARIO: AUTENTICADO --}}
                 @auth
                     <div class="hidden sm:flex relative group">
                         <button class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-200 focus:outline-none">
@@ -82,6 +82,16 @@
                                 </div>
                                 
                                 <div class="p-2 space-y-1">
+                                    
+                                    {{-- VALIDACIÓN PARA ADMIN (rol_id == 1) --}}
+                                    @if(Auth::user()->rol_id == 1)
+                                        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-primary bg-primary/5 hover:bg-primary/10 rounded-xl transition-all duration-200 group/link">
+                                            <span class="material-symbols-outlined text-[20px] text-primary transition-colors">admin_panel_settings</span> 
+                                            Panel de Control
+                                        </a>
+                                        <div class="h-px bg-gray-100 my-1 mx-2"></div>
+                                    @endif
+
                                     <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-primary/10 hover:text-agro-dark rounded-xl transition-all duration-200 group/link">
                                         <span class="material-symbols-outlined text-[20px] text-gray-400 group-hover/link:text-primary transition-colors">account_circle</span> 
                                         Mi Perfil
