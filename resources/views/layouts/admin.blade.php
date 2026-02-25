@@ -43,5 +43,32 @@
     @yield('content')
 
     @stack('scripts')
+
+    {{-- Script Global para el Sidebar del Administrador --}}
+    <script>
+        function toggleAdminSidebar() {
+            const sidebar = document.getElementById('admin-sidebar');
+            const backdrop = document.getElementById('admin-sidebar-backdrop');
+            
+            // Si el sidebar está escondido (tiene -translate-x-full)
+            if (sidebar.classList.contains('-translate-x-full')) {
+                // Abrir Sidebar
+                sidebar.classList.remove('-translate-x-full');
+                
+                // Mostrar Fondo Oscuro
+                backdrop.classList.remove('hidden');
+                // Pequeño timeout para que la animación de opacidad funcione
+                setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+            } else {
+                // Cerrar Sidebar
+                sidebar.classList.add('-translate-x-full');
+                
+                // Ocultar Fondo Oscuro
+                backdrop.classList.add('opacity-0');
+                // Esperar a que termine la animación antes de poner hidden
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
+            }
+        }
+    </script>
 </body>
 </html>
