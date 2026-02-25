@@ -134,4 +134,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'getPermisosExtra']);
     Route::post('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'updatePermisosExtra']);
 
+// Seccion - Finanzas y Caja
+    Route::get('/tasas-cambio', [App\Http\Controllers\Admin\TasaCambioController::class, 'index'])->name('tasas-cambio.index');
+    Route::post('/tasas-cambio', [App\Http\Controllers\Admin\TasaCambioController::class, 'store'])->name('tasas-cambio.store');
+    
+
 });

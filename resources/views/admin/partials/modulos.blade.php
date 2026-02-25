@@ -195,7 +195,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_tasas_cambio'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-gray-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
+                    <a href="{{ route('admin.tasas-cambio.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-gray-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">currency_exchange</span> Tasas de Cambio
                     </a>
                     @endif
