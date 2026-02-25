@@ -3,13 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductoImagen extends Model
 {
-    // 1. Definimos la tabla exacta de tu SQL
     protected $table = 'producto_imagenes';
-
-    // 2. IMPORTANTE: Tu tabla no tiene 'created_at' ni 'updated_at'
     public $timestamps = false;
 
     protected $fillable = [
@@ -21,12 +19,11 @@ class ProductoImagen extends Model
 
     protected $casts = [
         'es_principal' => 'boolean',
-        'orden' => 'integer',
+        'orden' => 'integer'
     ];
 
-    // Relación inversa: Una imagen pertenece a un producto
-    public function producto()
+    public function producto(): BelongsTo
     {
-        return $this->belongsTo(Producto::class, 'producto_id');
+        return $this->belongsTo(Producto::class);
     }
 }

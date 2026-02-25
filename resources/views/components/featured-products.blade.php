@@ -1,6 +1,5 @@
 <section class="py-12 sm:py-16 bg-white relative">
     
-    {{-- Alineación corregida usando tu layout-container estándar --}}
     <div class="layout-container w-full relative z-10 px-4 sm:px-0">
         
         <div class="mb-10 md:mb-12 max-w-3xl">
@@ -15,24 +14,18 @@
             </p>
         </div>
         
-        {{-- Reemplacé xs:grid-cols-2 por sm:grid-cols-2 para respetar los breakpoints nativos de Tailwind --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             
             @foreach($productosDestacados as $producto)
             <article class="group relative flex flex-col bg-white rounded-2xl border border-gray-100 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden h-full">
                 
-                {{-- ÁREA DE IMAGEN: Más limpia, sin overlays intrusivos --}}
+                {{-- ÁREA DE IMAGEN: Corregida para apuntar al Storage de Laravel --}}
                 <div class="relative w-full aspect-[4/3] bg-gray-50 overflow-hidden">
                     
-                    @php
-                        $img = $producto->imagenes->where('es_principal', 1)->first()?->url_imagen 
-                               ?? $producto->imagenes->first()?->url_imagen 
-                               ?? null;
-                    @endphp
-
-                    @if($img)
+                    @if($producto->imagen_url)
+                        {{-- Usamos asset('storage/...') para renderizar la imagen correctamente --}}
                         <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700 ease-out mix-blend-multiply" 
-                             style="background-image: url('{{ $img }}');"></div>
+                             style="background-image: url('{{ asset('storage/' . $producto->imagen_url) }}');"></div>
                     @else
                         <div class="w-full h-full flex flex-col items-center justify-center text-gray-300 bg-gray-50">
                             <span class="material-symbols-outlined text-5xl mb-2">image</span>
@@ -55,7 +48,7 @@
                         @endif
                     </div>
 
-                    {{-- Botón Favorito: Movido a la imagen superior derecha (Estándar E-commerce) --}}
+                    {{-- Botón Favorito --}}
                     <div class="absolute top-3 right-3 z-20">
                         <button class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 hover:shadow-md transition-all duration-300" title="Añadir a favoritos">
                             <span class="material-symbols-outlined text-[18px] hover:fill-current">favorite</span>
@@ -80,7 +73,7 @@
                             {{ $producto->marca->nombre ?? 'GENÉRICO' }}
                         </p>
                         
-                        {{-- Indicador de Stock reubicado --}}
+                        {{-- Indicador de Stock --}}
                         <div>
                             @if($producto->stock_total > 0 && $producto->stock_total <= $producto->stock_minimo_alerta)
                                 <span class="text-[10px] font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded text-right whitespace-nowrap">
@@ -89,6 +82,10 @@
                             @elseif($producto->stock_total > 0)
                                 <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded text-right whitespace-nowrap flex items-center gap-1">
                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Stock
+                                </span>
+                            @else
+                                <span class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded text-right whitespace-nowrap flex items-center gap-1">
+                                    Agotado
                                 </span>
                             @endif
                         </div>
@@ -120,14 +117,18 @@
                                 @endif
                             </div>
                             <span class="text-[11px] text-gray-400 font-medium mt-0.5">
+                                {{-- Aquí multiplicas por 60.50 como demo. A futuro, este número vendrá de la variable de Tasa de Cambio del BCV --}}
                                 ≈ Bs. {{ number_format(($producto->precio_oferta_usd ?? $producto->precio_venta_usd) * 60.50, 2, ',', '.') }}
                             </span>
                         </div>
                         
                         {{-- BOTÓN AÑADIR AL CARRITO EXPLÍCITO Y SIEMPRE VISIBLE --}}
-                        <button class="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-agro-dark hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group/btn" title="Añadir al carrito">
-                            <span class="material-symbols-outlined text-[22px] group-active/btn:scale-95 transition-transform">add_shopping_cart</span>
-                        </button>
+<button type="button" 
+        data-producto-id="{{ $producto->id }}"
+        class="btn-add-cart-destacado flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-agro-dark hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group/btn" 
+        title="Añadir al carrito">
+    <span class="material-symbols-outlined text-[22px] group-active/btn:scale-95 transition-transform pointer-events-none">add_shopping_cart</span>
+</button>
                     </div>
 
                 </div>
@@ -143,3 +144,109 @@
         </div>
     </div>
 </section>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // 1. Capturar todos los botones de esta sección específica
+        const botonesCart = document.querySelectorAll('.btn-add-cart-destacado');
+
+        botonesCart.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productoId = this.getAttribute('data-producto-id');
+                agregarAlCarrito(productoId, this);
+            });
+        });
+
+        // 2. Lógica principal de AJAX
+        function agregarAlCarrito(productoId, botonElement) {
+            // Guardar el ícono original y poner un spinner de carga
+            const iconoOriginal = botonElement.innerHTML;
+            botonElement.innerHTML = '<span class="material-symbols-outlined text-[22px] animate-spin">sync</span>';
+            botonElement.disabled = true;
+
+            // Obtener el token CSRF del meta tag de Laravel
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            fetch("{{ route('carrito.add') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ producto_id: productoId, cantidad: 1 })
+            })
+            .then(response => {
+                // Si el usuario no está logueado, Laravel devuelve un 401
+                if (response.status === 401) {
+                    window.location.href = "{{ route('login') }}";
+                    return Promise.reject('Requiere autenticación');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.status === 'success') {
+                    mostrarToastIndependiente('Producto agregado al carrito', 'success');
+
+                    // Actualizar el contador del menú superior (si tienes los IDs configurados así)
+                    const badge = document.getElementById('cart-count-badge');
+                    const badgeContainer = document.getElementById('cart-badge-container');
+                    
+                    if(badge && badgeContainer) {
+                        badge.innerText = data.cart_count;
+                        badgeContainer.classList.remove('hidden');
+                        badge.classList.add('animate-bounce');
+                        setTimeout(() => badge.classList.remove('animate-bounce'), 1000);
+                    }
+                } else {
+                    mostrarToastIndependiente(data.message || 'Error al agregar producto', 'error');
+                }
+            })
+            .catch(error => {
+                if (error !== 'Requiere autenticación') {
+                    console.error('Error de red:', error);
+                    mostrarToastIndependiente('Error de conexión con el servidor', 'error');
+                }
+            })
+            .finally(() => {
+                // Devolver el botón a su estado normal
+                botonElement.innerHTML = iconoOriginal;
+                botonElement.disabled = false;
+            });
+        }
+
+        // 3. Mini sistema de notificaciones (Toast) inyectado dinámicamente
+        function mostrarToastIndependiente(mensaje, tipo) {
+            // Definir colores según el tipo
+            const bgClase = tipo === 'success' ? 'bg-green-600' : 'bg-red-600';
+            const icono = tipo === 'success' ? 'check_circle' : 'error';
+
+            // Crear el elemento HTML del toast
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 rounded-xl shadow-2xl text-white transform transition-all duration-300 translate-y-20 opacity-0 font-sans text-sm font-medium ${bgClase}`;
+            toast.innerHTML = `<span class="material-symbols-outlined text-xl">${icono}</span> ${mensaje}`;
+
+            // Insertarlo en el documento
+            document.body.appendChild(toast);
+
+            // Animar entrada (usando setTimeout para que el DOM registre el elemento primero)
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-20', 'opacity-0');
+                }, 10);
+            });
+
+            // Animar salida y destruir elemento después de 3.5 segundos
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3500);
+        }
+    });
+</script>
+@endpush

@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\Admin\MarcaController;
+use App\Http\Controllers\Admin\ProductoController;
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
@@ -156,5 +157,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/marcas/{id}', [MarcaController::class, 'update'])->name('marcas.update');
     Route::delete('/marcas/{id}', [MarcaController::class, 'destroy'])->name('marcas.destroy');
     Route::post('/marcas/{id}/toggle', [MarcaController::class, 'toggleStatus']);
+
+    //Pantalla - Productos
+    Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
+    Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create'); 
+    Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store'); 
+    Route::get('/productos/{id}/editar', [ProductoController::class, 'edit'])->name('productos.edit'); 
+    Route::put('/productos/{id}', [ProductoController::class, 'update'])->name('productos.update'); 
+    Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
+    Route::post('/productos/{id}/destacado', [ProductoController::class, 'toggleDestacado']);
 
 });
