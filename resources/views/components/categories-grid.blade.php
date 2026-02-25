@@ -2,12 +2,6 @@
     
     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
 
-    {{-- 
-        CAMBIO CLAVE: 
-        1. Cambié 'container mx-auto' por 'layout-container' (para igualar al hero).
-        2. Cambié el padding 'px-4 sm:px-6 lg:px-8' por 'px-4 sm:px-0'.
-           Esto elimina el hueco extra a la izquierda y lo alinea con el título del Hero.
-    --}}
     <div class="layout-container w-full relative z-10 px-4 sm:px-0">
         
         <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
@@ -31,28 +25,30 @@
             
             @foreach($categoriasPrincipales->take(5) as $categoria)
                 <a href="{{ route('catalogo', ['categoria' => $categoria->id]) }}" 
-                   class="group relative flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-primary/10 border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1 h-full">
+                   class="group relative flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-primary/5 border border-gray-100 overflow-hidden transition-all duration-500 hover:-translate-y-1.5 h-full">
                     
-                    <div class="aspect-[4/3] w-full bg-gray-100 relative overflow-hidden">
-                        {{-- Fallback de imagen con lógica segura --}}
-                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-out" 
+                    <div class="aspect-[4/3] w-full bg-gray-50 relative overflow-hidden">
+                        {{-- Fallback de imagen con zoom suave --}}
+                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-in-out" 
                              style="background-image: url('{{ $categoria->imagen_url ?? 'https://placehold.co/400x300/F3F4F6/10B981?text=' . urlencode($categoria->nombre) }}');">
                         </div>
                         
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        {{-- Overlay sutil que le da profundidad a la imagen --}}
+                        <div class="absolute inset-0 bg-agro-dark/5 group-hover:bg-agro-dark/10 transition-colors duration-500"></div>
                     </div>
 
-                    <div class="p-4 text-center flex-1 flex flex-col justify-center relative bg-white group-hover:bg-green-50/30 transition-colors">
-                        <div class="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                             {{-- Primera letra como icono --}}
-                             <span class="font-black text-lg">{{ substr($categoria->nombre, 0, 1) }}</span>
+                    <div class="p-4 md:p-5 text-center flex-1 flex flex-col justify-start relative bg-white transition-colors z-10">
+                        
+                        {{-- Contenedor del ícono rediseñado (Solapado, contraste corregido y animación independiente) --}}
+                        <div class="w-12 h-12 md:w-14 md:h-14 bg-white text-agro-dark rounded-xl shadow-md flex items-center justify-center mx-auto mb-3 -mt-10 md:-mt-12 relative z-20 group-hover:-translate-y-1 group-hover:bg-primary group-hover:shadow-lg transition-all duration-300 border-2 border-white">
+                             <span class="font-black text-xl md:text-2xl">{{ substr($categoria->nombre, 0, 1) }}</span>
                         </div>
 
-                        <h4 class="font-bold text-gray-800 text-sm md:text-base group-hover:text-primary transition-colors line-clamp-1">
+                        <h4 class="font-bold text-agro-dark text-sm md:text-base group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                             {{ $categoria->nombre }}
                         </h4>
                         
-                        <p class="text-[10px] uppercase tracking-wide text-gray-400 mt-1 group-hover:text-gray-500">
+                        <p class="text-[10px] md:text-[11px] font-semibold uppercase tracking-wider text-gray-400 mt-2">
                             {{ $categoria->hijos ? $categoria->hijos->count() : 0 }} Subcategorías
                         </p>
                     </div>

@@ -1,47 +1,9 @@
 <footer class="bg-background-dark text-white border-t border-agro-dark">
     
     <div class="bg-agro-dark/40 border-b border-white/5 backdrop-blur-sm relative overflow-hidden">
-        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl"></div>
         
-        <div class="layout-container py-8 md:py-10 relative z-10">
-            <div class="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-12">
-                <div class="text-center lg:text-left max-w-xl">
-                    <h3 class="text-xl md:text-2xl font-bold text-white mb-2 flex items-center justify-center lg:justify-start gap-2">
-                        <span class="material-symbols-outlined text-primary">mail</span>
-                        Suscríbete a nuestro boletín
-                    </h3>
-                    <p class="text-gray-400 text-sm md:text-base leading-relaxed">
-                        Recibe ofertas exclusivas, novedades de productos y consejos técnicos para optimizar tu producción.
-                    </p>
-                </div>
-                
-                <form class="w-full lg:w-auto flex-shrink-0">
-                    <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto lg:mx-0">
-                        <div class="relative flex-grow">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 material-symbols-outlined text-[20px]">email</span>
-                            <input 
-                                type="email" 
-                                placeholder="Tu correo electrónico"
-                                class="w-full h-12 pl-11 pr-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm"
-                            >
-                        </div>
-                        <button 
-                            type="submit"
-                            class="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-agro-dark font-bold transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 whitespace-nowrap flex items-center justify-center gap-2"
-                        >
-                            <span>Suscribirse</span>
-                            <span class="material-symbols-outlined text-[20px]">send</span>
-                        </button>
-                    </div>
-                    <p class="text-[10px] text-gray-500 mt-2 text-center lg:text-left">
-                        Al suscribirte aceptas nuestros términos y condiciones.
-                    </p>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    <div class="layout-container pt-12 pb-8">
+    <div class="layout-container pt-12 pb-8"> <br>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
             
             <div class="lg:col-span-4 flex flex-col gap-6">

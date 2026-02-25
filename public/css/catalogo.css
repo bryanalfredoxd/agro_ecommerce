@@ -1,0 +1,57 @@
+/* public/css/catalogo.css */
+
+/* Animaciones personalizadas */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes pulseSlow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.15; transform: scale(1.1); }
+}
+
+.animate-pulse-slow {
+    animation: pulseSlow 8s infinite ease-in-out;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin { 
+    animation: spin 1s linear infinite; 
+}
+
+/* Scrollbar personalizada para el panel de categorías */
+.custom-scrollbar::-webkit-scrollbar { 
+    width: 6px; 
+}
+.custom-scrollbar::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+.custom-scrollbar::-webkit-scrollbar-thumb { 
+    background: #e2e8f0; 
+    border-radius: 10px; 
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { 
+    background: var(--color-primary); 
+}
+
+/* Transiciones de contenedores */
+#loading-overlay { 
+    transition: opacity 0.3s ease; 
+}
+#loading-overlay.hidden { 
+    opacity: 0; 
+    pointer-events: none; 
+}
+
+#products-container { 
+    transition: opacity 0.3s ease; 
+}

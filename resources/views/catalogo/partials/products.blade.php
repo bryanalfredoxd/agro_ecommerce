@@ -4,43 +4,37 @@
 @endphp
 
 <div id="products-content">
-    <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 transition-all hover:shadow-md">
-        <p class="text-gray-600 text-sm font-medium">
-            Mostrando <span class="font-black text-agro-dark">{{ $productos->firstItem() ?? 0 }} - {{ $productos->lastItem() ?? 0 }}</span> de <span class="font-black text-agro-dark">{{ $productos->total() }}</span> resultados
+    
+    {{-- 1. CABECERA DE ORDENAMIENTO (Limpia y profesional) --}}
+    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 transition-all">
+        <p class="text-gray-500 text-sm font-medium">
+            Mostrando <span class="font-black text-agro-dark text-base">{{ $productos->firstItem() ?? 0 }} - {{ $productos->lastItem() ?? 0 }}</span> de <span class="font-black text-agro-dark text-base">{{ $productos->total() }}</span> resultados
         </p>
         
-        <div class="flex items-center gap-3">
-            <label class="text-xs font-bold text-gray-500 uppercase hidden sm:block">Ordenar por:</label>
-            <div class="relative group">
-                <select name="orden" class="order-select appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-primary focus:border-primary block w-full p-2.5 pr-10 font-bold cursor-pointer hover:bg-white hover:shadow-sm transition-all">
-                    <option value="reciente" {{ request('orden') == 'reciente' ? 'selected' : '' }}>Más Nuevos</option>
-                    <option value="precio_asc" {{ request('orden') == 'precio_asc' ? 'selected' : '' }}>Precio: Bajo a Alto</option>
-                    <option value="precio_desc" {{ request('orden') == 'precio_desc' ? 'selected' : '' }}>Precio: Alto a Bajo</option>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <label class="text-xs font-bold text-gray-400 uppercase tracking-wider hidden sm:block">Ordenar por:</label>
+            <div class="relative w-full sm:w-auto group">
+                <select name="orden" 
+                        onchange="window.dispatchEvent(new CustomEvent('catalogo:orden-change', {detail: {value: this.value}}))" 
+                        class="appearance-none w-full sm:w-56 bg-gray-50 border border-gray-200 text-agro-dark text-sm rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary block p-2.5 pl-4 pr-10 font-bold cursor-pointer hover:bg-white hover:border-primary/50 transition-all">
+                    <option value="reciente" {{ request('orden') == 'reciente' ? 'selected' : '' }}>Más Recientes</option>
+                    <option value="precio_asc" {{ request('orden') == 'precio_asc' ? 'selected' : '' }}>Menor Precio</option>
+                    <option value="precio_desc" {{ request('orden') == 'precio_desc' ? 'selected' : '' }}>Mayor Precio</option>
+                    <option value="nombre_asc" {{ request('orden') == 'nombre_asc' ? 'selected' : '' }}>Nombre (A-Z)</option>
                 </select>
-                <span class="material-symbols-outlined absolute right-3 top-2.5 text-gray-400 pointer-events-none text-[22px] group-hover:text-primary transition-colors">expand_more</span>
+                <span class="material-symbols-outlined absolute right-3 top-2.5 text-gray-400 pointer-events-none text-[20px] group-hover:text-primary transition-colors">expand_more</span>
             </div>
         </div>
     </div>
 
+    {{-- 2. GRID DE PRODUCTOS --}}
     @if($productos->count() > 0)
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8" style="perspective: 1000px;">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($productos as $index => $producto)
-                <div class="group bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,128,0,0.15)] hover:-translate-y-2 transition-all duration-500 flex flex-col overflow-hidden relative animate-fade-in-up" style="animation-delay: {{ $index * 100 }}ms;">
+                <article class="group relative flex flex-col bg-white rounded-2xl border border-gray-100 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden h-full animate-fade-in-up" style="animation-delay: {{ $index * 50 }}ms;">
                     
-                    <div class="absolute top-4 left-4 z-10 flex flex-col gap-2 items-start">
-                        @if($producto->precio_oferta_usd)
-                            <span class="bg-red-500 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-sm uppercase tracking-wider flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[14px]">local_offer</span> Oferta
-                            </span>
-                        @endif
-                        @if($producto->stock_total <= $producto->stock_minimo_alerta)
-                            <span class="bg-amber-500 text-white text-[11px] font-black px-3 py-1.5 rounded-full shadow-sm uppercase tracking-wider flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[14px]">inventory_2</span> Poco Stock
-                            </span>
-                        @endif
-                    </div>
-
-                    <div class="relative aspect-[4/3] bg-gradient-to-b from-gray-50 to-white p-6 overflow-hidden">
+                    {{-- ÁREA DE IMAGEN (Limpia, sin overlays molestos) --}}
+                    <div class="relative w-full aspect-[4/3] bg-gray-50 overflow-hidden">
                         @php
                             $img = $producto->imagenes->where('es_principal', 1)->first()?->url_imagen 
                                    ?? $producto->imagenes->first()?->url_imagen 
@@ -48,107 +42,125 @@
                         @endphp
                         
                         @if($img)
-                            <img src="{{ $img }}" alt="{{ $producto->nombre }}" class="w-full h-full object-contain mix-blend-multiply filter drop-shadow-sm group-hover:scale-110 transition-transform duration-700 ease-in-out z-0">
+                            <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700 ease-out mix-blend-multiply" 
+                                 style="background-image: url('{{ $img }}');"></div>
                         @else
                             <div class="w-full h-full flex flex-col items-center justify-center text-gray-300 z-0">
-                                <span class="material-symbols-outlined text-6xl mb-2">image_not_supported</span>
-                                <span class="text-xs font-bold uppercase tracking-widest">Sin Imagen</span>
+                                <span class="material-symbols-outlined text-5xl mb-2">image</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Sin Imagen</span>
                             </div>
                         @endif
+
+                        {{-- Badges Superior Izquierda --}}
+                        <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start z-10 pointer-events-none">
+                            @if($producto->es_controlado)
+                                <span class="inline-flex items-center gap-1 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase shadow-sm tracking-wide">
+                                    <span class="material-symbols-outlined text-[12px]">lock</span> Controlado
+                                </span>
+                            @endif
+
+                            @if($producto->precio_oferta_usd)
+                                <span class="inline-flex items-center gap-1 bg-primary text-agro-dark text-[10px] font-black px-2 py-1 rounded-md uppercase shadow-sm tracking-wide">
+                                    Oferta
+                                </span>
+                            @endif
+                        </div>
+
+                        {{-- Botón Favorito Superior Derecha (Estándar e-commerce) --}}
+                        <div class="absolute top-3 right-3 z-20">
+                            <button class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 hover:shadow-md transition-all duration-300" title="Añadir a favoritos">
+                                <span class="material-symbols-outlined text-[18px] hover:fill-current">favorite</span>
+                            </button>
+                        </div>
                         
-                        <div class="absolute inset-0 bg-agro-dark/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6 gap-3 backdrop-blur-[1px]">
-                            <button class="bg-white text-agro-dark p-3 rounded-full hover:bg-primary hover:text-white hover:scale-110 transition-all shadow-lg transform translate-y-8 group-hover:translate-y-0 duration-500 ease-out">
-                                <span class="material-symbols-outlined">visibility</span>
-                            </button>
-                            
-                            <button onclick="addToCart({{ $producto->id }})" class="bg-primary text-white p-3 rounded-full hover:bg-green-600 hover:scale-110 transition-all shadow-lg transform translate-y-8 group-hover:translate-y-0 duration-500 ease-out delay-100" title="Agregar al carrito">
-                                <span class="material-symbols-outlined">add_shopping_cart</span>
-                            </button>
+                        {{-- Unidad de Medida --}}
+                        <div class="absolute bottom-3 left-3 pointer-events-none z-10">
+                            <span class="inline-block bg-white/95 backdrop-blur-sm text-agro-dark text-[10px] font-bold px-2 py-1 rounded-md shadow-sm uppercase tracking-wider">
+                                {{ $producto->unidad_medida }}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="p-6 flex-1 flex flex-col bg-white relative z-10">
-                        <div class="mb-3">
+                    {{-- ÁREA DE INFORMACIÓN --}}
+                    <div class="p-5 flex flex-col flex-1 relative bg-white z-10">
+                        
+                        {{-- Marca y Stock --}}
+                        <div class="flex justify-between items-center mb-2">
                             <a href="#" data-filter="categoria" data-value="{{ $producto->categoria_id }}" 
-                               class="filter-link inline-block text-[11px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-wider hover:bg-primary hover:text-white transition-colors">
+                               class="filter-link text-[10px] text-agro-accent font-bold uppercase tracking-wider flex items-center gap-1 hover:text-primary transition-colors relative z-20 truncate pr-2">
+                                <span class="material-symbols-outlined text-[14px]">verified</span>
                                 {{ $producto->categoria->nombre ?? 'General' }}
                             </a>
+                            
+                            <div>
+                                @if($producto->stock_total > 0 && $producto->stock_total <= $producto->stock_minimo_alerta)
+                                    <span class="text-[10px] font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded text-right whitespace-nowrap">
+                                        Poco Stock
+                                    </span>
+                                @elseif($producto->stock_total > 0)
+                                    <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded text-right whitespace-nowrap flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Stock
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                         
-                        <h3 class="font-bold text-agro-dark text-xl leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                            <a href="#" class="focus:outline-none">{{ $producto->nombre }}</a>
+                        {{-- Título clickeable en toda la tarjeta --}}
+                        <h3 class="font-bold text-agro-dark text-base leading-snug mb-2 line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors">
+                            <a href="#" class="focus:outline-none before:absolute before:inset-0">
+                                {{ $producto->nombre }}
+                            </a>
                         </h3>
                         
-                        <p class="text-sm text-gray-500 mb-6 line-clamp-2 leading-relaxed">{{ $producto->descripcion }}</p>
+                        <p class="text-xs text-gray-500 mb-4 line-clamp-2 flex-grow leading-relaxed relative z-20">{{ $producto->descripcion }}</p>
 
-                        <div class="mt-auto pt-5 border-t border-gray-100 flex items-end justify-between">
-                            <div>
-                                @if($producto->precio_oferta_usd)
-                                    <div class="flex flex-col">
-                                        <span class="text-xs text-red-400 line-through font-semibold mb-0.5">USD {{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                        <span class="text-2xl font-black text-agro-dark tracking-tight">USD {{ number_format($producto->precio_oferta_usd, 2) }}</span>
-                                    </div>
-                                @else
-                                    <span class="text-2xl font-black text-agro-dark tracking-tight">USD {{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                @endif
-                                <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-1">{{ $producto->unidad_medida }}</p>
+                        {{-- Precios y Call to Action --}}
+                        <div class="mt-auto pt-4 border-t border-gray-100 flex items-end justify-between relative z-20">
+                            <div class="flex flex-col">
+                                <div class="flex items-baseline gap-1.5">
+                                    @if($producto->precio_oferta_usd)
+                                        <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_oferta_usd, 2) }}</span>
+                                        <span class="text-xs text-gray-400 line-through font-semibold">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                                    @else
+                                        <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                                        <span class="text-[10px] text-gray-400 font-bold self-start mt-1">USD</span>
+                                    @endif
+                                </div>
+                                <span class="text-[11px] text-gray-400 font-medium mt-0.5">
+                                    ≈ Bs. {{ number_format(($producto->precio_oferta_usd ?? $producto->precio_venta_usd) * 60.50, 2, ',', '.') }}
+                                </span>
                             </div>
                             
-                            <div onclick="addToCart({{ $producto->id }})" class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-primary group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary/30 transition-all duration-300 transform group-hover:rotate-12 cursor-pointer" title="Agregar al carrito">
-                                 <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
-                            </div>
+                            {{-- BOTÓN AÑADIR AL CARRITO SIEMPRE VISIBLE --}}
+                            <button type="button" onclick="addToCart({{ $producto->id }})" class="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-agro-dark hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group/btn" title="Añadir al carrito">
+                                <span class="material-symbols-outlined text-[22px] group-active/btn:scale-95 transition-transform">add_shopping_cart</span>
+                            </button>
                         </div>
                     </div>
-                </div>
+                </article>
             @endforeach
         </div>
 
-        <div class="mt-16 flex justify-center animate-fade-in-up" style="animation-delay: 300ms;">
+        {{-- 3. PAGINACIÓN --}}
+        <div class="mt-12 flex justify-center animate-fade-in-up">
             {{ $productos->links('pagination::tailwind') }} 
         </div>
 
     @else
-        <div class="bg-white/80 backdrop-blur-md rounded-3xl shadow-sm border border-gray-100 p-16 text-center animate-fade-in-up">
-            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-                <span class="material-symbols-outlined text-5xl text-gray-300">travel_explore</span>
+        {{-- 4. ESTADO VACÍO (NO HAY RESULTADOS) --}}
+        <div class="bg-white rounded-2xl border border-gray-200 p-12 flex flex-col items-center justify-center text-center shadow-sm animate-fade-in-up">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                <span class="material-symbols-outlined text-4xl text-gray-400">search_off</span>
             </div>
-            <h3 class="text-2xl font-black text-agro-dark mb-3">No encontramos resultados</h3>
-            <p class="text-gray-500 text-lg max-w-md mx-auto mb-8 leading-relaxed">
-                No hay productos para esta búsqueda. Intenta limpiar los filtros.
+            <h3 class="text-xl font-black text-agro-dark mb-2">No encontramos resultados</h3>
+            <p class="text-gray-500 text-sm max-w-sm mx-auto mb-6 leading-relaxed">
+                No hay productos que coincidan con los filtros aplicados. Intenta cambiar de categoría o buscar con otro término.
             </p>
-            <a href="#" id="clear-filters-main" class="clear-filters-btn inline-flex items-center justify-center gap-2 px-8 py-4 border border-transparent text-base font-bold rounded-2xl text-white bg-agro-dark hover:bg-primary shadow-lg shadow-agro-dark/20 hover:shadow-primary/40 transform hover:-translate-y-1 transition-all duration-300">
-                <span class="material-symbols-outlined">restart_alt</span>
-                Limpiar Filtros
-            </a>
+            {{-- Usando onclick en lugar de event listeners para que sobreviva al AJAX --}}
+            <button onclick="if(window.catalogoClearFilters) window.catalogoClearFilters(event)" class="inline-flex items-center justify-center gap-2 px-6 py-3 border border-transparent text-sm font-bold rounded-xl text-agro-dark bg-primary/10 hover:bg-primary hover:text-white transition-all duration-300 group">
+                <span class="material-symbols-outlined text-[20px] group-hover:-rotate-180 transition-transform duration-500">restart_alt</span>
+                Limpiar Búsqueda
+            </button>
         </div>
     @endif
 </div>
-
-<script>
-// Script para la vista parcial
-document.addEventListener('DOMContentLoaded', function() {
-    // Configurar el select de ordenamiento en la vista parcial
-    document.querySelectorAll('.order-select').forEach(select => {
-        select.addEventListener('change', function(e) {
-            // Enviar evento al script principal (index.blade.php)
-            window.dispatchEvent(new CustomEvent('catalogo:orden-change', {
-                detail: { value: e.target.value }
-            }));
-        });
-    });
-    
-    // Botón de limpiar filtros en "no resultados"
-    document.addEventListener('click', function(e) {
-        if (e.target.matches('.clear-filters-btn') || e.target.closest('.clear-filters-btn')) {
-            e.preventDefault();
-            // Llamar directamente a la función global definida en index.blade.php
-            if (window.catalogoClearFilters) {
-                window.catalogoClearFilters(e);
-            } else if (typeof clearFilters === 'function') {
-                // Fallback por si la función se llama diferente en el scope global
-                clearFilters(e);
-            }
-        }
-    });
-});
-</script>
