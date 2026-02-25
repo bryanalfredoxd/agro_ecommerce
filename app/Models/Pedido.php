@@ -31,4 +31,9 @@ protected $fillable = [
     {
         return $this->hasOne(Pago::class, 'pedido_id');
     }
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'usuario_id');
+    }
 }

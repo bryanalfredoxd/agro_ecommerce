@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\Admin\MarcaController;
 use App\Http\Controllers\Admin\ProductoController;
 use App\Http\Controllers\Admin\HorarioadminController;
+use App\Http\Controllers\Admin\PedidoController;
 
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
@@ -174,5 +175,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     //Pantalla - Horarios
     Route::get('/horarios', [HorarioadminController::class, 'index'])->name('horarios.index');
     Route::post('/horarios/actualizar', [HorarioadminController::class, 'updateAll'])->name('horarios.updateAll');
+
+//Seccion - Ventas y Pedidos
+
+    //Pantalla - Pedidos
+    Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
+    Route::post('/pedidos/{id}/estado', [PedidoController::class, 'updateStatus'])->name('pedidos.updateStatus');
 
 });
