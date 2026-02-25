@@ -25,7 +25,7 @@
             <div class="px-6 pb-6 pt-2 border-t border-gray-50 animate-fade-in-up">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
                     @if(Auth::user()->tienePermiso('ver_pedidos'))
-                    <a href="{{ route('admin.pedidos.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-600 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
+                    <a href="{{ route('admin.pedidos.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-red-600 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">shopping_bag</span> Listado de Pedidos
                     </a>
                     @endif
@@ -68,7 +68,7 @@
             <div class="px-6 pb-6 pt-2 border-t border-gray-50 animate-fade-in-up">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
                     @if(Auth::user()->tienePermiso('ver_productos'))
-                    <a href="{{ route('admin.productos.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
+                    <a href="{{ route('admin.productos.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-red-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">inventory_2</span> Listado de Productos
                     </a>
                     @endif
@@ -78,10 +78,10 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_categorias_marcas'))
-                    <a href="{{ route('admin.categorias.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
+                    <a href="{{ route('admin.categorias.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-red-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">category</span> Categorías
                     </a>
-                    <a href="{{ route('admin.marcas.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
+                    <a href="{{ route('admin.marcas.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-red-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">sell</span> Marcas
                     </a>
                     @endif
@@ -114,12 +114,12 @@
             <div class="px-6 pb-6 pt-2 border-t border-gray-50 animate-fade-in-up">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
                     @if(Auth::user()->tienePermiso('ver_usuarios'))
-                    <a href="{{ route('admin.usuarios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-indigo-50 text-gray-600 hover:text-indigo-700 transition-colors border border-transparent hover:border-indigo-100 font-bold text-xs">
+                    <a href="{{ route('admin.usuarios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-indigo-50 text-red-600 hover:text-indigo-700 transition-colors border border-transparent hover:border-indigo-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">group</span> Listado de Usuarios
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_roles_permisos'))
-                    <a href="{{ route('admin.roles.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-indigo-50 text-gray-600 hover:text-indigo-700 transition-colors border border-transparent hover:border-indigo-100 font-bold text-xs">
+                    <a href="{{ route('admin.roles.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-indigo-50 text-red-600 hover:text-indigo-700 transition-colors border border-transparent hover:border-indigo-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span> Roles y Permisos
                     </a>
                     @endif
@@ -195,7 +195,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_tasas_cambio'))
-                    <a href="{{ route('admin.tasas-cambio.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-gray-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
+                    <a href="{{ route('admin.tasas-cambio.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-red-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">currency_exchange</span> Tasas de Cambio
                     </a>
                     @endif
@@ -276,7 +276,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_horarios'))
-                    <a href="{{ route('admin.horarios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 font-bold text-xs">
+                    <a href="{{ route('admin.horarios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-red-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">schedule</span> Horarios Físicos
                     </a>
                     @endif

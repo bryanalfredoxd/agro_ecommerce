@@ -43,7 +43,7 @@
                 </summary>
                 <div class="mt-1 pl-12 pr-2 space-y-1">
                     @if(Auth::user()->tienePermiso('ver_pedidos'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Listado de Pedidos</a>
+                        <a href="{{ route('admin.pedidos.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Listado de Pedidos</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_pagos'))
                         <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Gestión de Pagos</a>
@@ -70,13 +70,16 @@
                 </summary>
                 <div class="mt-1 pl-12 pr-2 space-y-1">
                     @if(Auth::user()->tienePermiso('ver_productos'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Listado de Productos</a>
+                        <a href="{{ route('admin.productos.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Listado de Productos</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_inventario_lotes'))
                         <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Inventario por Lotes</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_categorias_marcas'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Categorías y Marcas</a>
+                        <a href="{{ route('admin.categorias.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Categorías</a>
+                    @endif
+                    @if(Auth::user()->tienePermiso('gestionar_categorias_marcas'))
+                        <a href="{{ route('admin.marcas.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Marcas</a>
                     @endif
                     @if(Auth::user()->tienePermiso('ver_historico_precios'))
                         <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Histórico de Precios</a>
@@ -97,10 +100,10 @@
                 </summary>
                 <div class="mt-1 pl-12 pr-2 space-y-1">
                     @if(Auth::user()->tienePermiso('ver_usuarios'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Listado de Usuarios</a>
+                        <a href="{{ route('admin.usuarios.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Listado de Usuarios</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_roles_permisos'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Roles y Permisos</a>
+                        <a href="{{ route('admin.roles.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Roles y Permisos</a>
                     @endif
                 </div>
             </details>
@@ -151,7 +154,7 @@
                         <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Caja Diaria / POS</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_tasas_cambio'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Tasas de Cambio</a>
+                        <a href="{{ route('admin.tasas-cambio.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Tasas de Cambio</a>
                     @endif
                 </div>
             </details>
@@ -199,7 +202,7 @@
                         <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">APIs Externas</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_horarios'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Horarios Físicos</a>
+                        <a href="{{ route('admin.horarios.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Horarios Físicos</a>
                     @endif
                     @if(Auth::user()->tienePermiso('ver_logs_auditoria'))
                         <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Logs de Auditoría</a>
