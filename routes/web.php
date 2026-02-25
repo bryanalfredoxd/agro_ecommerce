@@ -14,6 +14,7 @@ use App\Http\Controllers\DireccionController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UsuarioController;
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
@@ -120,10 +121,17 @@ Route::get('/splash/should-show', [SplashController::class, 'shouldShow'])
 // ==========================================
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     
-    // Ruta principal del Dashboard
-    // Genera la URL: /admin/dashboard y el nombre de ruta: admin.dashboard
+    // Pantalla - Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+// Seccion - Usuarios y Roles
+
+    // Pantalla - Roles y Permisos
     Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit']);
+
+    // Pantalla - Lista de Usuarios
+    Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+    Route::get('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'getPermisosExtra']);
+    Route::post('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'updatePermisosExtra']);
 
 });
