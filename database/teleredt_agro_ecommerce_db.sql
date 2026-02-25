@@ -521,7 +521,9 @@ CREATE TABLE `marcas` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `pais_origen` varchar(100) DEFAULT NULL,
-  `activo` tinyint(1) DEFAULT 1
+  `activo` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\CategoriaController;
+use App\Http\Controllers\Admin\MarcaController;
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
 /*
@@ -136,13 +137,24 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'updatePermisosExtra']);
 
 // Seccion - Finanzas y Caja
+
+    // Pantalla - Tasas de Cambio
     Route::get('/tasas-cambio', [App\Http\Controllers\Admin\TasaCambioController::class, 'index'])->name('tasas-cambio.index');
     Route::post('/tasas-cambio', [App\Http\Controllers\Admin\TasaCambioController::class, 'store'])->name('tasas-cambio.store');
     
 // Seccion - Catalogo e Inventario
+
+    //Pantalla - Categorias
     Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
     Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store');
     Route::post('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
     Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
+
+    //Pantalla - Marcas
+    Route::get('/marcas', [MarcaController::class, 'index'])->name('marcas.index');
+    Route::post('/marcas', [MarcaController::class, 'store'])->name('marcas.store');
+    Route::put('/marcas/{id}', [MarcaController::class, 'update'])->name('marcas.update');
+    Route::delete('/marcas/{id}', [MarcaController::class, 'destroy'])->name('marcas.destroy');
+    Route::post('/marcas/{id}/toggle', [MarcaController::class, 'toggleStatus']);
 
 });
