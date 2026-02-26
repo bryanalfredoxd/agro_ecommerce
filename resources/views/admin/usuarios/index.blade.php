@@ -68,81 +68,79 @@
 
 {{-- MODAL DE PERMISOS EXTRA --}}
 <div id="permisosModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    {{-- Fondo Oscuro --}}
     <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="permisosBackdrop" onclick="closePermisosModal()"></div>
-    <div class="fixed inset-0 z-10 flex justify-center items-center p-4 sm:p-0">
-        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-2xl opacity-0 scale-95 flex flex-col max-h-[90vh]" id="permisosPanel">
-            
-            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 flex-shrink-0">
-                <div>
-                    <h3 class="text-lg font-black text-agro-dark leading-none">Configuración de Accesos</h3>
-                    <p class="text-xs text-indigo-600 font-bold mt-1" id="modalUserName">Cargando...</p>
-                </div>
-                <button type="button" onclick="closePermisosModal()" class="text-gray-400 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
 
-            <form id="permisosForm" onsubmit="savePermisos(event)" class="flex flex-col flex-1 overflow-hidden min-h-0">
-                <input type="hidden" id="usuario_id">
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center sm:items-center p-0 sm:p-4">
+            {{-- Panel del Modal --}}
+            <div class="relative transform overflow-hidden rounded-t-3xl sm:rounded-3xl bg-white text-left shadow-2xl transition-all w-full sm:max-w-4xl opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95 flex flex-col max-h-[90vh]" id="permisosPanel">
                 
-                <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
-                    
-                    {{-- SECCIÓN 1: CAMBIO DE ROL --}}
+                {{-- Header del Modal --}}
+                <div class="bg-white px-6 py-5 border-b border-gray-100 flex justify-between items-center z-10 flex-shrink-0">
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Rol del Usuario</label>
-                        <select name="rol_id" id="modalRolSelect" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 transition-all font-bold text-agro-dark outline-none cursor-pointer appearance-none">
-                            <option value="">Sin Rol</option>
-                            @foreach($roles as $rol)
-                                <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
-                            @endforeach
-                        </select>
+                        <h3 class="text-xl font-black text-agro-dark" id="modalTitle">Configuración de Accesos</h3>
+                        <p class="text-xs text-indigo-600 font-bold mt-1" id="modalUserName">Cargando...</p>
                     </div>
-
-                    <div class="h-px w-full bg-gray-100"></div>
-
-                    {{-- SECCIÓN 2: PERMISOS EXTRA --}}
-                    <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Permisos Excepcionales</label>
-                        <p class="text-xs text-gray-500 mb-4 bg-blue-50 text-blue-800 p-3 rounded-xl border border-blue-100 leading-relaxed">
-                            <span class="font-bold">Info:</span> Por defecto el usuario hereda los permisos del rol seleccionado arriba. Usa estas opciones para <b>concederle acceso extra</b> o <b>denegarle acceso</b> a un módulo ignorando su rol.
-                        </p>
-
-                        <div class="space-y-2">
-                            @foreach($permisos as $permiso)
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-white hover:border-indigo-200 transition-colors">
-                                <div class="mb-3 sm:mb-0">
-                                    <p class="text-sm font-bold text-gray-800 capitalize">{{ str_replace('_', ' ', $permiso->nombre) }}</p>
-                                    <p class="text-[10px] text-gray-500 mt-0.5">{{ $permiso->descripcion }}</p>
-                                </div>
-                                
-                                <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1 flex-shrink-0">
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="permisos[{{ $permiso->id }}]" value="heredar" class="peer sr-only" checked>
-                                        <div class="px-3 py-1.5 text-[10px] font-bold text-gray-400 rounded-md peer-checked:bg-gray-100 peer-checked:text-gray-700 transition-colors">Heredar</div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="permisos[{{ $permiso->id }}]" value="permitir" class="peer sr-only">
-                                        <div class="px-3 py-1.5 text-[10px] font-bold text-gray-400 rounded-md peer-checked:bg-green-100 peer-checked:text-green-700 transition-colors">Permitir</div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="permisos[{{ $permiso->id }}]" value="denegar" class="peer sr-only">
-                                        <div class="px-3 py-1.5 text-[10px] font-bold text-gray-400 rounded-md peer-checked:bg-red-100 peer-checked:text-red-700 transition-colors">Denegar</div>
-                                    </label>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3 flex-shrink-0">
-                    <button type="button" onclick="closePermisosModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-sm">Cancelar</button>
-                    <button type="submit" id="btnSave" class="px-6 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm text-sm flex items-center gap-2 transition-all">
-                        <span class="material-symbols-outlined text-[18px]">save</span> Guardar Cambios
+                    <button type="button" onclick="closePermisosModal()" class="text-gray-400 hover:text-red-500 transition-colors p-1 bg-gray-50 rounded-lg border border-gray-200">
+                        <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
-            </form>
+
+                {{-- Formulario --}}
+                <form id="permisosForm" onsubmit="savePermisos(event)" class="flex flex-col flex-1 overflow-hidden min-h-0">
+                    <input type="hidden" id="usuario_id">
+                    
+                    <div class="px-6 py-6 overflow-y-auto custom-scrollbar flex-1">
+                        
+                        {{-- SECCIÓN 1: ROL --}}
+                        <div class="mb-6">
+                            <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Rol Base del Usuario</label>
+                            <select name="rol_id" id="modalRolSelect" class="w-full h-12 rounded-xl bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 transition-all px-4 font-bold text-agro-dark outline-none cursor-pointer appearance-none">
+                                <option value="">Sin Rol</option>
+                                @foreach($roles as $rol)
+                                    <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- SECCIÓN 2: CUADRÍCULA DE PERMISOS --}}
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 ml-1 flex items-center justify-between">
+                                Asignación de Permisos
+                                <button type="button" onclick="marcarTodosPermisos()" class="text-indigo-600 hover:underline cursor-pointer">Marcar / Desmarcar todos</button>
+                            </label>
+                            
+                            <p class="text-xs text-gray-500 mb-4 bg-blue-50 text-blue-800 p-3 rounded-xl border border-blue-100 leading-relaxed">
+                                <span class="font-bold">Info:</span> Marca las casillas para conceder acceso explícito a un módulo. Si la dejas desmarcada, el acceso será denegado.
+                            </p>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="permissionsGrid">
+                                @foreach($permisos as $permiso)
+                                <label class="relative flex items-start p-4 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-indigo-50/50 hover:border-indigo-200 transition-all group">
+                                    <div class="flex items-center h-5">
+                                        <input type="checkbox" name="permisos[]" value="{{ $permiso->id }}" class="permiso-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer transition-colors">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <span class="font-bold text-gray-800 block capitalize">{{ str_replace('_', ' ', $permiso->nombre) }}</span>
+                                        <span class="text-gray-500 text-[11px] leading-tight block mt-0.5">{{ $permiso->descripcion }}</span>
+                                    </div>
+                                </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {{-- Footer / Botones --}}
+                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3 flex-shrink-0">
+                        <button type="button" onclick="closePermisosModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 transition-colors text-sm">Cancelar</button>
+                        <button type="submit" id="btnSave" class="px-6 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm text-sm flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">save</span> Guardar Configuración
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -221,41 +219,60 @@
     // ==========================================
     // LÓGICA DEL MODAL DE PERMISOS
     // ==========================================
+    // Función para el botón "Marcar / Desmarcar todos"
+    function marcarTodosPermisos() {
+        const checkboxes = document.querySelectorAll('.permiso-checkbox');
+        const todosMarcados = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !todosMarcados);
+    }
+
     function openPermisosModal(id, nombre) {
         document.getElementById('usuario_id').value = id;
         document.getElementById('modalUserName').innerText = 'Usuario: ' + nombre;
         
-        // Reset a "Heredar"
-        document.querySelectorAll('input[value="heredar"]').forEach(radio => radio.checked = true);
-        document.getElementById('modalRolSelect').value = ""; // Reset select
+        // Limpiamos todo al abrir
+        document.querySelectorAll('.permiso-checkbox').forEach(cb => cb.checked = false);
+        document.getElementById('modalRolSelect').value = ""; 
 
         fetch(`/admin/usuarios/${id}/permisos-extra`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
         .then(res => res.json())
         .then(data => {
-            // 1. Asignar el ROL actual en el Select
             if(data.rol_id) {
                 document.getElementById('modalRolSelect').value = data.rol_id;
             }
 
-            // 2. Marcar los permisos extra
+            // Marcamos solo los que tienen acción "permitir"
             data.permisosExtra.forEach(permiso => {
-                const radio = document.querySelector(`input[name="permisos[${permiso.permiso_id}]"][value="${permiso.accion}"]`);
-                if(radio) radio.checked = true;
+                if (permiso.accion === 'permitir') {
+                    const cb = document.querySelector(`.permiso-checkbox[value="${permiso.permiso_id}"]`);
+                    if(cb) cb.checked = true;
+                }
             });
 
-            // Animación
+            // Animación de entrada (adaptada a la nueva estructura)
             const modal = document.getElementById('permisosModal');
             const backdrop = document.getElementById('permisosBackdrop');
             const panel = document.getElementById('permisosPanel');
             modal.classList.remove('hidden');
             setTimeout(() => {
                 backdrop.classList.remove('opacity-0');
-                panel.classList.remove('opacity-0', 'scale-95');
+                panel.classList.remove('opacity-0', 'scale-95', 'translate-y-8', 'sm:translate-y-0');
                 panel.classList.add('opacity-100', 'scale-100');
             }, 10);
         });
+    }
+
+    function closePermisosModal() {
+        const modal = document.getElementById('permisosModal');
+        const backdrop = document.getElementById('permisosBackdrop');
+        const panel = document.getElementById('permisosPanel');
+
+        backdrop.classList.add('opacity-0');
+        panel.classList.remove('opacity-100', 'scale-100');
+        panel.classList.add('opacity-0', 'scale-95', 'translate-y-8', 'sm:translate-y-0');
+        setTimeout(() => modal.classList.add('hidden'), 300);
     }
 
     function closePermisosModal() {

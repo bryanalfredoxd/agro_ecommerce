@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File; // Añadimos esta importación
 use App\Models\Carrito;
 use App\Models\Pedido;
 use App\Models\Pago;
@@ -13,6 +14,9 @@ use App\Models\CuentaBancaria;
 
 class CheckoutController extends Controller
 {
+    // Definimos la carpeta donde se guardarán los comprobantes
+    private $uploadFolder = 'pagos';
+
     public function index()
     {
         $usuario = Auth::user();
@@ -147,11 +151,11 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            // 6. Subir Imagen y Registrar Pago
+            // 6. Subir Imagen y Registrar Pago (CAMBIO IMPORTANTE AQUÍ)
             $rutaCapture = null;
             if ($request->hasFile('comprobante')) {
-                // Se guarda en storage/app/public/pagos con nombre único
-                $rutaCapture = $request->file('comprobante')->store('pagos', 'public');
+                // Usamos nuestro método personalizado en lugar de store()
+                $rutaCapture = $this->uploadImage($request->file('comprobante'));
             }
 
             Pago::create([
@@ -170,5 +174,39 @@ class CheckoutController extends Controller
             return redirect()->route('perfil.pedidos')->with('success', '¡Pedido #' . $pedido->id . ' registrado correctamente! En breve verificaremos tu pago.');
 
         });
+    }
+
+    /**
+     * Método privado para subir imágenes a public/img/upload/pagos/
+     */
+    private function uploadImage($file)
+    {
+        // Definir la carpeta de destino
+        $destinationPath = public_path('img/upload/' . $this->uploadFolder);
+        
+        // Crear la carpeta si no existe
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0755, true);
+        }
+        
+        // Generar nombre único para la imagen
+        $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        
+        // Mover el archivo a la carpeta destino
+        $file->move($destinationPath, $fileName);
+        
+        // Retornar la ruta relativa para guardar en BD
+        return 'img/upload/' . $this->uploadFolder . '/' . $fileName;
+    }
+
+    /**
+     * Método privado para eliminar imágenes (opcional, por si necesitas borrar comprobantes)
+     */
+    private function deleteImage($imagePath)
+    {
+        $fullPath = public_path($imagePath);
+        if (File::exists($fullPath)) {
+            File::delete($fullPath);
+        }
     }
 }

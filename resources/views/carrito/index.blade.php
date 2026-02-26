@@ -49,11 +49,11 @@
                             <div class="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 gap-6 items-center sm:items-center relative group transition-colors hover:bg-gray-50/30 cart-item-row" id="item-{{ $item->id }}" data-price="{{ $item->producto->precio_venta_usd }}">
                                 
                                 <div class="col-span-6 flex items-center gap-4 sm:gap-6 w-full">
-                                    <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 relative p-2">
-                                        @if($item->producto->imagenes->first() && $item->producto->imagenes->first()->url_imagen)
-                                            <img src="{{ asset('storage/' . $item->producto->imagenes->first()->url_imagen) }}" 
+                                    <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 relative">
+                                        @if($item->producto->imagen_url)
+                                            <img src="{{ asset($item->producto->imagen_url) }}" 
                                                 alt="{{ $item->producto->nombre }}" 
-                                                class="w-full h-full object-contain mix-blend-multiply drop-shadow-sm group-hover:scale-105 transition-transform duration-500">
+                                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                         @else
                                             <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
                                                 <span class="material-symbols-outlined text-3xl mb-1">image_not_supported</span>

@@ -120,7 +120,7 @@
                             
                             <div class="w-full aspect-square bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center relative overflow-hidden mb-4 group hover:border-green-400 transition-colors">
                                 @if(isset($producto) && $producto->imagen_url)
-                                    <img src="{{ asset('storage/' . $producto->imagen_url) }}" class="w-full h-full object-cover" id="previewImg">
+                                    <img src="{{ asset($producto->imagen_url) }}" class="w-full h-full object-cover" id="previewImg">
                                 @else
                                     <span class="material-symbols-outlined text-4xl text-gray-300 mb-2 group-hover:text-green-400" id="previewIcon">add_photo_alternate</span>
                                     <img src="" class="w-full h-full object-cover hidden" id="previewImg">

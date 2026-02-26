@@ -23,16 +23,31 @@
         
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             
-            @foreach($categoriasPrincipales->take(5) as $categoria)
+            @foreach($categoriasPrincipales->take(15) as $categoria)
                 <a href="{{ route('catalogo', ['categoria' => $categoria->id]) }}" 
                    class="group relative flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-primary/5 border border-gray-100 overflow-hidden transition-all duration-500 hover:-translate-y-1.5 h-full">
                     
                     <div class="aspect-[4/3] w-full bg-gray-50 relative overflow-hidden flex items-center justify-center">
                         @if($categoria->imagen_url)
-                            <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-in-out" 
-                                 style="background-image: url('{{ asset('storage/' . $categoria->imagen_url) }}');">
-                            </div>
+                            {{-- Verificar si la imagen existe físicamente --}}
+                            @php
+                                $imagePath = public_path($categoria->imagen_url);
+                                $imageExists = file_exists($imagePath);
+                            @endphp
+                            
+                            @if($imageExists)
+                                {{-- Usar asset directamente sin storage --}}
+                                <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-in-out" 
+                                     style="background-image: url('{{ asset($categoria->imagen_url) }}');">
+                                </div>
+                            @else
+                                {{-- Fallback si la imagen no existe físicamente --}}
+                                <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-in-out" 
+                                     style="background-image: url('https://placehold.co/400x300/F3F4F6/10B981?text={{ urlencode($categoria->nombre) }}');">
+                                </div>
+                            @endif
                         @else
+                            {{-- Placeholder si no hay imagen --}}
                             <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-in-out" 
                                  style="background-image: url('https://placehold.co/400x300/F3F4F6/10B981?text={{ urlencode($categoria->nombre) }}');">
                             </div>

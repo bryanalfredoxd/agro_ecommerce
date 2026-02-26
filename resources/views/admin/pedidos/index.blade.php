@@ -22,11 +22,12 @@
                     <p class="text-sm text-gray-500 mt-1">Supervisa todas las órdenes web, despachos y ventas físicas.</p>
                 </div>
                 
-                {{-- Botón para nueva venta manual (Módulo futuro) --}}
+                {{-- Botón para nueva venta manual (Módulo futuro) 
                 <a href="#" class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5">
                     <span class="material-symbols-outlined text-[20px]">point_of_sale</span>
                     Nueva Venta Manual
                 </a>
+                --}}
             </div>
 
             {{-- CONTROLES Y FILTROS --}}

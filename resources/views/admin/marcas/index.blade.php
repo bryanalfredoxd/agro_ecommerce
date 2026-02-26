@@ -111,6 +111,8 @@
 
 <div id="toast-container" class="fixed bottom-6 right-6 z-[999] flex flex-col gap-2"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @push('scripts')
 <script>
     let currentSearch = '';
@@ -254,25 +256,40 @@
 
     // Eliminar
     function deleteMarca(id) {
-        if(!confirm('¿Estás seguro de eliminar esta marca?')) return;
-
-        fetch(`/admin/marcas/${id}`, {
-            method: 'DELETE',
-            headers: { 
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        Swal.fire({
+            title: '¿Eliminar marca?',
+            text: "Esta acción no se puede deshacer.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444', // Color rojo Tailwind (red-500)
+            cancelButtonColor: '#9ca3af', // Color gris Tailwind (gray-400)
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                popup: 'rounded-3xl' // Mismo redondeo que usas en tu modal de creación
             }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                showToast(data.message, 'success');
-                fetchData(1);
-            } else {
-                showToast(data.message, 'error');
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Tu lógica fetch intacta
+                fetch(`/admin/marcas/${id}`, {
+                    method: 'DELETE',
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        showToast(data.message, 'success');
+                        fetchData(1);
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                })
+                .catch(() => showToast('Error en el servidor', 'error'));
             }
-        })
-        .catch(() => showToast('Error en el servidor', 'error'));
+        });
     }
 
     // Toggle Rápido de Estado en la Tabla

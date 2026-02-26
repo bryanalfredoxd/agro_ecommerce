@@ -35,7 +35,7 @@ class Categoria extends Model
     }
 
     // Relación: Obtener las subcategorías (Ej: Veterinaria -> [Antibióticos, Vacunas...])
-    public function hijos()
+    public function subcategorias()
     {
         return $this->hasMany(Categoria::class, 'categoria_padre_id');
     }

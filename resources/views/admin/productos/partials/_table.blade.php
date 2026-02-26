@@ -18,7 +18,8 @@
                 <td class="px-6 py-4">
                     <div class="w-14 h-14 rounded-xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center shadow-sm relative">
                         @if($producto->imagen_url)
-                            <img src="{{ asset('storage/' . $producto->imagen_url) }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover">
+                            {{-- Solo quitamos el 'storage/' --}}
+                            <img src="{{ asset($producto->imagen_url) }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover">
                         @else
                             <span class="material-symbols-outlined text-gray-300 text-2xl">inventory</span>
                         @endif
@@ -104,13 +105,21 @@
                 {{-- Columna: Acciones --}}
                 <td class="px-6 py-4 text-right">
                     <div class="flex items-center justify-end gap-2">
-                        {{-- El botón editar redirigirá a una pantalla completa a futuro --}}
-                        <a href="#" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 flex items-center justify-center transition-all shadow-sm">
-                            <span class="material-symbols-outlined text-[18px]">edit</span>
-                        </a>
-                        <button onclick="deleteProducto({{ $producto->id }})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50 flex items-center justify-center transition-all shadow-sm">
-                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                        @if($producto->trashed())
+                        {{-- Si está suspendido, solo mostramos el botón de restaurar --}}
+                        <button onclick="restoreProducto({{ $producto->id }})" title="Reactivar Producto" class="w-8 h-8 rounded-lg bg-green-50 border border-green-200 text-green-600 hover:bg-green-600 hover:text-white flex items-center justify-center transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">settings_backup_restore</span>
                         </button>
+                        @else
+                            {{-- Si está activo, mostramos los botones normales de Editar y Suspender --}}
+                            <a href="{{ route('admin.productos.edit', $producto->id) }}" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 flex items-center justify-center transition-all shadow-sm">
+                                <span class="material-symbols-outlined text-[18px]">edit</span>
+                            </a>
+                            
+                            <button onclick="deleteProducto({{ $producto->id }})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-amber-500 hover:border-amber-200 hover:bg-amber-50 flex items-center justify-center transition-all shadow-sm">
+                                <span class="material-symbols-outlined text-[18px]">pause_circle</span>
+                            </button>
+                        @endif
                     </div>
                 </td>
             </tr>

@@ -106,6 +106,8 @@
 
 <div id="toast-container" class="fixed bottom-6 right-6 z-[999] flex flex-col gap-2"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @push('scripts')
 <script>
     let currentSearch = '';
@@ -246,26 +248,59 @@
     }
 
     function deleteCategoria(id) {
-        if(!confirm('¿Estás seguro de eliminar esta categoría?')) return;
-
-        fetch(`/admin/categorias/${id}`, {
-            method: 'DELETE',
-            headers: { 
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                showToast(data.message, 'success');
-                fetchData(1);
-            } else {
-                showToast(data.message, 'error');
-            }
-        })
-        .catch(() => showToast('Error en el servidor', 'error'));
-    }
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Esta acción eliminará la categoría de forma permanente.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444', // Color rojo (red-500 de Tailwind)
+        cancelButtonColor: '#9ca3af', // Color gris (gray-400 de Tailwind)
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            popup: 'rounded-2xl', // Le da bordes redondeados estilo Tailwind
+        }
+    }).then((result) => {
+        // Si el usuario hace clic en "Sí, eliminar"
+        if (result.isConfirmed) {
+            
+            // Hacemos la petición silenciosa a tu controlador
+            fetch(`/admin/categorias/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}', // Vital para la seguridad en Laravel
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Si el controlador devuelve success = true
+                    Swal.fire({
+                        title: '¡Eliminada!',
+                        text: data.message,
+                        icon: 'success',
+                        customClass: { popup: 'rounded-2xl' }
+                    }).then(() => {
+                        location.reload(); // Recarga la página para actualizar la tabla
+                    });
+                } else {
+                    // Si entra en la validación de subcategorías (success = false)
+                    Swal.fire({
+                        title: 'No se pudo eliminar',
+                        text: data.message,
+                        icon: 'error',
+                        customClass: { popup: 'rounded-2xl' }
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire('Error', 'Ocurrió un problema de red.', 'error');
+            });
+        }
+    })
+}
 </script>
 @endpush
 @endsection

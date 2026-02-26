@@ -169,6 +169,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/productos/{id}', [ProductoController::class, 'update'])->name('productos.update'); 
     Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
     Route::post('/productos/{id}/destacado', [ProductoController::class, 'toggleDestacado']);
+    Route::post('/productos/{id}/restore', [ProductoController::class, 'restore'])->name('admin.productos.restore');
 
 //Seccion - Sistema y Ajustes
 

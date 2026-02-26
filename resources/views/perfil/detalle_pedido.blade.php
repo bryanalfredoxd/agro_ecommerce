@@ -91,11 +91,11 @@
                             <div class="p-5 sm:p-6 flex flex-col sm:flex-row gap-5 items-start sm:items-center hover:bg-gray-50/30 transition-colors">
                                 
                                 {{-- Imagen --}}
-                                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-50 rounded-2xl flex-shrink-0 overflow-hidden border border-gray-200 relative p-1.5">
-                                    @if($detalle->producto && $detalle->producto->imagenes->first() && $detalle->producto->imagenes->first()->url_imagen)
-                                        <img src="{{ asset('storage/' . $detalle->producto->imagenes->first()->url_imagen) }}" 
+                                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gray-50 rounded-2xl flex-shrink-0 overflow-hidden border border-gray-200 relative">
+                                    @if($detalle->producto && $detalle->producto->imagen_url)
+                                        <img src="{{ asset($detalle->producto->imagen_url) }}" 
                                             alt="{{ $detalle->producto->nombre ?? 'Producto' }}"
-                                            class="w-full h-full object-contain mix-blend-multiply">
+                                            class="w-full h-full object-cover">
                                     @else
                                         <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
                                             <span class="material-symbols-outlined text-[28px] mb-1">image_not_supported</span>
@@ -245,7 +245,7 @@
 
                         @if($pedido->pago->captura_pago_url)
                         <div class="pt-3">
-                            <button onclick="window.PedidoConfig.abrirModalImagen('{{ asset('storage/' . $pedido->pago->captura_pago_url) }}')" class="w-full py-3.5 bg-blue-50 text-blue-700 rounded-xl text-sm font-bold hover:bg-blue-600 hover:text-white transition-colors border border-blue-200 flex items-center justify-center gap-2 shadow-sm group">
+                            <button onclick="window.PedidoConfig.abrirModalImagen('{{ asset($pedido->pago->captura_pago_url) }}')" class="w-full py-3.5 bg-blue-50 text-blue-700 rounded-xl text-sm font-bold hover:bg-blue-600 hover:text-white transition-colors border border-blue-200 flex items-center justify-center gap-2 shadow-sm group">
                                 <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">image</span> 
                                 Ver Comprobante Adjunto
                             </button>

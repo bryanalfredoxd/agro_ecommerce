@@ -250,11 +250,11 @@
                             <div class="space-y-4 max-h-56 overflow-y-auto custom-scrollbar pr-2 mb-6">
                                 @foreach($carrito as $item)
                                     <div class="flex gap-4 items-center">
-                                        <div class="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0 p-1">
-                                            @if($item->producto->imagenes->first() && $item->producto->imagenes->first()->url_imagen)
-                                                <img src="{{ asset('storage/' . $item->producto->imagenes->first()->url_imagen) }}" 
+                                        <div class="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0">
+                                            @if($item->producto && $item->producto->imagen_url)
+                                                <img src="{{ asset($item->producto->imagen_url) }}" 
                                                     alt="{{ $item->producto->nombre ?? 'Producto' }}"
-                                                    class="w-full h-full object-contain mix-blend-multiply">
+                                                    class="w-full h-full object-cover">
                                             @else
                                                 <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
                                                     <span class="material-symbols-outlined text-[20px] mb-1">image</span>

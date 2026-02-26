@@ -39,7 +39,7 @@
                         {{-- CARGA DE IMAGEN DESDE EL STORAGE PUBLICO --}}
                         @if($producto->imagen_url)
                             <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700 ease-out mix-blend-multiply" 
-                                style="background-image: url('{{ asset('storage/' . $producto->imagen_url) }}');"></div>
+                                style="background-image: url('{{ asset($producto->imagen_url) }}');"></div>
                         @else
                             <div class="w-full h-full flex flex-col items-center justify-center text-gray-300 bg-gray-50">
                                 <span class="material-symbols-outlined text-5xl mb-2">image</span>

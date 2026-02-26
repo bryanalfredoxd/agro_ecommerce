@@ -5,10 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class CategoriaController extends Controller
 {
+    /**
+     * Nombre de la carpeta donde se guardarán las imágenes
+     * Corresponde al nombre de la funcionalidad/controlador
+     */
+    private $uploadFolder = 'categorias';
+    
     public function index(Request $request)
     {
         // Traemos las categorías con su padre para la tabla
@@ -42,8 +48,8 @@ class CategoriaController extends Controller
         $data = $request->only(['nombre', 'categoria_padre_id']);
 
         if ($request->hasFile('imagen')) {
-            // Guarda en storage/app/public/categorias
-            $data['imagen_url'] = $request->file('imagen')->store('categorias', 'public');
+            // Guardar imagen en public/img/upload/categorias/
+            $data['imagen_url'] = $this->uploadImage($request->file('imagen'));
         }
 
         Categoria::create($data);
@@ -57,7 +63,7 @@ class CategoriaController extends Controller
 
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'categoria_padre_id' => 'nullable|exists:categorias,id|not_in:'.$id, // No puede ser padre de sí misma
+            'categoria_padre_id' => 'nullable|exists:categorias,id|not_in:'.$id,
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048'
         ]);
 
@@ -66,9 +72,11 @@ class CategoriaController extends Controller
         if ($request->hasFile('imagen')) {
             // Borrar imagen anterior si existe
             if ($categoria->imagen_url) {
-                Storage::disk('public')->delete($categoria->imagen_url);
+                $this->deleteImage($categoria->imagen_url);
             }
-            $data['imagen_url'] = $request->file('imagen')->store('categorias', 'public');
+            
+            // Guardar nueva imagen
+            $data['imagen_url'] = $this->uploadImage($request->file('imagen'));
         }
 
         $categoria->update($data);
@@ -85,15 +93,48 @@ class CategoriaController extends Controller
             return response()->json(['success' => false, 'message' => 'No puedes eliminar esta categoría porque tiene subcategorías asociadas.']);
         }
 
-        // Opcional: Podrías validar también si tiene productos asociados si tuvieras el modelo Producto
-
         // Eliminar imagen física
         if ($categoria->imagen_url) {
-            Storage::disk('public')->delete($categoria->imagen_url);
+            $this->deleteImage($categoria->imagen_url);
         }
 
         $categoria->delete();
 
         return response()->json(['success' => true, 'message' => 'Categoría eliminada.']);
+    }
+
+    /**
+     * Método privado para subir imágenes
+     * Usa la propiedad $uploadFolder para determinar la carpeta
+     */
+    private function uploadImage($file)
+    {
+        // Definir la carpeta de destino dinámica
+        $destinationPath = public_path('img/upload/' . $this->uploadFolder);
+        
+        // Crear la carpeta si no existe
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0755, true);
+        }
+        
+        // Generar nombre único para la imagen
+        $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        
+        // Mover el archivo a la carpeta destino
+        $file->move($destinationPath, $fileName);
+        
+        // Retornar la ruta relativa para guardar en BD
+        return 'img/upload/' . $this->uploadFolder . '/' . $fileName;
+    }
+
+    /**
+     * Método privado para eliminar imágenes
+     */
+    private function deleteImage($imagePath)
+    {
+        $fullPath = public_path($imagePath);
+        if (File::exists($fullPath)) {
+            File::delete($fullPath);
+        }
     }
 }

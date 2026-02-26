@@ -58,6 +58,7 @@
                             <option value="destacados">⭐ Destacados</option>
                             <option value="combos">📦 Solo Combos</option>
                             <option value="recetados">⚕️ Venta Controlada</option>
+                            <option value="suspendidos">🚫 Suspendidos / Ocultos</option>
                         </select>
                         <span class="material-symbols-outlined absolute right-3 top-3 text-red-400 pointer-events-none">filter_list</span>
                     </div>
@@ -82,6 +83,8 @@
 
 {{-- CONTENEDOR TOAST --}}
 <div id="toast-container" class="fixed bottom-6 right-6 z-[999] flex flex-col gap-2"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @push('scripts')
 <script>
@@ -191,26 +194,91 @@
         .finally(() => btn.disabled = false);
     }
 
-    function deleteProducto(id) {
-        if(!confirm('¿Estás seguro de eliminar este producto? Se ocultará del catálogo y tienda.')) return;
+function deleteProducto(id) {
+        Swal.fire({
+            title: '¿Suspender producto?',
+            text: "El producto se ocultará de la tienda y el catálogo, pero su historial de ventas quedará intacto.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#f59e0b',
+            cancelButtonColor: '#9ca3af',
+            confirmButtonText: 'Sí, suspender producto',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                popup: 'rounded-3xl'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/productos/${id}`, {
+                    method: 'DELETE',
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(async res => {
+                    if (!res.ok) throw new Error('Error en la respuesta del servidor');
+                    return res.json();
+                })
+                .then(data => {
+                    if(data.success) {
+                        showToast('Producto suspendido correctamente.', 'success'); 
+                        fetchData(1);
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al suspender:', error);
+                    showToast('Ocurrió un error al procesar la solicitud.', 'error');
+                });
+            }
+        });
+    } // <--- ¡ESTA LLAVE ES LA QUE FALTABA PARA CERRAR DELETEPRODUCTO!
 
-        fetch(`/admin/productos/${id}`, {
-            method: 'DELETE',
-            headers: { 
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    // Reactivar Producto Suspendido
+    function restoreProducto(id) {
+        Swal.fire({
+            title: '¿Reactivar producto?',
+            text: "El producto volverá a estar visible en el catálogo y disponible para la venta.",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#10b981', // green-500
+            cancelButtonColor: '#9ca3af',
+            confirmButtonText: 'Sí, reactivar',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                popup: 'rounded-3xl'
             }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                showToast(data.message, 'success');
-                fetchData(1);
-            } else {
-                showToast(data.message, 'error');
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/productos/${id}/restore`, {
+                    method: 'POST',
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(async res => {
+                    if (!res.ok) throw new Error('Error en la respuesta del servidor');
+                    return res.json();
+                })
+                .then(data => {
+                    if(data.success) {
+                        showToast(data.message, 'success');
+                        fetchData(1); // Recarga la tabla
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al reactivar:', error);
+                    showToast('Ocurrió un error al procesar la solicitud.', 'error');
+                });
             }
-        })
-        .catch(() => showToast('Error en el servidor', 'error'));
+        });
     }
 </script>
 @endpush

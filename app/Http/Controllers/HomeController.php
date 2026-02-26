@@ -15,7 +15,7 @@ class HomeController extends Controller
     {
         // 1. CATEGORÍAS PRINCIPALES
         $categoriasPrincipales = Categoria::whereNull('categoria_padre_id')
-                                          ->take(6)
+                                          ->take(20)
                                           ->get();
 
         // 2. PRODUCTOS DESTACADOS

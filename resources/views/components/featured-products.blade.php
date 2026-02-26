@@ -23,9 +23,9 @@
                 <div class="relative w-full aspect-[4/3] bg-gray-50 overflow-hidden">
                     
                     @if($producto->imagen_url)
-                        {{-- Usamos asset('storage/...') para renderizar la imagen correctamente --}}
+                        {{-- Usamos asset() directamente para renderizar la imagen desde public/img/upload/productos/ --}}
                         <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700 ease-out mix-blend-multiply" 
-                             style="background-image: url('{{ asset('storage/' . $producto->imagen_url) }}');"></div>
+                            style="background-image: url('{{ asset($producto->imagen_url) }}');"></div>
                     @else
                         <div class="w-full h-full flex flex-col items-center justify-center text-gray-300 bg-gray-50">
                             <span class="material-symbols-outlined text-5xl mb-2">image</span>

@@ -7,9 +7,13 @@ use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Marca;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File; // ¡Añadimos esto!
 
 class ProductoController extends Controller
 {
+    // Nombre de la carpeta destino
+    private $uploadFolder = 'productos';
+
     public function index(Request $request)
     {
         // Traemos los productos con sus relaciones para evitar el problema N+1
@@ -33,6 +37,9 @@ class ProductoController extends Controller
         // 3. Filtro rápido (Stock Crítico, Destacados, Combos, Recetados)
         if ($request->filled('filtro_rapido')) {
             switch ($request->filtro_rapido) {
+                case 'suspendidos':
+                    $query->onlyTrashed(); 
+                    break;
                 case 'critico':
                     $query->whereColumn('stock_total', '<=', 'stock_minimo_alerta');
                     break;
@@ -61,7 +68,6 @@ class ProductoController extends Controller
         return view('admin.productos.index', compact('productos', 'categorias', 'marcas'));
     }
 
-    // Acción rápida: Marcar/Desmarcar como Destacado (Estrella)
     public function toggleDestacado($id)
     {
         $producto = Producto::findOrFail($id);
@@ -72,16 +78,14 @@ class ProductoController extends Controller
         return response()->json(['success' => true, 'message' => $msj]);
     }
 
-    // Borrado lógico
     public function destroy($id)
     {
         $producto = Producto::findOrFail($id);
-        $producto->delete(); // Esto llenará la columna 'eliminado_at' automáticamente gracias al SoftDeletes
+        $producto->delete(); 
 
         return response()->json(['success' => true, 'message' => 'Producto eliminado correctamente del catálogo.']);
     }
 
-    // Mostrar pantalla de Creación
     public function create()
     {
         $categorias = Categoria::orderBy('nombre')->get();
@@ -89,10 +93,8 @@ class ProductoController extends Controller
         return view('admin.productos.form', compact('categorias', 'marcas'));
     }
 
-    // Guardar nuevo producto en la BD
     public function store(Request $request)
     {
-        // Validaciones básicas
         $request->validate([
             'nombre' => 'required|string|max:255',
             'sku' => 'nullable|string|unique:productos,sku',
@@ -103,13 +105,12 @@ class ProductoController extends Controller
 
         $data = $request->except(['imagen', '_token']);
         
-        // Checkboxes (Si no vienen en el request, son false/0)
         $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
 
-        // Subir Imagen
+        // --- CAMBIO AQUÍ ---
         if ($request->hasFile('imagen')) {
-            $data['imagen_url'] = $request->file('imagen')->store('productos', 'public');
+            $data['imagen_url'] = $this->uploadImage($request->file('imagen'));
         }
 
         Producto::create($data);
@@ -117,7 +118,6 @@ class ProductoController extends Controller
         return redirect()->route('admin.productos.index')->with('success', 'Producto creado exitosamente.');
     }
 
-    // Mostrar pantalla de Edición
     public function edit($id)
     {
         $producto = Producto::findOrFail($id);
@@ -127,7 +127,6 @@ class ProductoController extends Controller
         return view('admin.productos.form', compact('producto', 'categorias', 'marcas'));
     }
 
-    // Actualizar producto existente 
     public function update(Request $request, $id)
     {
         $producto = Producto::findOrFail($id);
@@ -145,15 +144,50 @@ class ProductoController extends Controller
         $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
 
+        // --- CAMBIO AQUÍ ---
         if ($request->hasFile('imagen')) {
             if ($producto->imagen_url) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($producto->imagen_url);
+                $this->deleteImage($producto->imagen_url);
             }
-            $data['imagen_url'] = $request->file('imagen')->store('productos', 'public');
+            $data['imagen_url'] = $this->uploadImage($request->file('imagen'));
         }
 
         $producto->update($data);
 
         return redirect()->route('admin.productos.index')->with('success', 'Producto actualizado correctamente.');
+    }
+
+    public function restore($id)
+    {
+        $producto = Producto::withTrashed()->findOrFail($id);
+        $producto->restore(); 
+
+        return response()->json(['success' => true, 'message' => 'Producto reactivado y visible nuevamente.']);
+    }
+
+    // ==========================================
+    // MÉTODOS PRIVADOS PARA IMÁGENES
+    // ==========================================
+
+    private function uploadImage($file)
+    {
+        $destinationPath = public_path('img/upload/' . $this->uploadFolder);
+        
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0755, true);
+        }
+        
+        $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $file->move($destinationPath, $fileName);
+        
+        return 'img/upload/' . $this->uploadFolder . '/' . $fileName;
+    }
+
+    private function deleteImage($imagePath)
+    {
+        $fullPath = public_path($imagePath);
+        if (File::exists($fullPath)) {
+            File::delete($fullPath);
+        }
     }
 }

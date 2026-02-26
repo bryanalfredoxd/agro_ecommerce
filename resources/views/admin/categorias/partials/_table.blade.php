@@ -14,7 +14,7 @@
                 <td class="px-6 py-4">
                     <div class="w-12 h-12 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center shadow-sm">
                         @if($cat->imagen_url)
-                            <img src="{{ asset('storage/' . $cat->imagen_url) }}" alt="{{ $cat->nombre }}" class="w-full h-full object-cover">
+                            <img src="{{ asset($cat->imagen_url) }}" alt="{{ $cat->nombre }}" class="w-full h-full object-cover">
                         @else
                             <span class="material-symbols-outlined text-gray-400">image</span>
                         @endif

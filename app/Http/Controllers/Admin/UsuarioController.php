@@ -68,6 +68,7 @@ class UsuarioController extends Controller
     }
 
     // Guardar los permisos extra de un usuario
+    // Guardar los permisos extra de un usuario
     public function updatePermisosExtra(Request $request, $id)
     {
         $usuario = User::findOrFail($id);
@@ -86,21 +87,24 @@ class UsuarioController extends Controller
         // 2. Borramos todas las excepciones anteriores de este usuario
         PermisoExtraUsuario::where('usuario_id', $id)->delete();
 
-        // 3. Insertamos las nuevas (solo las que sean 'permitir' o 'denegar')
-        if ($request->has('permisos')) {
-            $inserts = [];
-            foreach ($request->permisos as $permiso_id => $accion) {
-                if (in_array($accion, ['permitir', 'denegar'])) {
-                    $inserts[] = [
-                        'usuario_id' => $id,
-                        'permiso_id' => $permiso_id,
-                        'accion'     => $accion
-                    ];
-                }
-            }
-            if (count($inserts) > 0) {
-                PermisoExtraUsuario::insert($inserts);
-            }
+        // 3. Aplicar la nueva lógica: Si está marcado es "permitir", si no, es "denegar"
+        $todosLosPermisos = Permiso::pluck('id')->toArray();
+        $permisosMarcados = $request->input('permisos', []); // Array de IDs marcados (si viene vacío, asume un array vacío)
+
+        $inserts = [];
+        foreach ($todosLosPermisos as $permiso_id) {
+            $accion = in_array($permiso_id, $permisosMarcados) ? 'permitir' : 'denegar';
+            
+            $inserts[] = [
+                'usuario_id' => $id,
+                'permiso_id' => $permiso_id,
+                'accion'     => $accion
+            ];
+        }
+
+        // Guardamos todo de golpe en la base de datos
+        if (count($inserts) > 0) {
+            PermisoExtraUsuario::insert($inserts);
         }
 
         return response()->json(['success' => true, 'message' => 'Configuración actualizada correctamente.']);

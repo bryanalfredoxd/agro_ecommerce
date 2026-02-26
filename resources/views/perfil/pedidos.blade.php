@@ -154,14 +154,14 @@
                                             <div class="space-y-3">
                                                 @foreach($pedido->detalles->take(3) as $detalle)
                                                     <div class="flex items-center gap-4 group/item">
-                                                        <div class="w-14 h-14 bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 relative p-1">
-                                                            @if($detalle->producto && $detalle->producto->imagenes->first() && $detalle->producto->imagenes->first()->url_imagen)
-                                                                <img src="{{ asset('storage/' . $detalle->producto->imagenes->first()->url_imagen) }}" 
+                                                        <div class="w-14 h-14 bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 relative">
+                                                            @if($detalle->producto && $detalle->producto->imagen_url)
+                                                                <img src="{{ asset($detalle->producto->imagen_url) }}" 
                                                                     alt="{{ $detalle->producto->nombre ?? 'Producto' }}"
-                                                                    class="w-full h-full object-contain mix-blend-multiply">
+                                                                    class="w-full h-full object-cover">
                                                             @else
                                                                 <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
-                                                                    <span class="material-symbols-outlined text-[20px] mb-1">image</span>
+                                                                    <span class="material-symbols-outlined text-[20px]">image</span>
                                                                     <span class="text-[8px] font-bold uppercase tracking-widest">Sin Imagen</span>
                                                                 </div>
                                                             @endif

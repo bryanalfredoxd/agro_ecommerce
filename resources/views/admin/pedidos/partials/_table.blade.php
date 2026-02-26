@@ -83,10 +83,11 @@
                             <span class="material-symbols-outlined text-[18px]">sync_alt</span>
                         </button>
                         
-                        {{-- Botón Ver Detalle Completo --}}
+                        {{-- Botón Ver Detalle Completo 
                         <a href="#" class="w-8 h-8 rounded-lg bg-agro-dark border border-transparent text-white hover:bg-black flex items-center justify-center transition-all shadow-sm" title="Ver Detalle del Pedido">
                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                         </a>
+                        --}}
                     </div>
                 </td>
             </tr>
