@@ -28,7 +28,7 @@
                 </div>
             </button>
             
-            {{-- Mini menú de sesión --}}
+            {{-- Mini menú de sesión
             <div class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 hidden group-hover:block z-50">
                 <form method="POST" action="{{ route('logout') }}" class="p-2">
                     @csrf
@@ -38,6 +38,7 @@
                     </button>
                 </form>
             </div>
+             --}}
         </div>
     </div>
 </header>

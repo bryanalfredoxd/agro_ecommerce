@@ -7,19 +7,16 @@ use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Marca;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File; // ¡Añadimos esto!
+use Illuminate\Support\Facades\File;
 
 class ProductoController extends Controller
 {
-    // Nombre de la carpeta destino
     private $uploadFolder = 'productos';
 
     public function index(Request $request)
     {
-        // Traemos los productos con sus relaciones para evitar el problema N+1
         $query = Producto::with(['categoria', 'marca']);
 
-        // 1. Buscador (Nombre, SKU o Código de Barras)
         if ($request->filled('buscar')) {
             $busqueda = $request->buscar;
             $query->where(function($q) use ($busqueda) {
@@ -29,12 +26,10 @@ class ProductoController extends Controller
             });
         }
 
-        // 2. Filtro por Categoría
         if ($request->filled('categoria_id')) {
             $query->where('categoria_id', $request->categoria_id);
         }
 
-        // 3. Filtro rápido (Stock Crítico, Destacados, Combos, Recetados)
         if ($request->filled('filtro_rapido')) {
             switch ($request->filtro_rapido) {
                 case 'suspendidos':
@@ -61,7 +56,6 @@ class ProductoController extends Controller
             return view('admin.productos.partials._table', compact('productos'))->render();
         }
 
-        // Datos para los filtros
         $categorias = Categoria::orderBy('nombre')->get();
         $marcas = Marca::orderBy('nombre')->get();
 
@@ -82,7 +76,6 @@ class ProductoController extends Controller
     {
         $producto = Producto::findOrFail($id);
         $producto->delete(); 
-
         return response()->json(['success' => true, 'message' => 'Producto eliminado correctamente del catálogo.']);
     }
 
@@ -95,26 +88,48 @@ class ProductoController extends Controller
 
     public function store(Request $request)
     {
+        // REGLAS ANTI-BUGS EN EL BACKEND
         $request->validate([
             'nombre' => 'required|string|max:255',
             'sku' => 'nullable|string|unique:productos,sku',
             'precio_venta_usd' => 'required|numeric|min:0',
+            // La oferta debe ser estrictamente MENOR (lt) al precio de venta
+            'precio_oferta_usd' => 'nullable|numeric|min:0|lt:precio_venta_usd',
+            // El costo debe ser MENOR O IGUAL (lte) al precio de venta
+            'costo_promedio_usd' => 'nullable|numeric|min:0|lte:precio_venta_usd',
             'imagen' => 'nullable|image|max:2048',
-            'stock_total' => 'nullable|numeric|min:0'
+            'stock_total' => 'nullable|numeric|min:0',
+            // La alerta nunca puede ser mayor al stock total
+            'stock_minimo_alerta' => 'nullable|numeric|min:0|lte:stock_total',
+            'venta_minima' => 'nullable|numeric|min:0',
+            'paso_venta' => 'nullable|numeric|min:0',
+            'contenido_neto' => 'nullable|numeric|min:0',
+        ], [
+            'precio_oferta_usd.lt' => 'El precio de oferta no puede ser mayor ni igual al precio de venta.',
+            'costo_promedio_usd.lte' => 'El costo promedio no puede ser mayor al precio de venta (pérdida).',
+            'stock_minimo_alerta.lte' => 'La alerta de stock no puede ser mayor al stock físico total.',
         ]);
 
-        $data = $request->except(['imagen', '_token']);
+        $data = $request->except(['imagen', '_token', 'attr_keys', 'attr_values']);
         
         $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
 
-        // --- CAMBIO AQUÍ ---
+        if ($request->has('attr_keys') && is_array($request->attr_keys)) {
+            $atributos = [];
+            foreach ($request->attr_keys as $index => $key) {
+                if (!empty($key) && !empty($request->attr_values[$index])) {
+                    $atributos[$key] = $request->attr_values[$index];
+                }
+            }
+            $data['atributos_json'] = !empty($atributos) ? json_encode($atributos) : null;
+        }
+
         if ($request->hasFile('imagen')) {
             $data['imagen_url'] = $this->uploadImage($request->file('imagen'));
         }
 
         Producto::create($data);
-
         return redirect()->route('admin.productos.index')->with('success', 'Producto creado exitosamente.');
     }
 
@@ -123,7 +138,6 @@ class ProductoController extends Controller
         $producto = Producto::findOrFail($id);
         $categorias = Categoria::orderBy('nombre')->get();
         $marcas = Marca::orderBy('nombre')->get();
-        
         return view('admin.productos.form', compact('producto', 'categorias', 'marcas'));
     }
 
@@ -135,16 +149,37 @@ class ProductoController extends Controller
             'nombre' => 'required|string|max:255',
             'sku' => 'nullable|string|unique:productos,sku,'.$id,
             'precio_venta_usd' => 'required|numeric|min:0',
+            'precio_oferta_usd' => 'nullable|numeric|min:0|lt:precio_venta_usd',
+            'costo_promedio_usd' => 'nullable|numeric|min:0|lte:precio_venta_usd',
             'imagen' => 'nullable|image|max:2048',
-            'stock_total' => 'nullable|numeric|min:0'
+            'stock_total' => 'nullable|numeric|min:0',
+            'stock_minimo_alerta' => 'nullable|numeric|min:0|lte:stock_total',
+            'venta_minima' => 'nullable|numeric|min:0',
+            'paso_venta' => 'nullable|numeric|min:0',
+            'contenido_neto' => 'nullable|numeric|min:0',
+        ], [
+            'precio_oferta_usd.lt' => 'El precio de oferta no puede ser mayor ni igual al precio de venta.',
+            'costo_promedio_usd.lte' => 'El costo promedio no puede ser mayor al precio de venta (pérdida).',
+            'stock_minimo_alerta.lte' => 'La alerta de stock no puede ser mayor al stock físico total.',
         ]);
 
-        $data = $request->except(['imagen', '_token', '_method']);
+        $data = $request->except(['imagen', '_token', '_method', 'attr_keys', 'attr_values']);
         
         $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
 
-        // --- CAMBIO AQUÍ ---
+        if ($request->has('attr_keys') && is_array($request->attr_keys)) {
+            $atributos = [];
+            foreach ($request->attr_keys as $index => $key) {
+                if (!empty($key) && !empty($request->attr_values[$index])) {
+                    $atributos[$key] = $request->attr_values[$index];
+                }
+            }
+            $data['atributos_json'] = !empty($atributos) ? json_encode($atributos) : null;
+        } else {
+             $data['atributos_json'] = null; 
+        }
+
         if ($request->hasFile('imagen')) {
             if ($producto->imagen_url) {
                 $this->deleteImage($producto->imagen_url);
@@ -153,7 +188,6 @@ class ProductoController extends Controller
         }
 
         $producto->update($data);
-
         return redirect()->route('admin.productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 
@@ -161,33 +195,22 @@ class ProductoController extends Controller
     {
         $producto = Producto::withTrashed()->findOrFail($id);
         $producto->restore(); 
-
-        return response()->json(['success' => true, 'message' => 'Producto reactivado y visible nuevamente.']);
+        return response()->json(['success' => true, 'message' => 'Producto reactivado.']);
     }
-
-    // ==========================================
-    // MÉTODOS PRIVADOS PARA IMÁGENES
-    // ==========================================
 
     private function uploadImage($file)
     {
         $destinationPath = public_path('img/upload/' . $this->uploadFolder);
-        
-        if (!File::exists($destinationPath)) {
-            File::makeDirectory($destinationPath, 0755, true);
-        }
+        if (!File::exists($destinationPath)) File::makeDirectory($destinationPath, 0755, true);
         
         $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
         $file->move($destinationPath, $fileName);
-        
         return 'img/upload/' . $this->uploadFolder . '/' . $fileName;
     }
 
     private function deleteImage($imagePath)
     {
         $fullPath = public_path($imagePath);
-        if (File::exists($fullPath)) {
-            File::delete($fullPath);
-        }
+        if (File::exists($fullPath)) File::delete($fullPath);
     }
 }

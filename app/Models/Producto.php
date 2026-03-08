@@ -30,8 +30,13 @@ class Producto extends Model
         'destacado' => 'boolean',
         'atributos_json' => 'array',
         'precio_venta_usd' => 'decimal:2',
-        'stock_total' => 'decimal:3',
-        'stock_minimo_alerta' => 'decimal:3',
+        'precio_oferta_usd' => 'decimal:2',
+        'costo_promedio_usd' => 'decimal:2',
+        'contenido_neto' => 'decimal:3',
+        'stock_total',  
+        'stock_minimo_alerta', 
+        'venta_minima' => 'decimal:3',   
+        'paso_venta' => 'decimal:3',    
     ];
 
     // ==========================================

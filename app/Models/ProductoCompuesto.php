@@ -17,7 +17,7 @@ class ProductoCompuesto extends Model
     ];
 
     protected $casts = [
-        'cantidad_requerida' => 'decimal:3'
+        'cantidad_requerida' => 'decimal:2'
     ];
 
     public function productoPadre(): BelongsTo
