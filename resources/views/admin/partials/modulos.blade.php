@@ -35,7 +35,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('crear_venta_manual'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-600 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
+                    <a href="{{ route('admin.pos.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-600 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">point_of_sale</span> Venta Manual (POS)
                     </a>
                     @endif

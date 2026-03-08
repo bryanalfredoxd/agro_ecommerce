@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\ProductoController;
 use App\Http\Controllers\Admin\HorarioadminController;
 use App\Http\Controllers\Admin\PedidoController;
 use App\Http\Controllers\Admin\PagoController;
+use App\Http\Controllers\Admin\PosController;
 
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
@@ -190,5 +191,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
     Route::post('/pagos/{id}/aprobar', [PagoController::class, 'aprobar'])->name('pagos.aprobar');
     Route::post('/pagos/{id}/rechazar', [PagoController::class, 'rechazar'])->name('pagos.rechazar');
+
+    //Pantalla - Terminal POS (Punto de Venta)
+    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+    Route::post('/pos/abrir-caja', [PosController::class, 'abrirCaja'])->name('pos.abrirCaja');
+    Route::post('/pos/buscar-producto', [PosController::class, 'buscarProducto']); 
+    Route::post('/pos/procesar-venta', [PosController::class, 'procesarVenta']);
+    Route::post('/pos/cerrar-caja', [PosController::class, 'cerrarCaja']);
 
 });

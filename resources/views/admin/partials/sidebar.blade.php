@@ -49,7 +49,7 @@
                         <a href="{{ route('admin.pagos.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Gestión de Pagos</a>
                     @endif
                     @if(Auth::user()->tienePermiso('crear_venta_manual'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Nueva Venta Manual</a>
+                        <a href="{{ route('admin.pos.index') }}" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Nueva Venta Manual</a>
                     @endif
                     @if(Auth::user()->tienePermiso('procesar_devoluciones'))
                         <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Devoluciones</a>
