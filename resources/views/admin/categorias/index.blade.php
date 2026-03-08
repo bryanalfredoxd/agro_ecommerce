@@ -14,13 +14,26 @@
             
             {{-- Encabezado --}}
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div>
-                    <h2 class="text-2xl font-black text-agro-dark flex items-center gap-2">
-                        <span class="material-symbols-outlined text-green-600 text-[32px]">category</span>
-                        Jerarquía de Categorías
-                    </h2>
-                    <p class="text-sm text-gray-500 mt-1">Administra la estructura del catálogo, imágenes y subcategorías.</p>
+
+                {{-- Contenedor Flex para alinear el botón y los textos horizontalmente --}}
+                <div class="flex items-center gap-4">
+                        
+                    {{-- Botón Retroceder --}}
+                    <a href="{{ route('admin.dashboard') }}" class="w-10 h-10 flex-shrink-0 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-200 transition-colors shadow-sm">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </a>
+                    
+                    {{-- Textos (Título y Subtítulo) --}}
+                    <div>
+                        <h2 class="text-2xl font-black text-agro-dark flex items-center gap-2">
+                            <span class="material-symbols-outlined text-green-600 text-[32px]">category</span>
+                            Jerarquía de Categorías
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1">Administra la estructura del catálogo, imágenes y subcategorías.</p>
+                    </div>
+    
                 </div>
+
                 <button onclick="openModal()" class="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-green-700 hover:shadow-lg hover:shadow-green-500/30 transition-all transform hover:-translate-y-0.5">
                     <span class="material-symbols-outlined text-[20px]">add_circle</span>
                     Nueva Categoría

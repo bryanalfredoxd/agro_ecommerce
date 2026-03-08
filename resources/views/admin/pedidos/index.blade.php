@@ -68,7 +68,7 @@
 </div>
 
 {{-- ========================================== --}}
-{{-- MODAL CAMBIO RÁPIDO DE ESTADO              --}}
+{{-- MODAL ESTADO LOGÍSTICO                     --}}
 {{-- ========================================== --}}
 <div id="statusModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="statusBackdrop" onclick="closeStatusModal()"></div>
@@ -77,7 +77,7 @@
         <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-sm opacity-0 scale-95 flex flex-col" id="statusPanel">
             
             <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 class="text-lg font-black text-agro-dark leading-none">Cambiar Estado</h3>
+                <h3 class="text-lg font-black text-agro-dark leading-none">Despacho y Logística</h3>
                 <button type="button" onclick="closeStatusModal()" class="text-gray-400 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
@@ -87,29 +87,73 @@
                 <input type="hidden" id="pedido_id">
                 
                 <div class="p-6">
-                    <p class="text-xs text-gray-500 mb-4 bg-amber-50 p-3 rounded-xl border border-amber-100 text-amber-800">
-                        <span class="font-bold">Aviso:</span> Al cambiar a "Pagado" o "Devuelto", el inventario se ajustará automáticamente por el sistema.
-                    </p>
-                    
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nuevo Estado del Pedido</label>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Fase Operativa del Pedido</label>
                     <select id="estado_select" name="estado" required class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-agro-dark outline-none cursor-pointer appearance-none">
-                        <option value="pendiente">Pendiente</option>
-                        <option value="pagado">Pagado (Aprobado)</option>
+                        {{-- Logística SOLO ve lo que le interesa --}}
                         <option value="preparacion">En Preparación / Empaque</option>
-                        <option value="en_ruta">En Ruta (Despacho)</option>
-                        <option value="entregado">Entregado al Cliente</option>
-                        <option value="devuelto">Devuelto (Reintegro Stock)</option>
-                        <option value="cancelado">Cancelado</option>
+                        <option value="en_ruta">En Ruta (Con Repartidor)</option>
+                        <option value="entregado">Entregado al Cliente ✅</option>
+                        <option value="cancelado" class="text-red-500 font-bold">Cancelar Pedido (Sin Stock)</option>
                     </select>
                 </div>
 
                 <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-                    <button type="button" onclick="closeStatusModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-sm">Cancelar</button>
-                    <button type="submit" id="btnSaveStatus" class="px-6 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-sm flex items-center gap-2 transition-all">
-                        <span class="material-symbols-outlined text-[18px]">save</span> Actualizar
+                    <button type="button" onclick="closeStatusModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-sm">Cerrar</button>
+                    <button type="submit" id="btnSaveStatus" class="px-6 py-2.5 rounded-xl font-black text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-sm flex items-center gap-2 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">local_shipping</span> Actualizar
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+{{-- ========================================== --}}
+{{-- MODAL VER DETALLE (ORDEN DE DESPACHO)      --}}
+{{-- ========================================== --}}
+<div id="detalleModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="detalleBackdrop" onclick="closeDetalleModal()"></div>
+    
+    <div class="fixed inset-0 z-10 flex justify-center items-center p-4 sm:p-0">
+        <div class="relative transform overflow-hidden sm:rounded-3xl rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-2xl max-h-[90vh] flex flex-col opacity-0 scale-95" id="detallePanel">
+            
+            {{-- Header --}}
+            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-agro-dark text-white flex items-center justify-center shadow-sm">
+                        <span class="material-symbols-outlined">inventory_2</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-agro-dark leading-none">Orden de Despacho</h3>
+                        <p class="text-xs text-gray-400 font-bold mt-1" id="detalle_pedido_titulo">Pedido #000000</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeDetalleModal()" class="text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-xl transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            {{-- Contenedor donde se inyecta el HTML de _detalles.blade.php --}}
+            <div id="detalleContent" class="overflow-y-auto custom-scrollbar flex-1 relative">
+                {{-- Loader interno --}}
+                <div id="detalleLoader" class="absolute inset-0 bg-white z-10 flex flex-col items-center justify-center p-12">
+                    <span class="material-symbols-outlined animate-spin text-blue-600 text-4xl mb-4">autorenew</span>
+                    <p class="font-bold text-gray-500">Cargando orden...</p>
+                </div>
+                
+                {{-- Aquí va el HTML inyectado --}}
+                <div id="detalleInyectado"></div>
+            </div>
+            
+            {{-- Footer --}}
+            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end">
+                <button type="button" onclick="window.print()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-sm flex items-center gap-2 mr-auto hidden sm:flex">
+                    <span class="material-symbols-outlined text-[18px]">print</span> Imprimir Orden
+                </button>
+                <button type="button" onclick="closeDetalleModal()" class="px-6 py-2.5 rounded-xl font-black text-white bg-agro-dark hover:bg-black shadow-sm text-sm transition-all">
+                    Entendido
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -119,12 +163,12 @@
 
 @push('scripts')
 <script>
-    // ESTADO PARA AJAX
+    // VARIABLES AJAX
     let currentFiltroEstado = 'todos';
     let currentSearch = '';
     let searchTimeout;
 
-    // EVENTOS DE LOS CONTROLES (Tabs)
+    // TABS
     document.querySelectorAll('.status-tab').forEach(tab => {
         tab.addEventListener('click', function() {
             document.querySelectorAll('.status-tab').forEach(t => {
@@ -133,20 +177,19 @@
             });
             this.classList.remove('border-transparent', 'text-gray-400');
             this.classList.add('border-primary', 'text-agro-dark', 'active');
-            
             currentFiltroEstado = this.getAttribute('data-estado');
             fetchData(1);
         });
     });
 
-    // Buscador
+    // BUSCADOR
     document.getElementById('searchInput').addEventListener('input', function() {
         clearTimeout(searchTimeout);
         currentSearch = this.value;
-        searchTimeout = setTimeout(() => fetchData(1), 400); // 400ms debounce
+        searchTimeout = setTimeout(() => fetchData(1), 400); 
     });
 
-    // Paginación AJAX
+    // PAGINACIÓN
     document.addEventListener('click', function(e) {
         if (e.target.closest('.ajax-pagination a')) {
             e.preventDefault();
@@ -154,25 +197,16 @@
         }
     });
 
-    // Petición AJAX principal
     function fetchData(page = 1) {
         const loading = document.getElementById('loadingOverlay');
         loading.classList.remove('hidden');
         loading.classList.add('flex');
 
-        const params = new URLSearchParams({
-            filtro_estado: currentFiltroEstado,
-            buscar: currentSearch,
-            page: page
-        });
+        const params = new URLSearchParams({ filtro_estado: currentFiltroEstado, buscar: currentSearch, page: page });
 
-        fetch(`{{ route('admin.pedidos.index') }}?${params.toString()}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
+        fetch(`{{ route('admin.pedidos.index') }}?${params.toString()}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
         .then(response => response.text())
-        .then(html => {
-            document.getElementById('tableContent').innerHTML = html;
-        })
+        .then(html => { document.getElementById('tableContent').innerHTML = html; })
         .finally(() => {
             loading.classList.add('hidden');
             loading.classList.remove('flex');
@@ -180,11 +214,15 @@
     }
 
     // ==========================================
-    // LÓGICA DEL MODAL DE ESTADO
+    // MODAL: ESTADO LOGÍSTICO
     // ==========================================
     function openStatusModal(id, estadoActual) {
         document.getElementById('pedido_id').value = id;
-        document.getElementById('estado_select').value = estadoActual;
+        
+        // Si el estado no está en el select (porque es un estado nuevo como 'pagado'), lo forzamos a 'preparacion' visualmente
+        const select = document.getElementById('estado_select');
+        let optionExists = Array.from(select.options).some(opt => opt.value === estadoActual);
+        select.value = optionExists ? estadoActual : 'preparacion';
 
         const modal = document.getElementById('statusModal');
         const backdrop = document.getElementById('statusBackdrop');
@@ -209,28 +247,10 @@
         setTimeout(() => modal.classList.add('hidden'), 300);
     }
 
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
-        const icon = type === 'success' ? 'check_circle' : 'error';
-
-        toast.className = `flex items-center gap-3 px-5 py-4 rounded-xl shadow-2xl text-white transform translate-y-10 opacity-0 transition-all duration-300 ${bgColor}`;
-        toast.innerHTML = `<span class="material-symbols-outlined">${icon}</span><p class="font-bold text-sm">${message}</p>`;
-
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
-        setTimeout(() => {
-            toast.classList.add('translate-y-10', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-
     function saveStatus(e) {
         e.preventDefault();
         const id = document.getElementById('pedido_id').value;
         const estado = document.getElementById('estado_select').value;
-        
         const btn = document.getElementById('btnSaveStatus');
         const originalText = btn.innerHTML;
         
@@ -252,19 +272,81 @@
             return data;
         })
         .then(data => {
-            if(data.success) {
-                closeStatusModal();
-                showToast(data.message, 'success');
-                fetchData(1); // Recargamos la tabla para ver el nuevo badge
-            }
+            closeStatusModal();
+            showToast(data.message, 'success');
+            fetchData(1); 
         })
-        .catch(err => {
-            showToast(err.message, 'error');
-        })
+        .catch(err => { showToast(err.message, 'error'); })
         .finally(() => {
             btn.innerHTML = originalText;
             btn.disabled = false;
         });
+    }
+
+    // ==========================================
+    // MODAL: VER DETALLE DEL PEDIDO (NUEVO)
+    // ==========================================
+    function verDetallePedido(id) {
+        const modal = document.getElementById('detalleModal');
+        const backdrop = document.getElementById('detalleBackdrop');
+        const panel = document.getElementById('detallePanel');
+        const loader = document.getElementById('detalleLoader');
+        const content = document.getElementById('detalleInyectado');
+        
+        document.getElementById('detalle_pedido_titulo').innerText = `Pedido #${String(id).padStart(6, '0')}`;
+        
+        // Mostrar Modal y Loader
+        content.innerHTML = '';
+        loader.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            backdrop.classList.remove('opacity-0');
+            panel.classList.remove('opacity-0', 'scale-95');
+            panel.classList.add('opacity-100', 'scale-100');
+        }, 10);
+
+        // Fetch de los datos vía AJAX
+        fetch(`/admin/pedidos/${id}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(html => {
+            content.innerHTML = html;
+            loader.classList.add('hidden');
+        })
+        .catch(err => {
+            content.innerHTML = `<div class="p-8 text-center text-red-500 font-bold"><span class="material-symbols-outlined text-4xl mb-2">error</span><br>Error al cargar la orden de despacho.</div>`;
+            loader.classList.add('hidden');
+        });
+    }
+
+    function closeDetalleModal() {
+        const modal = document.getElementById('detalleModal');
+        const backdrop = document.getElementById('detalleBackdrop');
+        const panel = document.getElementById('detallePanel');
+
+        backdrop.classList.add('opacity-0');
+        panel.classList.remove('opacity-100', 'scale-100');
+        panel.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    // TOAST NOTIFICATIONS
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+        const icon = type === 'success' ? 'check_circle' : 'error';
+
+        toast.className = `flex items-center gap-3 px-5 py-4 rounded-xl shadow-2xl text-white transform translate-y-10 opacity-0 transition-all duration-300 ${bgColor}`;
+        toast.innerHTML = `<span class="material-symbols-outlined">${icon}</span><p class="font-bold text-sm">${message}</p>`;
+
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
+        setTimeout(() => {
+            toast.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 </script>
 @endpush

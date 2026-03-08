@@ -75,19 +75,25 @@
                     </span>
                 </td>
 
-                {{-- Columna 5: Acciones (Botones directos, sin solapamientos) --}}
+                {{-- Columna 5: Acciones --}}
                 <td class="px-6 py-4 text-right">
                     <div class="flex items-center justify-end gap-2">
-                        {{-- Botón Cambiar Estado Rápido --}}
-                        <button onclick="openStatusModal({{ $pedido->id }}, '{{ $pedido->estado }}')" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 flex items-center justify-center transition-all shadow-sm" title="Cambiar Estado">
-                            <span class="material-symbols-outlined text-[18px]">sync_alt</span>
-                        </button>
                         
-                        {{-- Botón Ver Detalle Completo 
-                        <a href="#" class="w-8 h-8 rounded-lg bg-agro-dark border border-transparent text-white hover:bg-black flex items-center justify-center transition-all shadow-sm" title="Ver Detalle del Pedido">
+                        {{-- Botón Cambiar Estado (Lógica de Permisos Visual) --}}
+                        @if($pedido->estado === 'pendiente')
+                            <button disabled class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 text-gray-300 flex items-center justify-center cursor-not-allowed" title="Esperando Pago">
+                                <span class="material-symbols-outlined text-[16px]">lock</span>
+                            </button>
+                        @elseif(!in_array($pedido->estado, ['entregado', 'completado_caja', 'devuelto', 'cancelado']))
+                            <button onclick="openStatusModal({{ $pedido->id }}, '{{ $pedido->estado }}')" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 flex items-center justify-center transition-all shadow-sm" title="Cambiar Estado Logístico">
+                                <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+                            </button>
+                        @endif
+                        
+                        {{-- Botón Ver Detalle / Orden de Despacho --}}
+                        <button onclick="verDetallePedido({{ $pedido->id }})" class="w-8 h-8 rounded-lg bg-agro-dark border border-transparent text-white hover:bg-black flex items-center justify-center transition-all shadow-sm shadow-black/20" title="Ver Orden de Despacho">
                             <span class="material-symbols-outlined text-[18px]">visibility</span>
-                        </a>
-                        --}}
+                        </button>
                     </div>
                 </td>
             </tr>
