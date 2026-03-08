@@ -17,21 +17,38 @@ class CategoriaController extends Controller
     
     public function index(Request $request)
     {
-        // Traemos las categorías con su padre para la tabla
         $query = Categoria::with('padre');
 
+        // 1. Buscador
         if ($request->filled('buscar')) {
             $query->where('nombre', 'LIKE', "%{$request->buscar}%");
         }
 
+        // 2. Filtro de Estado (Activas / Deshabilitadas)
+        if ($request->filled('estado')) {
+            if ($request->estado === 'deshabilitadas') {
+                $query->onlyTrashed();
+            } elseif ($request->estado === 'todas') {
+                $query->withTrashed();
+            }
+        }
+
+        // 3. Filtro de Tipo (Jerarquía)
+        if ($request->filled('tipo') && $request->tipo !== 'todas') {
+            if ($request->tipo === 'principales') {
+                $query->whereNull('categoria_padre_id');
+            } elseif ($request->tipo === 'subcategorias') {
+                $query->whereNotNull('categoria_padre_id');
+            }
+        }
+
         $categorias = $query->orderBy('categoria_padre_id', 'asc')->orderBy('nombre', 'asc')->paginate(10);
 
-        // Si es petición AJAX, devolvemos solo la tabla
         if ($request->ajax()) {
             return view('admin.categorias.partials._table', compact('categorias'))->render();
         }
 
-        // Para el select del Modal (Solo categorías principales o todas, elegimos todas para flexibilidad)
+        // Para el select del Modal (Obtenemos activas para no asignar padres borrados)
         $categoriasPadre = Categoria::orderBy('nombre')->get();
 
         return view('admin.categorias.index', compact('categorias', 'categoriasPadre'));
@@ -88,19 +105,32 @@ class CategoriaController extends Controller
     {
         $categoria = Categoria::findOrFail($id);
 
-        // Validar que no tenga subcategorías antes de eliminar
         if ($categoria->subcategorias()->count() > 0) {
-            return response()->json(['success' => false, 'message' => 'No puedes eliminar esta categoría porque tiene subcategorías asociadas.']);
+            return response()->json(['success' => false, 'message' => 'No puedes deshabilitar esta categoría porque tiene subcategorías activas.']);
         }
 
-        // Eliminar imagen física
-        if ($categoria->imagen_url) {
-            $this->deleteImage($categoria->imagen_url);
+        // YA NO ELIMINAMOS LA IMAGEN FÍSICA
+        $categoria->delete(); // Hace el SoftDelete (llena la columna eliminado_at)
+
+        return response()->json(['success' => true, 'message' => 'Categoría deshabilitada correctamente.']);
+    }
+
+    public function restore($id)
+    {
+        // Buscamos la categoría incluso si está borrada
+        $categoria = Categoria::withTrashed()->findOrFail($id);
+        
+        // Si es una subcategoría, verificamos que su padre no esté eliminado
+        if ($categoria->categoria_padre_id) {
+            $padre = Categoria::withTrashed()->find($categoria->categoria_padre_id);
+            if ($padre && $padre->trashed()) {
+                return response()->json(['success' => false, 'message' => 'No puedes reactivar esta subcategoría porque su categoría padre está deshabilitada.']);
+            }
         }
 
-        $categoria->delete();
+        $categoria->restore(); // Reactiva la categoría (vuelve eliminado_at a NULL)
 
-        return response()->json(['success' => true, 'message' => 'Categoría eliminada.']);
+        return response()->json(['success' => true, 'message' => 'Categoría reactivada y visible en la tienda.']);
     }
 
     /**

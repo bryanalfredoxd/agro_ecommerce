@@ -10,9 +10,9 @@
         </thead>
         <tbody class="divide-y divide-gray-50">
             @forelse($categorias as $cat)
-            <tr class="hover:bg-gray-50/50 transition-colors group">
+            <tr class="hover:bg-gray-50/50 transition-colors group {{ $cat->trashed() ? 'opacity-60 bg-gray-50/30' : '' }}">
                 <td class="px-6 py-4">
-                    <div class="w-12 h-12 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center shadow-sm {{ $cat->trashed() ? 'grayscale' : '' }}">
                         @if($cat->imagen_url)
                             <img src="{{ asset($cat->imagen_url) }}" alt="{{ $cat->nombre }}" class="w-full h-full object-cover">
                         @else
@@ -21,14 +21,19 @@
                     </div>
                 </td>
                 <td class="px-6 py-4">
-                    <p class="font-bold text-agro-dark capitalize text-base">{{ $cat->nombre }}</p>
+                    <p class="font-bold text-agro-dark capitalize text-base flex items-center gap-2">
+                        <span class="{{ $cat->trashed() ? 'line-through text-gray-400' : '' }}">{{ $cat->nombre }}</span>
+                        @if($cat->trashed())
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black bg-red-100 text-red-600 uppercase tracking-widest">Inactiva</span>
+                        @endif
+                    </p>
                     <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">ID: {{ $cat->id }}</p>
                 </td>
                 <td class="px-6 py-4">
                     @if($cat->padre)
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 text-[11px] font-bold rounded-lg border border-green-100">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 {{ $cat->trashed() ? 'bg-gray-100 text-gray-500 border-gray-200' : 'bg-green-50 text-green-700 border-green-100' }} text-[11px] font-bold rounded-lg border">
                             <span class="material-symbols-outlined text-[14px]">subdirectory_arrow_right</span>
-                            Subcategoría de: {{ $cat->padre->nombre }}
+                            Sub de: {{ $cat->padre->nombre }}
                         </span>
                     @else
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-600 text-[11px] font-bold rounded-lg border border-gray-200">
@@ -39,20 +44,29 @@
                 </td>
                 <td class="px-6 py-4 text-right">
                     <div class="flex items-center justify-end gap-2">
-                        <button onclick="openModal({{ $cat->toJson() }})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 flex items-center justify-center transition-all shadow-sm">
-                            <span class="material-symbols-outlined text-[18px]">edit</span>
-                        </button>
-                        <button onclick="deleteCategoria({{ $cat->id }})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50 flex items-center justify-center transition-all shadow-sm">
-                            <span class="material-symbols-outlined text-[18px]">delete</span>
-                        </button>
+                        @if($cat->trashed())
+                            {{-- Botón Reactivar si está deshabilitada --}}
+                            <button onclick="restoreCategoria({{ $cat->id }})" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-50 border border-green-200 text-green-700 hover:bg-green-600 hover:text-white font-bold text-xs transition-all shadow-sm">
+                                <span class="material-symbols-outlined text-[16px]">restore</span> Reactivar
+                            </button>
+                        @else
+                            {{-- Botones normales si está activa --}}
+                            <button onclick="openModal({{ $cat->toJson() }})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 flex items-center justify-center transition-all shadow-sm" title="Editar">
+                                <span class="material-symbols-outlined text-[18px]">edit</span>
+                            </button>
+                            <button onclick="deleteCategoria({{ $cat->id }})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-orange-600 hover:border-orange-200 hover:bg-orange-50 flex items-center justify-center transition-all shadow-sm" title="Deshabilitar">
+                                <span class="material-symbols-outlined text-[18px]">block</span>
+                            </button>
+                        @endif
                     </div>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                <td colspan="4" class="px-6 py-16 text-center text-gray-500">
                     <span class="material-symbols-outlined text-4xl mb-2 text-gray-300">category</span>
-                    <p class="font-bold">No hay categorías registradas</p>
+                    <p class="font-bold text-gray-600">No hay categorías registradas</p>
+                    <p class="text-xs mt-1">Prueba ajustando los filtros.</p>
                 </td>
             </tr>
             @endforelse

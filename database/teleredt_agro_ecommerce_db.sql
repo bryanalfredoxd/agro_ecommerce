@@ -198,7 +198,8 @@ CREATE TABLE `categorias` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) DEFAULT NULL,
   `imagen_url` varchar(255) DEFAULT NULL,
-  `categoria_padre_id` int(11) DEFAULT NULL
+  `categoria_padre_id` int(11) DEFAULT NULL,
+  `eliminado_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------

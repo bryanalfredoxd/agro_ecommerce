@@ -153,6 +153,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store');
     Route::post('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
     Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
+    Route::post('/categorias/{id}/restore', [CategoriaController::class, 'restore'])->name('categorias.restore');
 
     //Pantalla - Marcas
     Route::get('/marcas', [MarcaController::class, 'index'])->name('marcas.index');

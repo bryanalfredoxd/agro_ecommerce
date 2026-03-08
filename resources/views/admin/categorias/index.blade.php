@@ -27,11 +27,35 @@
                 </button>
             </div>
 
-            {{-- Buscador --}}
-            <div class="bg-white rounded-t-3xl shadow-sm border border-gray-100 p-4 flex gap-4 relative z-10">
+            {{-- Barra de Filtros Avanzados --}}
+            <div class="bg-white rounded-t-3xl shadow-sm border border-gray-100 p-4 sm:p-5 flex flex-col xl:flex-row gap-4 relative z-10">
+                
+                {{-- Buscador --}}
                 <div class="flex-1 relative">
                     <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
                     <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none font-medium text-agro-dark" placeholder="Buscar categoría por nombre...">
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    {{-- Filtro Jerarquía --}}
+                    <div class="w-full sm:w-48 relative">
+                        <select id="typeSelect" class="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none font-bold text-gray-600 appearance-none cursor-pointer">
+                            <option value="todas">Cualquier tipo</option>
+                            <option value="principales">Solo Principales</option>
+                            <option value="subcategorias">Solo Subcategorías</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">account_tree</span>
+                    </div>
+
+                    {{-- Filtro Estado (Soft Deletes) --}}
+                    <div class="w-full sm:w-48 relative">
+                        <select id="statusSelect" class="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none font-bold text-gray-600 appearance-none cursor-pointer">
+                            <option value="activas">Activas (Visibles)</option>
+                            <option value="deshabilitadas">Deshabilitadas (Borradas)</option>
+                            <option value="todas">Mostrar Todas</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">filter_list</span>
+                    </div>
                 </div>
             </div>
 
@@ -111,13 +135,32 @@
 @push('scripts')
 <script>
     let currentSearch = '';
+    let currentType = 'todas';
+    let currentStatus = 'activas';
     let searchTimeout;
 
-    // Buscador AJAX
+    // Listeners de Filtros
     document.getElementById('searchInput').addEventListener('input', function() {
         clearTimeout(searchTimeout);
         currentSearch = this.value;
         searchTimeout = setTimeout(() => fetchData(1), 400);
+    });
+
+    document.getElementById('typeSelect').addEventListener('change', function() {
+        currentType = this.value;
+        fetchData(1);
+    });
+
+    document.getElementById('statusSelect').addEventListener('change', function() {
+        currentStatus = this.value;
+        if(this.value === 'deshabilitadas') {
+            this.classList.replace('bg-gray-50', 'bg-red-50');
+            this.classList.replace('text-gray-600', 'text-red-600');
+        } else {
+            this.classList.replace('bg-red-50', 'bg-gray-50');
+            this.classList.replace('text-red-600', 'text-gray-600');
+        }
+        fetchData(1);
     });
 
     // Paginación AJAX
@@ -133,7 +176,14 @@
         loading.classList.remove('hidden');
         loading.classList.add('flex');
 
-        fetch(`{{ route('admin.categorias.index') }}?buscar=${currentSearch}&page=${page}`, {
+        const params = new URLSearchParams({
+            buscar: currentSearch,
+            tipo: currentType,
+            estado: currentStatus,
+            page: page
+        });
+
+        fetch(`{{ route('admin.categorias.index') }}?${params.toString()}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(res => res.text())
@@ -144,9 +194,7 @@
         });
     }
 
-    // ==========================================
-    // LÓGICA DEL MODAL Y FORMULARIO (FormData)
-    // ==========================================
+    // Funciones del Modal y Notificaciones
     function openModal(categoria = null) {
         const form = document.getElementById('categoriaForm');
         form.reset();
@@ -182,6 +230,7 @@
         setTimeout(() => modal.classList.add('hidden'), 300);
     }
 
+    // Usamos el Toast estándar para respuestas del servidor
     function showToast(message, type = 'success') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -208,18 +257,11 @@
         btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">autorenew</span> Guardando...';
         btn.disabled = true;
 
-        // IMPORTANTE: Usamos FormData porque hay un campo <input type="file">
         const formData = new FormData(e.target);
-        
-        let url = `{{ route('admin.categorias.store') }}`;
-        
-        // Si es edición, apuntamos a la URL de update
-        if (id) {
-            url = `/admin/categorias/${id}`;
-        }
+        let url = id ? `/admin/categorias/${id}` : `{{ route('admin.categorias.store') }}`;
 
         fetch(url, {
-            method: 'POST', // Siempre enviamos por POST con FormData
+            method: 'POST',
             body: formData,
             headers: { 
                 'X-Requested-With': 'XMLHttpRequest',
@@ -236,71 +278,72 @@
         .then(data => {
             closeModal();
             showToast(data.message, 'success');
-            fetchData(1); // Recargar la tabla
+            fetchData(1);
         })
-        .catch(err => {
-            showToast(err.message, 'error');
-        })
+        .catch(err => showToast(err.message, 'error'))
         .finally(() => {
             btn.innerHTML = originalText;
             btn.disabled = false;
         });
     }
 
+    // Modal Visual SweetAlert2 (Para Confirmaciones Peligrosas)
     function deleteCategoria(id) {
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: "Esta acción eliminará la categoría de forma permanente.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444', // Color rojo (red-500 de Tailwind)
-        cancelButtonColor: '#9ca3af', // Color gris (gray-400 de Tailwind)
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-            popup: 'rounded-2xl', // Le da bordes redondeados estilo Tailwind
-        }
-    }).then((result) => {
-        // Si el usuario hace clic en "Sí, eliminar"
-        if (result.isConfirmed) {
-            
-            // Hacemos la petición silenciosa a tu controlador
-            fetch(`/admin/categorias/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}', // Vital para la seguridad en Laravel
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Si el controlador devuelve success = true
-                    Swal.fire({
-                        title: '¡Eliminada!',
-                        text: data.message,
-                        icon: 'success',
-                        customClass: { popup: 'rounded-2xl' }
-                    }).then(() => {
-                        location.reload(); // Recarga la página para actualizar la tabla
-                    });
-                } else {
-                    // Si entra en la validación de subcategorías (success = false)
-                    Swal.fire({
-                        title: 'No se pudo eliminar',
-                        text: data.message,
-                        icon: 'error',
-                        customClass: { popup: 'rounded-2xl' }
-                    });
-                }
-            })
-            .catch(error => {
-                Swal.fire('Error', 'Ocurrió un problema de red.', 'error');
-            });
-        }
-    })
-}
+        Swal.fire({
+            title: '¿Deshabilitar categoría?',
+            text: "Los productos asociados a esta categoría seguirán existiendo en tu base de datos, pero la categoría se ocultará de la tienda.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#f97316', // Orange-500 (Advertencia, ya no es rojo destructivo)
+            cancelButtonColor: '#9ca3af',
+            confirmButtonText: 'Sí, deshabilitar',
+            cancelButtonText: 'Cancelar',
+            customClass: { popup: 'rounded-2xl' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/admin/categorias/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        fetchData(1);
+                    } else {
+                        showToast(data.message, 'error');
+                    }
+                })
+                .catch(error => showToast('Ocurrió un problema de red.', 'error'));
+            }
+        });
+    }
+
+    // NUEVA FUNCIÓN: Reactivar Categoría
+    function restoreCategoria(id) {
+        fetch(`/admin/categorias/${id}/restore`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                fetchData(1);
+            } else {
+                showToast(data.message, 'error'); // Si intenta reactivar subcategoría sin padre
+            }
+        })
+        .catch(error => showToast('Ocurrió un problema de red.', 'error'));
+    }
 </script>
 @endpush
 @endsection
