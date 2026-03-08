@@ -11,11 +11,7 @@ class Pago extends Model
 
     protected $table = 'pagos';
 
-    // CORRECCIÓN CRÍTICA:
-    // 1. Según tu SQL, la fecha de creación se llama 'fecha_pago'
     const CREATED_AT = 'fecha_pago';
-    
-    // 2. Tu tabla 'pagos' NO tiene columna de actualización, la desactivamos
     const UPDATED_AT = null;
 
     protected $fillable = [
@@ -24,8 +20,27 @@ class Pago extends Model
         'monto_usd', 
         'monto_ves', 
         'referencia_bancaria', 
-        'captura_pago_url', // Asegúrate que en tu BD sea 'captura_pago_url' (si es 'captura_pago_url' corrígelo aquí también)
+        'captura_pago_url', 
         'estado',
-        'verificado_por_usuario_id' // Agregado por si acaso lo necesitas llenar después
+        'verificado_por_usuario_id' 
     ];
+
+    protected $casts = [
+        'monto_usd' => 'decimal:2',
+        'monto_ves' => 'decimal:2',
+    ];
+
+    // ==========================================
+    // RELACIONES
+    // ==========================================
+    public function pedido()
+    {
+        return $this->belongsTo(Pedido::class, 'pedido_id');
+    }
+
+    public function verificador()
+    {
+        // El usuario admin/cajero que aprobó o rechazó el pago
+        return $this->belongsTo(User::class, 'verificado_por_usuario_id');
+    }
 }

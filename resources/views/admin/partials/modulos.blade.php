@@ -30,7 +30,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_pagos'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-600 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
+                    <a href="{{ route('admin.pagos.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-red-600 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">fact_check</span> Gestión de Pagos
                     </a>
                     @endif

@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\MarcaController;
 use App\Http\Controllers\Admin\ProductoController;
 use App\Http\Controllers\Admin\HorarioadminController;
 use App\Http\Controllers\Admin\PedidoController;
+use App\Http\Controllers\Admin\PagoController;
 
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
@@ -184,5 +185,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
     Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show');
     Route::post('/pedidos/{id}/estado', [PedidoController::class, 'updateStatus'])->name('pedidos.updateStatus');
+
+    //Pantalla - Gestión de Pagos
+    Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
+    Route::post('/pagos/{id}/aprobar', [PagoController::class, 'aprobar'])->name('pagos.aprobar');
+    Route::post('/pagos/{id}/rechazar', [PagoController::class, 'rechazar'])->name('pagos.rechazar');
 
 });
