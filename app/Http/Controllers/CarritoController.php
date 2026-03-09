@@ -4,35 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Carrito;
 use App\Models\Producto;
-use App\Models\ConfiguracionTienda; // Para el IVA
+use App\Models\ConfiguracionTienda;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CarritoController extends Controller
 {
-    // 1. Ver el carrito (Página principal del carrito)
     public function index()
     {
         $userId = Auth::id();
         
-        // Traemos los items con la info del producto y su imagen principal
         $items = Carrito::where('usuario_id', $userId)
             ->with(['producto.imagenes' => function($q) {
                 $q->where('es_principal', 1);
             }])
             ->get();
 
-        // Obtener configuración para IVA
         $config = DB::table('configuracion_tienda')->first();
         $ivaPorcentaje = $config ? $config->iva_porcentaje : 16.00;
 
-        // Cálculos
         $subtotal = 0;
         foreach ($items as $item) {
-            // Validar que el producto exista y tenga precio
             if ($item->producto) {
-                $subtotal += $item->producto->precio_venta_usd * $item->cantidad;
+                // Usar precio de oferta si existe, sino el regular
+                $precio = $item->producto->precio_oferta_usd ?: $item->producto->precio_venta_usd;
+                $subtotal += $precio * $item->cantidad;
             }
         }
 
@@ -42,23 +39,20 @@ class CarritoController extends Controller
         return view('carrito.index', compact('items', 'subtotal', 'montoIva', 'total', 'ivaPorcentaje'));
     }
 
-    // 2. Añadir producto (AJAX desde el catálogo)
     public function add(Request $request)
     {
         $request->validate([
             'producto_id' => 'required|exists:productos,id',
-            'cantidad' => 'required|numeric|min:1'
+            'cantidad' => 'nullable|numeric|min:0.01'
         ]);
 
         $userId = Auth::id();
         $producto = Producto::find($request->producto_id);
 
-        // Validar Stock
-        if ($producto->stock_total < $request->cantidad) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Stock insuficiente. Disponibles: ' . number_format($producto->stock_total, 0)
-            ], 422);
+        // Si no mandan cantidad, o mandan menos del mínimo, forzamos la venta mínima
+        $cantidadSolicitada = $request->cantidad ?? $producto->venta_minima;
+        if ($cantidadSolicitada < $producto->venta_minima) {
+            $cantidadSolicitada = $producto->venta_minima;
         }
 
         // Buscar si ya existe en el carrito
@@ -66,27 +60,29 @@ class CarritoController extends Controller
                               ->where('producto_id', $request->producto_id)
                               ->first();
 
-        if ($carritoItem) {
-            // Si ya existe, validamos que la suma no supere el stock
-            $nuevaCantidad = $carritoItem->cantidad + $request->cantidad;
-            
-            if ($producto->stock_total < $nuevaCantidad) {
-                return response()->json(['status' => 'error', 'message' => 'No puedes añadir más cantidad de la disponible en stock.'], 422);
-            }
+        $nuevaCantidad = $carritoItem ? ($carritoItem->cantidad + $cantidadSolicitada) : $cantidadSolicitada;
 
+        // Validar Stock Total
+        if ($producto->stock_total < $nuevaCantidad) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Stock insuficiente. Solo quedan ' . floatval($producto->stock_total) . ' unidades.'
+            ], 422);
+        }
+
+        if ($carritoItem) {
             $carritoItem->cantidad = $nuevaCantidad;
-            $carritoItem->save(); // El trigger 'actualizado_at' de la BD se encarga de la fecha
+            $carritoItem->save();
         } else {
-            // Crear nuevo registro
             Carrito::create([
                 'usuario_id' => $userId,
                 'producto_id' => $request->producto_id,
-                'cantidad' => $request->cantidad
+                'cantidad' => $nuevaCantidad
             ]);
         }
 
-        // Contar total de items para actualizar el badge del header (opcional)
-        $count = Carrito::where('usuario_id', $userId)->sum('cantidad');
+        // Contamos cuántos PRODUCTOS DISTINTOS hay para el badge del Header
+        $count = Carrito::where('usuario_id', $userId)->count();
 
         return response()->json([
             'status' => 'success',
@@ -95,11 +91,9 @@ class CarritoController extends Controller
         ]);
     }
 
-    // 3. Actualizar cantidad (AJAX desde la vista del carrito)
     public function update(Request $request)
     {
         $item = Carrito::where('id', $request->id)->where('usuario_id', Auth::id())->first();
-        
         if (!$item) return response()->json(['status' => 'error'], 404);
 
         $producto = Producto::find($item->producto_id);
@@ -111,13 +105,20 @@ class CarritoController extends Controller
             ], 422);
         }
 
+        // Validar que no intente hackear y poner menos del mínimo
+        if ($request->cantidad < $producto->venta_minima) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => 'La cantidad mínima es ' . floatval($producto->venta_minima)
+            ], 422);
+        }
+
         $item->cantidad = $request->cantidad;
         $item->save();
 
         return response()->json(['status' => 'success']);
     }
 
-    // 4. Eliminar item
     public function remove(Request $request)
     {
         Carrito::where('id', $request->id)->where('usuario_id', Auth::id())->delete();

@@ -45,15 +45,21 @@
 
                     <div class="divide-y divide-gray-100" id="cart-items-wrapper">
                         @foreach($items as $item)
-                            {{-- Fila del producto con Clases y Atributos para JS --}}
-                            <div class="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 gap-6 items-center sm:items-center relative group transition-colors hover:bg-gray-50/30 cart-item-row" id="item-{{ $item->id }}" data-price="{{ $item->producto->precio_venta_usd }}">
+                            @php
+                                $precioUsado = $item->producto->precio_oferta_usd ?: $item->producto->precio_venta_usd;
+                            @endphp
+
+                            {{-- Fila con variables data-* inyectadas para JS --}}
+                            <div class="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 gap-6 items-center sm:items-center relative group transition-colors hover:bg-gray-50/30 cart-item-row" 
+                                 id="item-{{ $item->id }}" 
+                                 data-price="{{ $precioUsado }}"
+                                 data-min="{{ $item->producto->venta_minima }}"
+                                 data-step="{{ $item->producto->paso_venta }}">
                                 
                                 <div class="col-span-6 flex items-center gap-4 sm:gap-6 w-full">
                                     <div class="w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 relative">
                                         @if($item->producto->imagen_url)
-                                            <img src="{{ asset($item->producto->imagen_url) }}" 
-                                                alt="{{ $item->producto->nombre }}" 
-                                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            <img src="{{ asset($item->producto->imagen_url) }}" alt="{{ $item->producto->nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                         @else
                                             <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
                                                 <span class="material-symbols-outlined text-3xl mb-1">image_not_supported</span>
@@ -69,20 +75,20 @@
                                         <h3 class="text-base sm:text-lg font-bold text-agro-dark leading-snug line-clamp-2 mb-1">
                                             <a href="#" class="hover:text-primary transition-colors">{{ $item->producto->nombre }}</a>
                                         </h3>
-                                        <p class="text-sm font-black text-primary">${{ number_format($item->producto->precio_venta_usd, 2) }} <span class="text-[10px] font-bold text-gray-400 uppercase">c/u</span></p>
+                                        <p class="text-sm font-black text-primary">${{ number_format($precioUsado, 2) }} <span class="text-[10px] font-bold text-gray-400 uppercase">/ {{ $item->producto->unidad_medida }}</span></p>
                                     </div>
                                 </div>
 
-                                {{-- Controles de Cantidad (AHORA CENTRADOS EN MÓVIL Y PC) --}}
+                                {{-- Controles de Cantidad Dinámicos --}}
                                 <div class="col-span-3 flex justify-center w-full sm:w-auto">
-                                    <div class="flex items-center bg-white border border-gray-200 rounded-xl shadow-sm h-11 w-32 overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
-                                        <button type="button" onclick="updateQty({{ $item->id }}, -1)" class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-agro-dark hover:bg-gray-50 transition-colors active:bg-gray-100 flex-shrink-0">
+                                    <div class="flex items-center bg-white border border-gray-200 rounded-xl shadow-sm h-11 overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+                                        <button type="button" onclick="updateQty({{ $item->id }}, 'sub')" class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-agro-dark hover:bg-gray-50 transition-colors active:bg-gray-100 flex-shrink-0">
                                             <span class="material-symbols-outlined text-[20px]">remove</span>
                                         </button>
                                         
-                                        <input type="text" inputmode="numeric" id="qty-{{ $item->id }}" readonly value="{{ $item->cantidad }}" class="qty-input flex-1 w-12 h-full text-center font-black text-agro-dark text-sm bg-transparent border-0 focus:ring-0 p-0 m-0 select-none">
+                                        <input type="text" inputmode="decimal" id="qty-{{ $item->id }}" readonly value="{{ (float) $item->cantidad }}" class="qty-input flex-1 min-w-[3rem] px-2 h-full text-center font-black text-agro-dark text-sm bg-transparent border-0 focus:ring-0 p-0 m-0 select-none">
                                         
-                                        <button type="button" onclick="updateQty({{ $item->id }}, 1)" class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors active:bg-gray-100 flex-shrink-0">
+                                        <button type="button" onclick="updateQty({{ $item->id }}, 'add')" class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors active:bg-gray-100 flex-shrink-0">
                                             <span class="material-symbols-outlined text-[20px]">add</span>
                                         </button>
                                     </div>
@@ -91,10 +97,10 @@
                                 {{-- Total del Item --}}
                                 <div class="col-span-2 text-right w-full sm:w-auto flex justify-between sm:block border-t border-gray-50 sm:border-0 pt-4 sm:pt-0 mt-2 sm:mt-0">
                                     <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider sm:hidden">Total</span>
-                                    <span class="item-total-display text-lg font-black text-agro-dark">${{ number_format($item->producto->precio_venta_usd * $item->cantidad, 2) }}</span>
+                                    <span class="item-total-display text-lg font-black text-agro-dark">${{ number_format($precioUsado * $item->cantidad, 2) }}</span>
                                 </div>
 
-                                {{-- Botón Eliminar (AHORA ROJO Y MÁS VISIBLE) --}}
+                                {{-- Botón Eliminar --}}
                                 <div class="col-span-1 absolute top-4 right-4 sm:relative sm:top-0 sm:right-0 flex justify-end">
                                     <button onclick="openDeleteModal({{ $item->id }})" class="flex items-center justify-center w-10 h-10 text-red-500 bg-red-50 hover:bg-red-100 hover:text-red-700 rounded-xl transition-all duration-300 border border-red-100 hover:border-red-200 shadow-sm" title="Eliminar producto">
                                         <span class="material-symbols-outlined text-[22px]">delete</span>

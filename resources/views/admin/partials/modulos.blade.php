@@ -86,7 +86,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('ver_historico_precios'))
-                    <a href="{{ route('admin.historico_precios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs sm:col-span-2">
+                    <a href="{{ route('admin.historico_precios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-red-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs sm:col-span-2">
                         <span class="material-symbols-outlined text-[18px]">history</span> Histórico de Precios
                     </a>
                     @endif

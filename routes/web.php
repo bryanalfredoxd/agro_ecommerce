@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\HistoricoPrecioController;
 |--------------------------------------------------------------------------
 */
 
+
 // --- 1. RUTA PRINCIPAL (HOME) ---
 // CORRECCIÓN: Usamos HomeController para que cargue los productos y categorías
 Route::get('/', HomeController::class)->name('home');
@@ -134,6 +135,10 @@ Route::get('/splash/should-show', [SplashController::class, 'shouldShow'])
 // RUTAS DE ADMINISTRACIÓN (Solo para rol_id = 1)
 // ==========================================
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+// Notificaciones en tiempo real del Topbar
+    Route::get('/notificaciones/fetch', [App\Http\Controllers\Admin\DashboardController::class, 'fetchNotificaciones'])->name('notificaciones.fetch');
+
     
     // Pantalla - Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

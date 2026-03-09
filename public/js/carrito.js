@@ -124,15 +124,31 @@ document.addEventListener("DOMContentLoaded", () => {
 // ========================
 // 🛒 Sumar/Restar Cantidad en Vivo
 // ========================
-window.updateQty = function(itemId, change) {
+window.updateQty = function(itemId, action) {
+    const row = document.getElementById(`item-${itemId}`);
     const input = document.getElementById(`qty-${itemId}`);
-    if (!input) return;
+    if (!input || !row) return;
 
-    const currentQty = parseInt(input.value, 10);
-    const newQty = currentQty + change;
-    
-    // No permitir bajar de 1
-    if (isNaN(newQty) || newQty < 1) return;
+    const step = parseFloat(row.getAttribute('data-step')) || 1;
+    const min = parseFloat(row.getAttribute('data-min')) || 1;
+    const currentQty = parseFloat(input.value) || min;
+
+    let newQty = currentQty;
+
+    if (action === 'add') {
+        newQty += step;
+    } else if (action === 'sub') {
+        newQty -= step;
+    }
+
+    // Matemáticas de JS: Solucionar el problema de "0.1 + 0.2 = 0.30000004"
+    newQty = Math.round(newQty * 1000) / 1000;
+
+    // Regla de Negocio: Si baja de la venta mínima, asumimos que quiere borrarlo
+    if (newQty < min) {
+        openDeleteModal(itemId);
+        return;
+    }
 
     // 1. ACTUALIZAR INTERFAZ AL INSTANTE (Optimistic UI)
     input.value = newQty;
@@ -148,21 +164,18 @@ window.updateQty = function(itemId, change) {
         },
         body: JSON.stringify({ id: itemId, cantidad: newQty })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') {
-            // Si el servidor falla (ej. No hay stock), revertir
-            input.value = currentQty;
-            recalculateTotals();
-            showToast(data.message || 'Error de stock', 'error');
+    .then(async res => {
+        const data = await res.json();
+        if (!res.ok || data.status !== 'success') {
+            throw new Error(data.message || 'Error de stock');
         }
     })
     .catch(err => {
         console.error(err);
-        // Si no hay internet o error grave, revertir
+        // Si no hay stock o falla, revertir en la UI
         input.value = currentQty;
         recalculateTotals();
-        showToast('Error de conexión al actualizar', 'error');
+        showToast(err.message, 'error');
     });
 };
 
@@ -171,8 +184,7 @@ window.updateQty = function(itemId, change) {
 // ========================
 function recalculateTotals() {
     let subtotal = 0;
-    let uniqueItems = 0;
-    let totalQuantity = 0; // Suma de cantidades para el Header
+    let uniqueItems = 0; // Para contar líneas de producto, no kilos.
     
     const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     
@@ -180,7 +192,7 @@ function recalculateTotals() {
     document.querySelectorAll('.cart-item-row').forEach(row => {
         const price = parseFloat(row.getAttribute('data-price'));
         const qtyInput = row.querySelector('.qty-input');
-        const qty = parseInt(qtyInput.value, 10) || 0;
+        const qty = parseFloat(qtyInput.value) || 0;
         
         // Precio de la fila
         const itemTotal = price * qty;
@@ -189,11 +201,10 @@ function recalculateTotals() {
         
         subtotal += itemTotal;
         uniqueItems += 1;
-        totalQuantity += qty; // Acumulamos para el ícono rojo
     });
     
     // 2. Actualizar Panel de Resumen
-    const ivaPercentage = window.CarritoConfig.ivaPercentage || 16;
+    const ivaPercentage = parseFloat(window.CarritoConfig.ivaPercentage) || 16;
     const ivaAmount = subtotal * (ivaPercentage / 100);
     const total = subtotal + ivaAmount;
     
@@ -214,12 +225,13 @@ function recalculateTotals() {
 
     // 3. ACTUALIZAR ÍCONO DEL HEADER
     const headerBadge = document.getElementById('cart-count-badge');
-    const badgeContainer = document.getElementById('cart-badge-container'); // Opcional, dependiendo de tu header
+    const badgeContainer = document.getElementById('cart-badge-container');
     
     if (headerBadge) {
-        headerBadge.innerText = totalQuantity;
+        // En el header, mostramos el número de items diferentes (no los kilos)
+        headerBadge.innerText = uniqueItems;
         
-        if (totalQuantity > 0) {
+        if (uniqueItems > 0) {
             headerBadge.classList.remove('hidden');
             if (badgeContainer) badgeContainer.classList.remove('hidden');
         } else {
@@ -227,9 +239,8 @@ function recalculateTotals() {
             if (badgeContainer) badgeContainer.classList.add('hidden');
         }
         
-        // Efecto de "salto" para avisar al usuario
         headerBadge.classList.remove('animate-bounce');
-        void headerBadge.offsetWidth; // Truco mágico para reiniciar animaciones en JS
+        void headerBadge.offsetWidth;
         headerBadge.classList.add('animate-bounce');
         
         setTimeout(() => {

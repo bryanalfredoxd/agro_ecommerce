@@ -183,7 +183,7 @@ CREATE TABLE `carrito` (
   `id` int(11) NOT NULL,
   `usuario_id` int(11) DEFAULT NULL,
   `producto_id` int(11) DEFAULT NULL,
-  `cantidad` INT NOT NULL DEFAULT 1,
+  `cantidad` DECIMAL(12,3) NOT NULL DEFAULT 1.000,
   `observaciones` varchar(255) DEFAULT NULL,
   `actualizado_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -607,10 +607,16 @@ CREATE TABLE `pedidos` (
 --
 -- Disparadores `pedidos`
 --
-DELIMITER $$
 CREATE TRIGGER `tr_descontar_inventario_universal` AFTER UPDATE ON `pedidos` FOR EACH ROW BEGIN
+    DECLARE v_unidades DECIMAL(15,3) DEFAULT 0;
+
     IF (NEW.estado = 'pagado' OR NEW.estado = 'completado_caja') 
        AND (OLD.estado != 'pagado' AND OLD.estado != 'completado_caja') THEN
+       
+       -- NUEVO: Calcular las unidades vendidas sumando los detalles del pedido
+       SELECT COALESCE(SUM(cantidad_solicitada), 0) INTO v_unidades
+       FROM pedido_detalles 
+       WHERE pedido_id = NEW.id;
        
        -- Descontar del stock total del producto
        UPDATE productos p
@@ -624,37 +630,47 @@ CREATE TRIGGER `tr_descontar_inventario_universal` AFTER UPDATE ON `pedidos` FOR
        SET il.cantidad_restante = il.cantidad_restante - COALESCE(pd.cantidad_real_despachada, pd.cantidad_solicitada)
        WHERE pd.pedido_id = NEW.id AND pd.inventario_lote_id IS NOT NULL;
        
-       -- Registrar en estadísticas diarias
-       INSERT INTO estadisticas_ventas_diarias (fecha_reporte, total_pedidos, total_ingresos_usd, total_ingresos_ves)
-       VALUES (CURDATE(), 1, NEW.total_usd, NEW.total_ves_calculado)
+       -- Registrar en estadísticas diarias (AHORA INCLUYE UNIDADES)
+       INSERT INTO estadisticas_ventas_diarias (fecha_reporte, total_pedidos, total_ingresos_usd, total_ingresos_ves, unidades_vendidas)
+       VALUES (CURDATE(), 1, NEW.total_usd, NEW.total_ves_calculado, v_unidades)
        ON DUPLICATE KEY UPDATE 
            total_pedidos = total_pedidos + 1,
            total_ingresos_usd = total_ingresos_usd + NEW.total_usd,
-           total_ingresos_ves = total_ingresos_ves + NEW.total_ves_calculado;
+           total_ingresos_ves = total_ingresos_ves + NEW.total_ves_calculado,
+           unidades_vendidas = unidades_vendidas + v_unidades;
     END IF;
 END
 $$
 DELIMITER ;
+
 DELIMITER $$
 CREATE TRIGGER `tr_reintegrar_inventario_devolucion` AFTER UPDATE ON `pedidos` FOR EACH ROW BEGIN
+    DECLARE v_unidades DECIMAL(15,3) DEFAULT 0;
+
     IF NEW.estado = 'devuelto' AND OLD.estado != 'devuelto' THEN
+        -- NUEVO: Calcular las unidades a revertir
+        SELECT COALESCE(SUM(cantidad_solicitada), 0) INTO v_unidades
+        FROM pedido_detalles 
+        WHERE pedido_id = NEW.id;
+
         -- Reintegrar al stock total del producto
         UPDATE productos p
         JOIN pedido_detalles pd ON p.id = pd.producto_id
         SET p.stock_total = p.stock_total + COALESCE(pd.cantidad_real_despachada, pd.cantidad_solicitada)
         WHERE pd.pedido_id = NEW.id;
         
-        -- Reintegrar al lote específico si estaba asignado
+        -- Reintegrar al lote específico
         UPDATE inventario_lotes il
         JOIN pedido_detalles pd ON il.id = pd.inventario_lote_id
         SET il.cantidad_restante = il.cantidad_restante + COALESCE(pd.cantidad_real_despachada, pd.cantidad_solicitada)
         WHERE pd.pedido_id = NEW.id AND pd.inventario_lote_id IS NOT NULL;
         
-        -- Ajustar estadísticas diarias (revertir la venta)
+        -- Ajustar estadísticas diarias (revertir la venta Y LAS UNIDADES)
         UPDATE estadisticas_ventas_diarias
         SET total_pedidos = GREATEST(0, total_pedidos - 1),
             total_ingresos_usd = GREATEST(0, total_ingresos_usd - NEW.total_usd),
-            total_ingresos_ves = GREATEST(0, total_ingresos_ves - NEW.total_ves_calculado)
+            total_ingresos_ves = GREATEST(0, total_ingresos_ves - NEW.total_ves_calculado),
+            unidades_vendidas = GREATEST(0, unidades_vendidas - v_unidades)
         WHERE fecha_reporte = DATE(NEW.creado_at);
     END IF;
 END
