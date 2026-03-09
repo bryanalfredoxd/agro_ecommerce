@@ -22,6 +22,12 @@ use App\Http\Controllers\Admin\HorarioadminController;
 use App\Http\Controllers\Admin\PedidoController;
 use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\PosController;
+use App\Http\Controllers\Admin\ConfiguracionTiendaController;
+use App\Http\Controllers\Admin\CuentaBancariaController;
+use App\Http\Controllers\Admin\FacturaController;
+use App\Http\Controllers\Admin\CajaDiariaController;
+use App\Http\Controllers\Admin\FacturacionConfigController;
+use App\Http\Controllers\Admin\HistoricoPrecioController;
 
 // Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
 
@@ -144,6 +150,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 // Seccion - Finanzas y Caja
 
+    //Pantalla - Finanzas y Facturación
+    Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index');
+    Route::get('/facturas/{id}', [FacturaController::class, 'show'])->name('facturas.show');
+    Route::post('/facturas/{id}/anular', [FacturaController::class, 'anular'])->name('facturas.anular');
+
+    // Pantalla - Caja Diaria
+    Route::get('/caja-diaria', [CajaDiariaController::class, 'index'])->name('caja_diaria.index');
+    Route::get('/caja-diaria/{id}/movimientos', [CajaDiariaController::class, 'movimientos'])->name('caja_diaria.movimientos');
+
+    // Configuración de Facturación (Series y Correlativos)
+    Route::get('/configuracion-facturacion', [FacturacionConfigController::class, 'index'])->name('facturacion_config.index');
+    Route::post('/configuracion-facturacion', [FacturacionConfigController::class, 'store'])->name('facturacion_config.store');
+    Route::put('/configuracion-facturacion/{id}', [FacturacionConfigController::class, 'update'])->name('facturacion_config.update');
+    Route::post('/configuracion-facturacion/{id}/toggle', [FacturacionConfigController::class, 'toggleStatus'])->name('facturacion_config.toggle');
+
     // Pantalla - Tasas de Cambio
     Route::get('/tasas-cambio', [App\Http\Controllers\Admin\TasaCambioController::class, 'index'])->name('tasas-cambio.index');
     Route::post('/tasas-cambio', [App\Http\Controllers\Admin\TasaCambioController::class, 'store'])->name('tasas-cambio.store');
@@ -174,11 +195,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/productos/{id}/destacado', [ProductoController::class, 'toggleDestacado']);
     Route::post('/productos/{id}/restore', [ProductoController::class, 'restore'])->name('admin.productos.restore');
 
-//Seccion - Sistema y Ajustes
-
-    //Pantalla - Horarios
-    Route::get('/horarios', [HorarioadminController::class, 'index'])->name('horarios.index');
-    Route::post('/horarios/actualizar', [HorarioadminController::class, 'updateAll'])->name('horarios.updateAll');
+    // Histórico de Precios
+    Route::get('/historico-precios', [HistoricoPrecioController::class, 'index'])->name('historico_precios.index');
 
 //Seccion - Ventas y Pedidos
 
@@ -198,5 +216,22 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/pos/buscar-producto', [PosController::class, 'buscarProducto']); 
     Route::post('/pos/procesar-venta', [PosController::class, 'procesarVenta']);
     Route::post('/pos/cerrar-caja', [PosController::class, 'cerrarCaja']);
+
+//Seccion - Sistema y Ajustes
+
+    //Pantalla - Horarios
+    Route::get('/horarios', [HorarioadminController::class, 'index'])->name('horarios.index');
+    Route::post('/horarios/actualizar', [HorarioadminController::class, 'updateAll'])->name('horarios.updateAll');
+
+    //Pantalla - Configuración de la Tienda
+    Route::get('/configuracion-tienda', [ConfiguracionTiendaController::class, 'index'])->name('configuracion.index');
+    Route::post('/configuracion-tienda', [ConfiguracionTiendaController::class, 'update'])->name('configuracion.update');
+
+    //Pantalla - Cuentas Bancarias
+    Route::get('/cuentas-bancarias', [CuentaBancariaController::class, 'index'])->name('cuentas_bancarias.index');
+    Route::post('/cuentas-bancarias', [CuentaBancariaController::class, 'store'])->name('cuentas_bancarias.store');
+    Route::put('/cuentas-bancarias/{id}', [CuentaBancariaController::class, 'update'])->name('cuentas_bancarias.update');
+    Route::delete('/cuentas-bancarias/{id}', [CuentaBancariaController::class, 'destroy'])->name('cuentas_bancarias.destroy');
+    Route::post('/cuentas-bancarias/{id}/toggle', [CuentaBancariaController::class, 'toggleStatus'])->name('cuentas_bancarias.toggle');
 
 });

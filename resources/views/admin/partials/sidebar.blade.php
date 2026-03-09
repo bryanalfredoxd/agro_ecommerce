@@ -49,7 +49,7 @@
                         <a href="{{ route('admin.pagos.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Gestión de Pagos</a>
                     @endif
                     @if(Auth::user()->tienePermiso('crear_venta_manual'))
-                        <a href="{{ route('admin.pos.index') }}" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Nueva Venta Manual</a>
+                        <a href="{{ route('admin.pos.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Nueva Venta Manual</a>
                     @endif
                     @if(Auth::user()->tienePermiso('procesar_devoluciones'))
                         <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Devoluciones</a>
@@ -82,7 +82,7 @@
                         <a href="{{ route('admin.marcas.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Marcas</a>
                     @endif
                     @if(Auth::user()->tienePermiso('ver_historico_precios'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Histórico de Precios</a>
+                        <a href="{{ route('admin.historico_precios.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Histórico de Precios</a>
                     @endif
                 </div>
             </details>
@@ -145,13 +145,13 @@
                 </summary>
                 <div class="mt-1 pl-12 pr-2 space-y-1">
                     @if(Auth::user()->tienePermiso('ver_facturas'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Listado de Facturas</a>
+                        <a href="{{ route('admin.facturas.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Listado de Facturas</a>
                     @endif
                     @if(Auth::user()->tienePermiso('configurar_facturacion'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Config. Facturación</a>
+                        <a href="{{ route('admin.facturacion_config.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Config. Facturación</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_caja_diaria'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Caja Diaria / POS</a>
+                        <a href="{{ route('admin.caja_diaria.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Caja Diaria / POS</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_tasas_cambio'))
                         <a href="{{ route('admin.tasas-cambio.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Tasas de Cambio</a>
@@ -193,10 +193,10 @@
                 </summary>
                 <div class="mt-1 pl-12 pr-2 space-y-1">
                     @if(Auth::user()->tienePermiso('configurar_tienda'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Configuración Tienda</a>
+                        <a href="{{ route('admin.configuracion.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Configuración Tienda</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_cuentas_banco'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Cuentas Bancarias</a>
+                        <a href="{{ route('admin.cuentas_bancarias.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Cuentas Bancarias</a>
                     @endif
                     @if(Auth::user()->tienePermiso('configurar_apis'))
                         <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">APIs Externas</a>

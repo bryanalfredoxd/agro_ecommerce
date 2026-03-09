@@ -187,6 +187,22 @@ class ProductoController extends Controller
             $data['imagen_url'] = $this->uploadImage($request->file('imagen'));
         }
 
+        // ==========================================
+        // NUEVA LÓGICA: AUDITORÍA DE PRECIOS
+        // ==========================================
+        $precioViejo = (float) $producto->precio_venta_usd;
+        $precioNuevo = (float) $request->precio_venta_usd;
+
+        if ($precioViejo !== $precioNuevo) {
+            \App\Models\HistoricoPrecioProducto::create([
+                'producto_id' => $producto->id,
+                'precio_anterior_usd' => $precioViejo,
+                'precio_nuevo_usd' => $precioNuevo,
+                'motivo_cambio' => $request->filled('motivo_cambio') ? $request->motivo_cambio : 'Actualización regular desde catálogo',
+                'usuario_editor_id' => \Illuminate\Support\Facades\Auth::id() // Aquí obtenemos al usuario real
+            ]);
+        }
+
         $producto->update($data);
         return redirect()->route('admin.productos.index')->with('success', 'Producto actualizado correctamente.');
     }

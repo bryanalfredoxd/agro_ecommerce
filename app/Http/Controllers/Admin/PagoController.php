@@ -74,6 +74,11 @@ class PagoController extends Controller
             $pedido->estado = 'pagado';
             $pedido->save(); // ¡ESTO DISPARA EL TRIGGER SQL DEL INVENTARIO!
 
+            // Verificamos que no tenga factura ya emitida (por seguridad)
+            if(!\App\Models\Factura::where('pedido_id', $pedido->id)->exists()){
+                \App\Models\Factura::emitirParaPedido($pedido);
+            }
+
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Pago aprobado. El inventario ha sido descontado y Logística notificada.']);
 

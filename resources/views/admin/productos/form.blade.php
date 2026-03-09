@@ -168,7 +168,7 @@
                                 @forelse($atributosArray as $key => $val)
                                     <div class="flex items-center gap-3">
                                         <input type="text" name="attr_keys[]" value="{{ $key }}" placeholder="Ej: Material" class="w-1/3 h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold outline-none">
-                                        <input type="text" name="attr_values[]" value="{{ $val }}" placeholder="Ej: Plástico" class="flex-1 h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none">
+                                        <input type="text" name="attr_values[]" value="{{ is_array($val) ? implode(', ', $val) : $val }}" placeholder="Ej: Plástico" class="flex-1 h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 text-sm outline-none">
                                         <button type="button" onclick="this.parentElement.remove()" class="w-10 h-10 flex-shrink-0 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors">
                                             <span class="material-symbols-outlined text-[18px]">close</span>
                                         </button>
@@ -236,6 +236,12 @@
                                     </div>
                                     <p id="error-costo" class="text-[10px] text-red-500 font-bold hidden mt-1 ml-1">Error: Costo mayor al precio (Pérdida).</p>
                                 </div>
+                                @if(isset($producto))
+                                <div class="pt-4 border-t border-gray-100">
+                                    <label class="block text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1.5 ml-1">Motivo del cambio de precio (Para Auditoría)</label>
+                                    <input type="text" name="motivo_cambio" placeholder="Ej: Ajuste por inflación, Nuevo lote más caro..." class="w-full h-12 px-4 rounded-xl bg-blue-50/50 border border-blue-100 focus:border-blue-400 focus:bg-white text-sm font-medium text-agro-dark outline-none">
+                                </div>
+                                @endif
                             </div>
                         </div>
 

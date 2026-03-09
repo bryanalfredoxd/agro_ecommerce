@@ -25,4 +25,9 @@ class SesionCaja extends Model
     {
         return $this->belongsTo(User::class, 'cajero_usuario_id');
     }
+    
+    public function movimientos()
+    {
+        return $this->hasMany(MovimientoCaja::class, 'sesion_caja_id');
+    }
 }

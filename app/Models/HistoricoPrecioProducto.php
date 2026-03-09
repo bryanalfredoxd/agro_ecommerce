@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HistoricoPrecioProducto extends Model
 {
+    use HasFactory;
+
     protected $table = 'historico_precios_productos';
-    public $timestamps = false;
+
+    const CREATED_AT = 'creado_at';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'producto_id',
@@ -18,17 +22,12 @@ class HistoricoPrecioProducto extends Model
         'usuario_editor_id'
     ];
 
-    protected $casts = [
-        'precio_anterior_usd' => 'decimal:2',
-        'precio_nuevo_usd' => 'decimal:2'
-    ];
-
-    public function producto(): BelongsTo
+    public function producto()
     {
-        return $this->belongsTo(Producto::class);
+        return $this->belongsTo(Producto::class, 'producto_id');
     }
 
-    public function usuarioEditor(): BelongsTo
+    public function editor()
     {
         return $this->belongsTo(User::class, 'usuario_editor_id');
     }

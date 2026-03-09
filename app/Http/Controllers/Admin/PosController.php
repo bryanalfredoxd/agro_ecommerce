@@ -181,6 +181,11 @@ class PosController extends Controller
             $sesion->total_ventas_sistema_ves += $gran_total_ves;
             $sesion->save();
 
+            // ===============================================
+            // 8. EMITIR LA FACTURA AUTOMÁTICAMENTE
+            // ===============================================
+            \App\Models\Factura::emitirParaPedido($pedido);
+
             DB::commit();
 
             return response()->json([

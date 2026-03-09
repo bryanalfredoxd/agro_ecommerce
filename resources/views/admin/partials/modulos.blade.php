@@ -35,7 +35,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('crear_venta_manual'))
-                    <a href="{{ route('admin.pos.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-600 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
+                    <a href="{{ route('admin.pos.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-red-600 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">point_of_sale</span> Venta Manual (POS)
                     </a>
                     @endif
@@ -86,7 +86,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('ver_historico_precios'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs sm:col-span-2">
+                    <a href="{{ route('admin.historico_precios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs sm:col-span-2">
                         <span class="material-symbols-outlined text-[18px]">history</span> Histórico de Precios
                     </a>
                     @endif
@@ -185,12 +185,12 @@
             <div class="px-6 pb-6 pt-2 border-t border-gray-50 animate-fade-in-up">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
                     @if(Auth::user()->tienePermiso('ver_facturas'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-gray-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
+                    <a href="{{ route('admin.facturas.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-red-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">receipt</span> Listado de Facturas
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_caja_diaria'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-gray-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
+                    <a href="{{ route('admin.caja_diaria.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-red-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">store</span> Caja Diaria / POS
                     </a>
                     @endif
@@ -200,7 +200,7 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('configurar_facturacion'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-gray-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
+                    <a href="{{ route('admin.facturacion_config.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-teal-50 text-gray-600 hover:text-teal-700 transition-colors border border-transparent hover:border-teal-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">settings</span> Config. Facturación
                     </a>
                     @endif
@@ -261,12 +261,12 @@
             <div class="px-6 pb-6 pt-2 border-t border-gray-50 animate-fade-in-up">
                 <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-4">
                     @if(Auth::user()->tienePermiso('configurar_tienda'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 font-bold text-xs">
+                    <a href="{{ route('admin.configuracion.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-red-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">storefront</span> Configuración Tienda
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_cuentas_banco'))
-                    <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 font-bold text-xs">
+                    <a href="{{ route('admin.cuentas_bancarias.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 text-red-600 hover:text-gray-900 transition-colors border border-transparent hover:border-gray-200 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">account_balance</span> Cuentas Bancarias
                     </a>
                     @endif
