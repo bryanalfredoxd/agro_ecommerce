@@ -7,4 +7,6 @@
     
     @include('components.categories-grid')
     @include('components.featured-products')
+
+    @include('components.whatsapp-btn')
 @endsection
