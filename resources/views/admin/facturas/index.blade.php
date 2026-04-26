@@ -28,13 +28,13 @@
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-2 mb-6">
                 <div class="flex overflow-x-auto custom-scrollbar border-b border-gray-100 px-4 pt-2 gap-6">
                     <button class="status-tab active pb-3 text-sm font-black border-b-2 border-teal-600 text-agro-dark whitespace-nowrap" data-estado="todas">Todas</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="emitida">Emitidas Válidas</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="anulada">Anuladas</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="emitida">Emitidas Válidas</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="anulada">Anuladas</button>
                 </div>
 
                 <div class="p-4 bg-gray-50/50 rounded-b-2xl">
                     <div class="w-full relative">
-                        <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
+                        <span class="material-symbols-outlined absolute left-3 top-3 text-gray-700">search</span>
                         <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all outline-none font-medium text-agro-dark" placeholder="Buscar por Nº Factura, Cliente o RIF...">
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                     <button id="btnImprimir" onclick="descargarPDF()" class="text-gray-500 hover:text-teal-600 bg-white border border-gray-200 hover:border-teal-200 p-1.5 rounded-lg transition-colors flex items-center gap-1 px-3 font-bold text-sm" title="Descargar PDF">
                         <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span> PDF
                     </button>
-                    <button type="button" onclick="closeFacturaModal()" class="text-gray-400 hover:text-red-500 bg-white border border-gray-200 hover:border-red-200 p-1.5 rounded-lg transition-colors">
+                    <button type="button" onclick="closeFacturaModal()" class="text-gray-700 hover:text-red-500 bg-white border border-gray-200 hover:border-red-200 p-1.5 rounded-lg transition-colors">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -105,9 +105,9 @@
         tab.addEventListener('click', function() {
             document.querySelectorAll('.status-tab').forEach(t => {
                 t.classList.remove('border-teal-600', 'text-agro-dark', 'active');
-                t.classList.add('border-transparent', 'text-gray-400');
+                t.classList.add('border-transparent', 'text-gray-700');
             });
-            this.classList.remove('border-transparent', 'text-gray-400');
+            this.classList.remove('border-transparent', 'text-gray-700');
             this.classList.add('border-teal-600', 'text-agro-dark', 'active');
             currentFiltroEstado = this.getAttribute('data-estado');
             fetchData(1);

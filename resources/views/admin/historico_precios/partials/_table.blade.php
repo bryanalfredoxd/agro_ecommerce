@@ -2,10 +2,10 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha y Hora</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Producto afectado</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Variación (USD)</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Motivo / Autor</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Fecha y Hora</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Producto afectado</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Variación (USD)</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Motivo / Autor</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
@@ -14,17 +14,17 @@
                 
                 <td class="px-6 py-4">
                     <p class="text-sm font-bold text-agro-dark">{{ \Carbon\Carbon::parse($hist->creado_at)->format('d M, Y') }}</p>
-                    <p class="text-[10px] font-black text-gray-400 mt-0.5">{{ \Carbon\Carbon::parse($hist->creado_at)->format('h:i A') }}</p>
+                    <p class="text-[10px] font-black text-gray-700 mt-0.5">{{ \Carbon\Carbon::parse($hist->creado_at)->format('h:i A') }}</p>
                 </td>
 
                 <td class="px-6 py-4">
                     <p class="text-sm font-bold text-agro-dark">{{ $hist->producto->nombre ?? 'Producto Eliminado' }}</p>
-                    <p class="text-[10px] font-mono font-bold text-gray-400 mt-0.5">SKU: {{ $hist->producto->sku ?? 'N/A' }}</p>
+                    <p class="text-[10px] font-mono font-bold text-gray-700 mt-0.5">SKU: {{ $hist->producto->sku ?? 'N/A' }}</p>
                 </td>
 
                 <td class="px-6 py-4 text-center">
                     <div class="flex items-center justify-center gap-3">
-                        <span class="text-gray-400 font-bold line-through text-sm">${{ number_format($hist->precio_anterior_usd, 2) }}</span>
+                        <span class="text-gray-700 font-bold line-through text-sm">${{ number_format($hist->precio_anterior_usd, 2) }}</span>
                         
                         @if($hist->precio_nuevo_usd > $hist->precio_anterior_usd)
                             <span class="material-symbols-outlined text-green-500">trending_up</span>

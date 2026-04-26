@@ -43,7 +43,7 @@
             {{-- Filtros y Buscador --}}
             <div class="bg-white rounded-t-3xl shadow-sm border border-gray-100 p-4 flex flex-col sm:flex-row gap-4 relative z-10">
                 <div class="flex-1 relative">
-                    <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
+                    <span class="material-symbols-outlined absolute left-3 top-3 text-gray-700">search</span>
                     <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none font-medium text-agro-dark" placeholder="Buscar por nombre o país...">
                 </div>
                 <div class="w-full sm:w-48 relative">
@@ -52,7 +52,7 @@
                         <option value="1">Activas</option>
                         <option value="0">Inactivas</option>
                     </select>
-                    <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">filter_list</span>
+                    <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 pointer-events-none">filter_list</span>
                 </div>
             </div>
 
@@ -80,7 +80,7 @@
             
             <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h3 class="text-lg font-black text-agro-dark leading-none" id="modalTitle">Nueva Marca</h3>
-                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
+                <button type="button" onclick="closeModal()" class="text-gray-700 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -92,12 +92,12 @@
                 <div class="p-6 space-y-5">
                     
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nombre Comercial <span class="text-red-500">*</span></label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Nombre Comercial <span class="text-red-500">*</span></label>
                         <input type="text" id="nombre" name="nombre" required class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none uppercase placeholder:normal-case" placeholder="Ej: Bayer">
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">País de Origen (Opcional)</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">País de Origen (Opcional)</label>
                         <input type="text" id="pais_origen" name="pais_origen" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none" placeholder="Ej: Alemania">
                     </div>
 

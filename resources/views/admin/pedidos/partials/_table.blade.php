@@ -2,11 +2,11 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Pedido / Canal</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Cliente</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Total (USD/Bs)</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Estado</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acciones</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Pedido / Canal</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Cliente</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Total (USD/Bs)</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Estado</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Acciones</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
@@ -36,14 +36,14 @@
                         <p class="font-bold text-gray-800 text-sm capitalize line-clamp-1">{{ $pedido->usuario->nombre }} {{ $pedido->usuario->apellido }}</p>
                         <p class="text-[11px] text-gray-500 mt-0.5">{{ $pedido->usuario->documento_identidad ?? $pedido->usuario->email }}</p>
                     @else
-                        <span class="text-xs text-gray-400 italic font-bold">Cliente Anónimo (POS)</span>
+                        <span class="text-xs text-gray-700 italic font-bold">Cliente Anónimo (POS)</span>
                     @endif
                 </td>
 
                 {{-- Columna 3: Montos --}}
                 <td class="px-6 py-4">
                     <p class="font-black text-agro-dark text-base">${{ number_format($pedido->total_usd, 2) }}</p>
-                    <p class="text-[10px] font-bold text-gray-400">Bs. {{ number_format($pedido->total_ves_calculado, 2) }}</p>
+                    <p class="text-[10px] font-bold text-gray-700">Bs. {{ number_format($pedido->total_ves_calculado, 2) }}</p>
                 </td>
 
                 {{-- Columna 4: Estado (Badges Semánticos) --}}
@@ -102,7 +102,7 @@
                 <td colspan="5" class="px-6 py-16 text-center text-gray-500">
                     <div class="flex flex-col items-center justify-center">
                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                            <span class="material-symbols-outlined text-3xl text-gray-400">receipt_long</span>
+                            <span class="material-symbols-outlined text-3xl text-gray-700">receipt_long</span>
                         </div>
                         <p class="font-bold text-gray-600">No se encontraron pedidos</p>
                         <p class="text-xs mt-1">Prueba ajustando los filtros de búsqueda.</p>

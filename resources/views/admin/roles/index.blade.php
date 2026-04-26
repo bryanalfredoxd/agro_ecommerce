@@ -69,7 +69,7 @@
                                     </span>
                                 @endif
                             @else
-                                <span class="text-xs text-gray-400 italic">Sin permisos asignados</span>
+                                <span class="text-xs text-gray-700 italic">Sin permisos asignados</span>
                             @endif
                         </div>
 
@@ -83,7 +83,7 @@
                             <form action="{{ route('admin.roles.destroy', $rol->id) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de eliminar este rol?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="w-10 h-10 flex items-center justify-center bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded-xl transition-colors border border-gray-200">
+                                <button type="submit" class="w-10 h-10 flex items-center justify-center bg-gray-50 hover:bg-red-50 text-gray-700 hover:text-red-600 rounded-xl transition-colors border border-gray-200">
                                     <span class="material-symbols-outlined text-[18px]">delete</span>
                                 </button>
                             </form>
@@ -114,7 +114,7 @@
                 {{-- Header del Modal --}}
                 <div class="bg-white px-6 py-5 border-b border-gray-100 flex justify-between items-center z-10 flex-shrink-0">
                     <h3 class="text-xl font-black text-agro-dark" id="modalTitle">Crear Nuevo Rol</h3>
-                    <button type="button" onclick="closeRoleModal()" class="text-gray-400 hover:text-red-500 transition-colors p-1 bg-gray-50 rounded-lg">
+                    <button type="button" onclick="closeRoleModal()" class="text-gray-700 hover:text-red-500 transition-colors p-1 bg-gray-50 rounded-lg">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>

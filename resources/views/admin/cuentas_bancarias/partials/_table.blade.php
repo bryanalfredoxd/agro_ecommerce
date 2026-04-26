@@ -2,10 +2,10 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest w-16">Estado</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Tipo / Entidad</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Datos de Recepción</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acciones</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest w-16">Estado</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Tipo / Entidad</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Datos de Recepción</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Acciones</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
@@ -47,10 +47,10 @@
                     @endif
                     
                     <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[11px] text-gray-500">
-                        @if($cuenta->telefono) <span class="font-mono"><span class="font-bold text-gray-400">TEL:</span> {{ $cuenta->telefono }}</span> @endif
-                        @if($cuenta->identificacion) <span class="font-mono"><span class="font-bold text-gray-400">CI/RIF:</span> {{ $cuenta->identificacion }}</span> @endif
-                        @if($cuenta->email) <span class="font-medium"><span class="font-bold text-gray-400">EMAIL:</span> {{ $cuenta->email }}</span> @endif
-                        @if($cuenta->numero_cuenta) <span class="font-mono"><span class="font-bold text-gray-400">CTA:</span> {{ $cuenta->numero_cuenta }}</span> @endif
+                        @if($cuenta->telefono) <span class="font-mono"><span class="font-bold text-gray-700">TEL:</span> {{ $cuenta->telefono }}</span> @endif
+                        @if($cuenta->identificacion) <span class="font-mono"><span class="font-bold text-gray-700">CI/RIF:</span> {{ $cuenta->identificacion }}</span> @endif
+                        @if($cuenta->email) <span class="font-medium"><span class="font-bold text-gray-700">EMAIL:</span> {{ $cuenta->email }}</span> @endif
+                        @if($cuenta->numero_cuenta) <span class="font-mono"><span class="font-bold text-gray-700">CTA:</span> {{ $cuenta->numero_cuenta }}</span> @endif
                     </div>
                 </td>
 

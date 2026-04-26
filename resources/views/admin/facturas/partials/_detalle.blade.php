@@ -62,7 +62,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="4" class="py-8 text-center text-gray-400 italic">No hay detalles de productos asociados.</td>
+                        <td colspan="4" class="py-8 text-center text-gray-700 italic">No hay detalles de productos asociados.</td>
                     </tr>
                 @endif
             </tbody>
@@ -95,7 +95,7 @@
                 </div>
             </div>
         </div>
-        <div class="mt-8 text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+        <div class="mt-8 text-center text-[10px] text-gray-700 font-bold uppercase tracking-widest">
             *** Copia Contable Sin Derecho a Crédito Fiscal *** <br>
             Sistema ERP Corpo Agrícola
         </div>

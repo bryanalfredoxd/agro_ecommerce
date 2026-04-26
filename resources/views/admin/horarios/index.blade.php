@@ -46,10 +46,10 @@
                     
                     {{-- Encabezados de la tabla visual --}}
                     <div class="hidden sm:grid grid-cols-12 gap-4 px-8 py-4 border-b border-gray-100 bg-gray-50/80">
-                        <div class="col-span-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Día</div>
-                        <div class="col-span-3 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Estado</div>
-                        <div class="col-span-3 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Apertura</div>
-                        <div class="col-span-3 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Cierre</div>
+                        <div class="col-span-3 text-[10px] font-black text-gray-700 uppercase tracking-widest">Día</div>
+                        <div class="col-span-3 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Estado</div>
+                        <div class="col-span-3 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Apertura</div>
+                        <div class="col-span-3 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Cierre</div>
                     </div>
 
                     <form id="horarioForm" onsubmit="saveHorarios(event)">
@@ -83,7 +83,7 @@
 
                                 {{-- 3. Hora de Apertura --}}
                                 <div class="col-span-3 flex items-center sm:justify-center gap-2">
-                                    <span class="sm:hidden text-xs font-bold text-gray-400 w-16">Apertura:</span>
+                                    <span class="sm:hidden text-xs font-bold text-gray-700 w-16">Apertura:</span>
                                     <input type="time" name="horarios[{{ $horario->dia_semana }}][hora_apertura]" id="apertura_{{ $horario->dia_semana }}" 
                                            value="{{ $horario->hora_apertura ? \Carbon\Carbon::parse($horario->hora_apertura)->format('H:i') : '08:00' }}" 
                                            {{ !$horario->es_laborable ? 'disabled' : '' }}
@@ -92,7 +92,7 @@
 
                                 {{-- 4. Hora de Cierre --}}
                                 <div class="col-span-3 flex items-center sm:justify-center gap-2">
-                                    <span class="sm:hidden text-xs font-bold text-gray-400 w-16">Cierre:</span>
+                                    <span class="sm:hidden text-xs font-bold text-gray-700 w-16">Cierre:</span>
                                     <input type="time" name="horarios[{{ $horario->dia_semana }}][hora_cierre]" id="cierre_{{ $horario->dia_semana }}" 
                                            value="{{ $horario->hora_cierre ? \Carbon\Carbon::parse($horario->hora_cierre)->format('H:i') : '17:00' }}" 
                                            {{ !$horario->es_laborable ? 'disabled' : '' }}

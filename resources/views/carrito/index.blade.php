@@ -36,7 +36,7 @@
             <div class="flex-1">
                 <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
                     
-                    <div class="hidden sm:grid grid-cols-12 gap-4 p-6 border-b border-gray-100 bg-gray-50/50 text-xs font-black text-gray-400 uppercase tracking-wider">
+                    <div class="hidden sm:grid grid-cols-12 gap-4 p-6 border-b border-gray-100 bg-gray-50/50 text-xs font-black text-gray-700 uppercase tracking-wider">
                         <div class="col-span-6">Producto</div>
                         <div class="col-span-3 text-center">Cantidad</div>
                         <div class="col-span-2 text-right">Total</div>
@@ -75,20 +75,20 @@
                                         <h3 class="text-base sm:text-lg font-bold text-agro-dark leading-snug line-clamp-2 mb-1">
                                             <a href="#" class="hover:text-primary transition-colors">{{ $item->producto->nombre }}</a>
                                         </h3>
-                                        <p class="text-sm font-black text-primary">${{ number_format($precioUsado, 2) }} <span class="text-[10px] font-bold text-gray-400 uppercase">/ {{ $item->producto->unidad_medida }}</span></p>
+                                        <p class="text-sm font-black text-primary">${{ number_format($precioUsado, 2) }} <span class="text-[10px] font-bold text-gray-700 uppercase">/ {{ $item->producto->unidad_medida }}</span></p>
                                     </div>
                                 </div>
 
                                 {{-- Controles de Cantidad Dinámicos --}}
                                 <div class="col-span-3 flex justify-center w-full sm:w-auto">
                                     <div class="flex items-center bg-white border border-gray-200 rounded-xl shadow-sm h-11 overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
-                                        <button type="button" onclick="updateQty({{ $item->id }}, 'sub')" class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-agro-dark hover:bg-gray-50 transition-colors active:bg-gray-100 flex-shrink-0">
+                                        <button type="button" onclick="updateQty({{ $item->id }}, 'sub')" class="w-10 h-full flex items-center justify-center text-gray-700 hover:text-agro-dark hover:bg-gray-50 transition-colors active:bg-gray-100 flex-shrink-0">
                                             <span class="material-symbols-outlined text-[20px]">remove</span>
                                         </button>
                                         
                                         <input type="text" inputmode="decimal" id="qty-{{ $item->id }}" readonly value="{{ (float) $item->cantidad }}" class="qty-input flex-1 min-w-[3rem] px-2 h-full text-center font-black text-agro-dark text-sm bg-transparent border-0 focus:ring-0 p-0 m-0 select-none">
                                         
-                                        <button type="button" onclick="updateQty({{ $item->id }}, 'add')" class="w-10 h-full flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors active:bg-gray-100 flex-shrink-0">
+                                        <button type="button" onclick="updateQty({{ $item->id }}, 'add')" class="w-10 h-full flex items-center justify-center text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors active:bg-gray-100 flex-shrink-0">
                                             <span class="material-symbols-outlined text-[20px]">add</span>
                                         </button>
                                     </div>
@@ -96,7 +96,7 @@
 
                                 {{-- Total del Item --}}
                                 <div class="col-span-2 text-right w-full sm:w-auto flex justify-between sm:block border-t border-gray-50 sm:border-0 pt-4 sm:pt-0 mt-2 sm:mt-0">
-                                    <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider sm:hidden">Total</span>
+                                    <span class="block text-xs font-bold text-gray-700 uppercase tracking-wider sm:hidden">Total</span>
                                     <span class="item-total-display text-lg font-black text-agro-dark">${{ number_format($precioUsado * $item->cantidad, 2) }}</span>
                                 </div>
 
@@ -144,7 +144,7 @@
                             <span class="text-base text-agro-dark font-bold">Total a pagar</span>
                             <div class="text-right">
                                 <span id="summary-total" class="block text-3xl font-black text-agro-dark leading-none">${{ number_format($total, 2) }}</span>
-                                <span class="block text-[11px] text-gray-400 font-bold uppercase mt-1">USD</span>
+                                <span class="block text-[11px] text-gray-700 font-bold uppercase mt-1">USD</span>
                             </div>
                         </div>
                     </div>
@@ -154,7 +154,7 @@
                         <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </a>
                     
-                    <div class="mt-6 flex items-center justify-center gap-2 text-xs font-bold text-gray-400">
+                    <div class="mt-6 flex items-center justify-center gap-2 text-xs font-bold text-gray-700">
                         <span class="material-symbols-outlined text-[16px] text-green-500">lock</span>
                         Transacción 100% Segura
                     </div>
@@ -199,7 +199,7 @@
             <h4 id="toast-title" class="font-bold text-gray-900 text-sm">Notificación</h4>
             <p id="toast-message" class="text-xs font-medium text-gray-500 mt-0.5">Mensaje...</p>
         </div>
-        <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100">
+        <button onclick="hideToast()" class="text-gray-700 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100">
             <span class="material-symbols-outlined text-xl">close</span>
         </button>
     </div>

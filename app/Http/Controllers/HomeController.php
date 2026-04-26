@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Producto;
 use App\Models\Categoria;
+use App\Models\TasaCambio; // <-- IMPORTANTE: Agregar esta línea
 
 class HomeController extends Controller
 {
@@ -13,6 +14,8 @@ class HomeController extends Controller
      */
     public function __invoke()
     {
+        $tasaDolar = TasaCambio::obtenerValorUSD() ?? 1; 
+        
         // 1. CATEGORÍAS PRINCIPALES
         $categoriasPrincipales = Categoria::whereNull('categoria_padre_id')
                                           ->take(20)
@@ -25,7 +28,6 @@ class HomeController extends Controller
             ->with(['marca', 'categoria', 'imagenes' => function($q) {
                 $q->where('es_principal', 1);
             }])
-            // CORRECCIÓN: Cambiamos latest() por orderBy('id', 'desc')
             ->orderBy('id', 'desc') 
             ->take(8)
             ->get();
@@ -38,7 +40,6 @@ class HomeController extends Controller
                 ->whereNull('eliminado_at')
                 ->whereNotIn('id', $productosDestacados->pluck('id'))
                 ->with(['marca', 'categoria', 'imagenes'])
-                // CORRECCIÓN: Aquí también cambiamos latest()
                 ->orderBy('id', 'desc')
                 ->take($cantidadFaltante)
                 ->get();
@@ -46,6 +47,7 @@ class HomeController extends Controller
             $productosDestacados = $productosDestacados->merge($relleno);
         }
 
-        return view('welcome', compact('categoriasPrincipales', 'productosDestacados'));
+        // AGREGAMOS $tasaDolar a la función compact()
+        return view('welcome', compact('categoriasPrincipales', 'productosDestacados', 'tasaDolar'));
     }
 }

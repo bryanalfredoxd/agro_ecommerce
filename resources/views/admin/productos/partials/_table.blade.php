@@ -2,12 +2,12 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest w-20">Imagen</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Detalle del Producto</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Precio (USD)</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Stock Disponible</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Atributos</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acciones</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest w-20">Imagen</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Detalle del Producto</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Precio (USD)</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Stock Disponible</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Atributos</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Acciones</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
@@ -38,7 +38,7 @@
                     </p>
                     <div class="flex items-center gap-2">
                         <span class="font-mono text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">SKU: {{ $producto->sku ?? 'N/A' }}</span>
-                        <span class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">
+                        <span class="text-[10px] text-gray-700 uppercase tracking-wider font-bold">
                             {{ $producto->categoria->nombre ?? 'Sin Categoría' }}
                         </span>
                     </div>
@@ -50,7 +50,7 @@
                     @if($producto->precio_oferta_usd)
                         <p class="text-[10px] font-bold text-red-500 line-through">${{ number_format($producto->precio_oferta_usd, 2) }}</p>
                     @else
-                        <p class="text-[10px] font-medium text-gray-400">P. Base</p>
+                        <p class="text-[10px] font-medium text-gray-700">P. Base</p>
                     @endif
                 </td>
                 
@@ -128,7 +128,7 @@
                 <td colspan="6" class="px-6 py-16 text-center text-gray-500">
                     <div class="flex flex-col items-center justify-center">
                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                            <span class="material-symbols-outlined text-3xl text-gray-400">inventory_2</span>
+                            <span class="material-symbols-outlined text-3xl text-gray-700">inventory_2</span>
                         </div>
                         <p class="font-bold text-gray-600">No se encontraron productos</p>
                         <p class="text-xs mt-1">Prueba ajustando los filtros o la búsqueda.</p>

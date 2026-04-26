@@ -3,9 +3,6 @@
     <div class="layout-container w-full relative z-10 px-4 sm:px-0">
         
         <div class="mb-10 md:mb-12 max-w-3xl">
-            <span class="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary font-bold uppercase tracking-wider text-xs mb-3">
-                Selección del Mes
-            </span>
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-agro-dark leading-tight">
                 Productos Más <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-agro-dark">Vendidos</span>
             </h2>
@@ -15,15 +12,14 @@
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            
+    
             @foreach($productosDestacados as $producto)
             <article class="group relative flex flex-col bg-white rounded-2xl border border-gray-100 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden h-full">
                 
-                {{-- ÁREA DE IMAGEN: Corregida para apuntar al Storage de Laravel --}}
+                {{-- ÁREA DE IMAGEN --}}
                 <div class="relative w-full aspect-[4/3] bg-gray-50 overflow-hidden">
                     
                     @if($producto->imagen_url)
-                        {{-- Usamos asset() directamente para renderizar la imagen desde public/img/upload/productos/ --}}
                         <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700 ease-out mix-blend-multiply" 
                             style="background-image: url('{{ asset($producto->imagen_url) }}');"></div>
                     @else
@@ -33,24 +29,18 @@
                         </div>
                     @endif
                     
-                    {{-- Badges Superior Izquierda --}}
+                    {{-- Badges Superior Izquierda (Solo Controlado, ya no hay Oferta) --}}
                     <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start z-10 pointer-events-none">
                         @if($producto->es_controlado)
                             <span class="inline-flex items-center gap-1 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase shadow-sm tracking-wide">
                                 <span class="material-symbols-outlined text-[12px]">lock</span> Controlado
                             </span>
                         @endif
-
-                        @if($producto->precio_oferta_usd)
-                            <span class="inline-flex items-center gap-1 bg-primary text-agro-dark text-[10px] font-black px-2 py-1 rounded-md uppercase shadow-sm tracking-wide">
-                                Oferta
-                            </span>
-                        @endif
                     </div>
 
                     {{-- Botón Favorito --}}
                     <div class="absolute top-3 right-3 z-20">
-                        <button class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 hover:shadow-md transition-all duration-300" title="Añadir a favoritos">
+                        <button class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-700 hover:text-red-500 hover:bg-red-50 hover:shadow-md transition-all duration-300" title="Añadir a favoritos">
                             <span class="material-symbols-outlined text-[18px] hover:fill-current">favorite</span>
                         </button>
                     </div>
@@ -99,36 +89,35 @@
                     </h3>
                     
                     {{-- Descripción --}}
-                    <p class="text-xs text-gray-500 mb-4 line-clamp-2 flex-grow leading-relaxed relative z-20">
+                    <p class="text-xs text-gray-600 mb-4 line-clamp-2 flex-grow leading-relaxed relative z-20">
                         {{ $producto->descripcion }}
                     </p>
                     
-                    {{-- Fila Inferior: Precios y Call to Action (CTA) --}}
-                    <div class="mt-auto pt-4 border-t border-gray-100 flex items-end justify-between relative z-20">
+                    {{-- Fila Inferior: Precios (USD y VES) y Call to Action (CTA) --}}
+                    <div class="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between relative z-20">
                         
+                        {{-- Contenedor de Precios --}}
                         <div class="flex flex-col">
-                            <div class="flex items-baseline gap-1.5">
-                                @if($producto->precio_oferta_usd)
-                                    <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_oferta_usd, 2) }}</span>
-                                    <span class="text-xs text-gray-400 line-through font-semibold">${{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                @else
-                                    <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                    <span class="text-[10px] text-gray-400 font-bold self-start mt-1">USD</span>
-                                @endif
+                            {{-- Precio en Dólares (Principal) --}}
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                                <span class="text-[10px] text-gray-700 font-bold uppercase tracking-wider">USD</span>
                             </div>
-                            <span class="text-[11px] text-gray-400 font-medium mt-0.5">
-                                {{-- Aquí multiplicas por 60.50 como demo. A futuro, este número vendrá de la variable de Tasa de Cambio del BCV --}}
-                                ≈ Bs. {{ number_format(($producto->precio_oferta_usd ?? $producto->precio_venta_usd) * 60.50, 2, ',', '.') }}
+                            
+                            {{-- NUEVO: Precio en Bolívares (Calculado Dinámicamente) --}}
+                            <span class="text-[11px] text-gray-600 font-bold mt-0.5 tracking-wide">
+                                Bs. {{ number_format($producto->precio_venta_usd * $tasaDolar, 2, ',', '.') }}
                             </span>
                         </div>
                         
-                        {{-- BOTÓN AÑADIR AL CARRITO EXPLÍCITO Y SIEMPRE VISIBLE --}}
-<button type="button" 
-        data-producto-id="{{ $producto->id }}"
-        class="btn-add-cart-destacado flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-agro-dark hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group/btn" 
-        title="Añadir al carrito">
-    <span class="material-symbols-outlined text-[22px] group-active/btn:scale-95 transition-transform pointer-events-none">add_shopping_cart</span>
-</button>
+                        {{-- BOTÓN AÑADIR AL CARRITO --}}
+                        <button type="button" 
+                                data-producto-id="{{ $producto->id }}"
+                                class="btn-add-cart-destacado flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-agro-dark hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group/btn shrink-0" 
+                                title="Añadir al carrito">
+                            <span class="material-symbols-outlined text-[20px] group-active/btn:scale-95 transition-transform pointer-events-none">add_shopping_cart</span>
+                        </button>
+
                     </div>
 
                 </div>

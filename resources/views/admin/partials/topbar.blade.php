@@ -5,7 +5,7 @@
         </button>
         <div>
             <h1 class="text-xl font-black text-agro-dark leading-none">Corpo Agrícola</h1>
-            <p class="text-[11px] font-bold text-gray-400 mt-1 uppercase tracking-wider">{{ date('d M Y, h:i A') }}</p>
+            <p class="text-[11px] font-bold text-gray-700 mt-1 uppercase tracking-wider">{{ date('d M Y, h:i A') }}</p>
         </div>
     </div>
 
@@ -13,7 +13,7 @@
         
         {{-- CONTENEDOR NOTIFICACIONES --}}
         <div class="relative">
-            <button id="btnNotificaciones" onclick="toggleNotificaciones()" class="relative p-2 text-gray-400 hover:text-primary transition-colors rounded-full hover:bg-gray-50 focus:outline-none">
+            <button id="btnNotificaciones" onclick="toggleNotificaciones()" class="relative p-2 text-gray-700 hover:text-primary transition-colors rounded-full hover:bg-gray-50 focus:outline-none">
                 <span class="material-symbols-outlined">notifications</span>
                 {{-- Punto rojo (Oculto por defecto hasta que el JS lo active) --}}
                 <span id="notificaciones-badge" class="absolute top-1 right-1 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 ring-2 ring-white hidden">
@@ -31,13 +31,13 @@
 
                 <div id="listaNotificaciones" class="max-h-[60vh] overflow-y-auto custom-scrollbar divide-y divide-gray-50">
                     {{-- Loader inicial --}}
-                    <div class="p-8 text-center text-gray-400">
+                    <div class="p-8 text-center text-gray-700">
                         <span class="material-symbols-outlined animate-spin text-3xl">autorenew</span>
                     </div>
                 </div>
 
                 <div class="p-3 border-t border-gray-50 text-center bg-gray-50/50 hidden" id="pieNotificaciones">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Actualizado en vivo</p>
+                    <p class="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Actualizado en vivo</p>
                 </div>
             </div>
         </div>
@@ -133,12 +133,12 @@
             if (data.total > 0) {
                 badge.classList.remove('hidden');
                 tituloCount.innerText = `${data.cantidad_eventos} Pendientes`;
-                tituloCount.classList.replace('text-gray-400', 'text-primary');
+                tituloCount.classList.replace('text-gray-700', 'text-primary');
                 tituloCount.classList.replace('bg-gray-100', 'bg-primary/10');
             } else {
                 badge.classList.add('hidden');
                 tituloCount.innerText = 'Al día';
-                tituloCount.classList.replace('text-primary', 'text-gray-400');
+                tituloCount.classList.replace('text-primary', 'text-gray-700');
                 tituloCount.classList.replace('bg-primary/10', 'bg-gray-100');
             }
 
@@ -152,7 +152,7 @@
                             <span class="material-symbols-outlined text-gray-300 text-3xl">done_all</span>
                         </div>
                         <p class="text-sm font-black text-gray-700">¡Todo al día!</p>
-                        <p class="text-xs text-gray-400 mt-1">No hay tareas pendientes por ahora.</p>
+                        <p class="text-xs text-gray-700 mt-1">No hay tareas pendientes por ahora.</p>
                     </div>`;
                 pie.classList.add('hidden');
             } else {
@@ -166,7 +166,7 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex justify-between items-start mb-0.5">
                                     <h4 class="text-sm font-black text-agro-dark truncate">${alerta.titulo}</h4>
-                                    <span class="text-[9px] font-bold text-gray-400 uppercase bg-white px-1.5 py-0.5 border border-gray-100 rounded">${alerta.tiempo}</span>
+                                    <span class="text-[9px] font-bold text-gray-700 uppercase bg-white px-1.5 py-0.5 border border-gray-100 rounded">${alerta.tiempo}</span>
                                 </div>
                                 <p class="text-xs text-gray-500 leading-snug pr-2">${alerta.mensaje}</p>
                             </div>

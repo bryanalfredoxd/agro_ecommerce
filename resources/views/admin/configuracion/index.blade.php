@@ -38,17 +38,17 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nombre Comercial de la Empresa</label>
+                                <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Nombre Comercial de la Empresa</label>
                                 <input type="text" name="nombre_empresa" value="{{ old('nombre_empresa', $config->nombre_empresa) }}" required class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-agro-dark outline-none">
                             </div>
                             
                             <div>
-                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Porcentaje de Impuesto (IVA) %</label>
+                                <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Porcentaje de Impuesto (IVA) %</label>
                                 <div class="relative">
-                                    <span class="absolute left-4 top-3.5 font-bold text-gray-400">%</span>
+                                    <span class="absolute left-4 top-3.5 font-bold text-gray-700">%</span>
                                     <input type="number" step="0.01" min="0" max="100" name="iva_porcentaje" value="{{ old('iva_porcentaje', $config->iva_porcentaje) }}" required class="limit-decimals w-full h-12 pl-10 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-blue-600 text-lg outline-none">
                                 </div>
-                                <p class="text-[10px] text-gray-400 mt-1 ml-1 font-medium">Este porcentaje se calculará automáticamente en los carritos web y el POS.</p>
+                                <p class="text-[10px] text-gray-700 mt-1 ml-1 font-medium">Este porcentaje se calculará automáticamente en los carritos web y el POS.</p>
                             </div>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                         </h3>
                         
                         <div class="mb-6">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Modo de Funcionamiento Actual</label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Modo de Funcionamiento Actual</label>
                             <select name="modo_operativo" id="modo_operativo" onchange="verificarModo()" class="w-full h-14 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-500/20 transition-all font-bold text-agro-dark outline-none cursor-pointer">
                                 <option value="automatico" {{ $config->modo_operativo == 'automatico' ? 'selected' : '' }}>Automático (Abre y cierra según los horarios configurados)</option>
                                 <option value="manual_abierto" {{ $config->modo_operativo == 'manual_abierto' ? 'selected' : '' }}>Forzar Abierto 24/7 (Ignora los horarios)</option>
@@ -69,15 +69,15 @@
                         </div>
 
                         <div id="caja_mensaje_cierre" class="transition-all duration-300 {{ $config->modo_operativo == 'manual_cerrado' ? 'bg-red-50 border border-red-200 p-4 rounded-2xl' : '' }}">
-                            <label class="block text-[10px] font-black uppercase tracking-widest mb-2 ml-1 {{ $config->modo_operativo == 'manual_cerrado' ? 'text-red-500' : 'text-gray-400' }}">Mensaje visible cuando la tienda esté cerrada</label>
+                            <label class="block text-[10px] font-black uppercase tracking-widest mb-2 ml-1 {{ $config->modo_operativo == 'manual_cerrado' ? 'text-red-500' : 'text-gray-700' }}">Mensaje visible cuando la tienda esté cerrada</label>
                             <textarea name="mensaje_cierre_emergencia" rows="3" class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-orange-500 focus:bg-white outline-none text-sm text-gray-600 font-medium">{{ old('mensaje_cierre_emergencia', $config->mensaje_cierre_emergencia) }}</textarea>
-                            <p class="text-[10px] text-gray-400 mt-1.5 ml-1">Este texto lo verán los clientes en la página web en lugar del botón "Añadir al Carrito".</p>
+                            <p class="text-[10px] text-gray-700 mt-1.5 ml-1">Este texto lo verán los clientes en la página web en lugar del botón "Añadir al Carrito".</p>
                         </div>
                     </div>
                 </div>
 
                 {{-- Auditoría Footer --}}
-                <div class="mt-4 px-2 flex justify-between items-center text-xs font-bold text-gray-400">
+                <div class="mt-4 px-2 flex justify-between items-center text-xs font-bold text-gray-700">
                     <p>Última actualización: {{ \Carbon\Carbon::parse($config->actualizado_at)->format('d/m/Y h:i A') }}</p>
                     <p>Editado por: {{ $config->ultimoEditor ? $config->ultimoEditor->nombre : 'Sistema' }}</p>
                 </div>
@@ -133,10 +133,10 @@
 
         if (select.value === 'manual_cerrado') {
             cajaMensaje.classList.add('bg-red-50', 'border', 'border-red-200', 'p-4', 'rounded-2xl');
-            labelMensaje.classList.replace('text-gray-400', 'text-red-500');
+            labelMensaje.classList.replace('text-gray-700', 'text-red-500');
         } else {
             cajaMensaje.classList.remove('bg-red-50', 'border', 'border-red-200', 'p-4', 'rounded-2xl');
-            labelMensaje.classList.replace('text-red-500', 'text-gray-400');
+            labelMensaje.classList.replace('text-red-500', 'text-gray-700');
         }
     }
 

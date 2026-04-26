@@ -16,17 +16,17 @@
                             <span class="text-white text-xl font-bold tracking-tight">Corpo</span>
                             <span class="text-agro-gold text-xl font-bold tracking-tight">Agrícola</span>
                         </div>
-                        <span class="text-[10px] text-gray-400 font-medium tracking-wider uppercase mt-0.5">Venezuela</span>
+                        <span class="text-[10px] text-gray-700 font-medium tracking-wider uppercase mt-0.5">Venezuela</span>
                     </div>
                 </div>
                 
-                <p class="text-gray-400 text-sm leading-relaxed text-pretty">
+                <p class="text-gray-700 text-sm leading-relaxed text-pretty">
                     Su aliado estratégico en el campo venezolano. Ofrecemos insumos, maquinaria y asesoría técnica especializada para garantizar el éxito de su cosecha.
                 </p>
                 
                 <div class="flex gap-3">
                     @foreach(['facebook', 'instagram', 'youtube'] as $social)
-                    <a href="#" class="size-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-primary transition-all duration-300 group">
+                    <a href="#" class="size-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-700 hover:text-primary transition-all duration-300 group">
                         <img src="https://cdn.simpleicons.org/{{ $social }}/ffffff" class="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity" alt="{{ $social }}">
                     </a>
                     @endforeach
@@ -41,7 +41,7 @@
                 <ul class="space-y-3">
                     @foreach(['Inicio', 'Nosotros', 'Catálogo', 'Servicios', 'Blog', 'Contacto'] as $link)
                     <li>
-                        <a href="#" class="text-sm text-gray-400 hover:text-primary hover:pl-1 transition-all duration-200 flex items-center gap-2">
+                        <a href="#" class="text-sm text-gray-700 hover:text-primary hover:pl-1 transition-all duration-200 flex items-center gap-2">
                             <span class="w-1 h-1 bg-gray-600 rounded-full"></span>
                             {{ $link }}
                         </a>
@@ -66,7 +66,7 @@
                     @endphp
                     @foreach($cats as $cat)
                     <a href="#" class="group flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
-                        <span class="text-sm text-gray-400 group-hover:text-white transition-colors">{{ $cat['name'] }}</span>
+                        <span class="text-sm text-gray-700 group-hover:text-white transition-colors">{{ $cat['name'] }}</span>
                         <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-gray-500 group-hover:bg-primary/20 group-hover:text-primary transition-colors">{{ $cat['count'] }}</span>
                     </a>
                     @endforeach
@@ -86,17 +86,17 @@
                         </div>
                         <div>
                             <span class="block text-xs text-gray-500 mb-0.5">Llámanos</span>
-                            <a href="tel:+584241234567" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">+58 424-123-4567</a>
+                            <a href="tel:+58412-9614615" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">+58 412-9614615</a>
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-3 group">
+                    <div class="flex items-start gap-3 group"> 
                         <div class="size-8 rounded-lg bg-white/5 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-agro-dark transition-colors">
                             <span class="material-symbols-outlined text-[18px]">mail</span>
                         </div>
                         <div>
                             <span class="block text-xs text-gray-500 mb-0.5">Escríbenos</span>
-                            <a href="mailto:ventas@corpoagricola.com" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">ventas@corpoagricola.com</a>
+                            <a href="mailto:gerenciacorpoasia@gmail.com" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">gerenciacorpoasia@gmail.com</a>
                         </div>
                     </div>
 
@@ -106,7 +106,7 @@
                         </div>
                         <div>
                             <span class="block text-xs text-gray-500 mb-0.5">Visítanos</span>
-                            <p class="text-sm font-medium text-gray-300">Av. Principal Zona Industrial, Galpón 5, Venezuela.</p>
+                            <p class="text-sm font-medium text-gray-300">Avenida Carabobo Edificio San Vicente Local 4 Planta Baja</p>
                         </div>
                     </div>
                 </div>

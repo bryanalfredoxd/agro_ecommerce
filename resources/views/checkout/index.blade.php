@@ -20,7 +20,7 @@
             </div>
             
             {{-- Breadcrumbs / Steps Visual --}}
-            <div class="hidden sm:flex items-center gap-3 text-xs font-bold text-gray-400 bg-white py-2.5 px-5 rounded-xl shadow-sm border border-gray-100">
+            <div class="hidden sm:flex items-center gap-3 text-xs font-bold text-gray-700 bg-white py-2.5 px-5 rounded-xl shadow-sm border border-gray-100">
                 <span class="text-primary flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">shopping_cart</span> Carrito</span>
                 <span class="material-symbols-outlined text-[16px]">chevron_right</span>
                 <span class="text-agro-dark bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200"><span class="material-symbols-outlined text-[18px]">local_shipping</span> Envío y Pago</span>
@@ -49,7 +49,7 @@
                             <label class="relative cursor-pointer group">
                                 <input type="radio" name="metodo_entrega" value="delivery" class="peer sr-only" checked onchange="window.CheckoutConfig.toggleDirecciones(true)">
                                 <div class="p-4 rounded-2xl border-2 border-gray-100 bg-white peer-checked:border-primary peer-checked:bg-primary/5 hover:border-gray-200 transition-all h-full flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 peer-checked:text-primary peer-checked:bg-white peer-checked:shadow-sm transition-all flex-shrink-0">
+                                    <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-700 peer-checked:text-primary peer-checked:bg-white peer-checked:shadow-sm transition-all flex-shrink-0">
                                         <span class="material-symbols-outlined text-[28px]">local_shipping</span>
                                     </div>
                                     <div>
@@ -62,7 +62,7 @@
                             <label class="relative cursor-pointer group">
                                 <input type="radio" name="metodo_entrega" value="pickup" class="peer sr-only" onchange="window.CheckoutConfig.toggleDirecciones(false)">
                                 <div class="p-4 rounded-2xl border-2 border-gray-100 bg-white peer-checked:border-primary peer-checked:bg-primary/5 hover:border-gray-200 transition-all h-full flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 peer-checked:text-primary peer-checked:bg-white peer-checked:shadow-sm transition-all flex-shrink-0">
+                                    <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-700 peer-checked:text-primary peer-checked:bg-white peer-checked:shadow-sm transition-all flex-shrink-0">
                                         <span class="material-symbols-outlined text-[28px]">storefront</span>
                                     </div>
                                     <div>
@@ -104,7 +104,7 @@
                                                 </div>
                                                 <p class="text-sm text-gray-600 leading-snug">{{ $dir->direccion_texto }}</p>
                                                 @if($dir->referencia_punto)
-                                                    <p class="text-[11px] font-medium text-gray-400 mt-1.5 flex items-start gap-1">
+                                                    <p class="text-[11px] font-medium text-gray-700 mt-1.5 flex items-start gap-1">
                                                         <span class="material-symbols-outlined text-[14px]">info</span> Ref: {{ $dir->referencia_punto }}
                                                     </p>
                                                 @endif
@@ -211,7 +211,7 @@
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Comprobante (Opcional)</label>
                                     <div class="relative w-full h-11 bg-white border border-gray-200 rounded-xl shadow-sm flex items-center overflow-hidden hover:border-primary hover:bg-primary/5 cursor-pointer transition-colors" onclick="document.getElementById('input-comprobante').click()">
-                                        <div class="px-4 border-r border-gray-100 text-gray-400 bg-gray-50 h-full flex items-center">
+                                        <div class="px-4 border-r border-gray-100 text-gray-700 bg-gray-50 h-full flex items-center">
                                             <span class="material-symbols-outlined text-[20px]">upload_file</span>
                                         </div>
                                         <div id="nombre-archivo-container" class="px-4 text-sm text-gray-500 truncate flex-1 font-medium">Adjuntar imagen...</div>
@@ -228,7 +228,7 @@
                             <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-600 font-black text-sm">4</span>
                             Notas adicionales (Opcional)
                         </h2>
-                        <textarea name="observaciones" rows="3" class="w-full rounded-2xl border-gray-200 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm p-4 transition-all placeholder:text-gray-400 resize-none shadow-inner" placeholder="Ej: Dejar con el vigilante en recepción, enviar el día martes por la mañana..."></textarea>
+                        <textarea name="observaciones" rows="3" class="w-full rounded-2xl border-gray-200 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm p-4 transition-all placeholder:text-gray-700 resize-none shadow-inner" placeholder="Ej: Dejar con el vigilante en recepción, enviar el día martes por la mañana..."></textarea>
                     </section>
 
                 </div>
@@ -265,7 +265,7 @@
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-bold text-agro-dark truncate">{{ $item->producto->nombre }}</p>
                                             <div class="flex justify-between items-center mt-0.5">
-                                                <span class="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md">Cant: {{ (int)$item->cantidad }}</span>
+                                                <span class="text-xs font-bold text-gray-700 bg-gray-100 px-2 py-0.5 rounded-md">Cant: {{ (int)$item->cantidad }}</span>
                                                 <span class="text-sm font-black text-primary">${{ number_format($item->producto->precio_venta_usd * $item->cantidad, 2) }}</span>
                                             </div>
                                         </div>
@@ -292,7 +292,7 @@
                                     <span class="text-base font-black text-agro-dark">Total a Pagar</span>
                                     <div class="text-right">
                                         <span id="total-usd-display" class="block text-3xl font-black text-agro-dark leading-none">${{ number_format($totalUsd, 2) }}</span>
-                                        <span class="block text-[11px] text-gray-400 font-bold mt-1">USD</span>
+                                        <span class="block text-[11px] text-gray-700 font-bold mt-1">USD</span>
                                     </div>
                                 </div>
 
@@ -314,7 +314,7 @@
                                 Procesar Pedido
                             </button>
                             
-                            <p class="text-[10px] text-center text-gray-400 mt-4 leading-tight flex justify-center items-center gap-1 font-medium">   
+                            <p class="text-[10px] text-center text-gray-700 mt-4 leading-tight flex justify-center items-center gap-1 font-medium">   
                                 <span class="material-symbols-outlined text-[14px]">lock</span> Tu compra es segura y encriptada.
                             </p>
                         </div>

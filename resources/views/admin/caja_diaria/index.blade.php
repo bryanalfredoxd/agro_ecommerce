@@ -36,8 +36,8 @@
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-2 mb-6">
                 <div class="flex overflow-x-auto custom-scrollbar px-4 pt-2 gap-6">
                     <button class="status-tab active pb-3 text-sm font-black border-b-2 border-teal-600 text-agro-dark whitespace-nowrap" data-estado="todas">Todos los Turnos</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="abierta">Turnos Abiertos</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="cerrada">Turnos Cerrados</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="abierta">Turnos Abiertos</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="cerrada">Turnos Cerrados</button>
                 </div>
             </div>
 
@@ -67,7 +67,7 @@
                     </div>
                     <h3 class="text-lg font-black text-agro-dark leading-none">Corte de Caja (Turno)</h3>
                 </div>
-                <button type="button" onclick="closeMovModal()" class="text-gray-400 hover:text-red-500 bg-gray-50 border border-gray-200 hover:border-red-200 p-2 rounded-xl transition-colors">
+                <button type="button" onclick="closeMovModal()" class="text-gray-700 hover:text-red-500 bg-gray-50 border border-gray-200 hover:border-red-200 p-2 rounded-xl transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -91,9 +91,9 @@
         tab.addEventListener('click', function() {
             document.querySelectorAll('.status-tab').forEach(t => {
                 t.classList.remove('border-teal-600', 'text-agro-dark', 'active');
-                t.classList.add('border-transparent', 'text-gray-400');
+                t.classList.add('border-transparent', 'text-gray-700');
             });
-            this.classList.remove('border-transparent', 'text-gray-400');
+            this.classList.remove('border-transparent', 'text-gray-700');
             this.classList.add('border-teal-600', 'text-agro-dark', 'active');
             currentFiltroEstado = this.getAttribute('data-estado');
             fetchData(1);

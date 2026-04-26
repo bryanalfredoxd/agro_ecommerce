@@ -12,10 +12,10 @@
             </div>
             <div class="flex flex-col">
                 <span class="text-white text-lg font-black tracking-tight leading-none">Corpo<span class="text-primary">Admin</span></span>
-                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Centro de Mando</span>
+                <span class="text-[10px] text-gray-700 font-bold uppercase tracking-widest mt-0.5">Centro de Mando</span>
             </div>
         </div>
-        <button onclick="toggleAdminSidebar()" class="lg:hidden text-gray-400 hover:text-white transition-colors p-1 bg-white/5 rounded-lg">
+        <button onclick="toggleAdminSidebar()" class="lg:hidden text-gray-700 hover:text-white transition-colors p-1 bg-white/5 rounded-lg">
             <span class="material-symbols-outlined text-[24px]">close</span>
         </button>
     </div>
@@ -52,7 +52,7 @@
                         <a href="{{ route('admin.pos.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Nueva Venta Manual</a>
                     @endif
                     @if(Auth::user()->tienePermiso('procesar_devoluciones'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Devoluciones</a>
+                        <a href="#" class="block py-2 text-xs font-medium text-gray-700 hover:text-primary transition-colors">Devoluciones</a>
                     @endif
                 </div>
             </details>
@@ -73,7 +73,7 @@
                         <a href="{{ route('admin.productos.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Listado de Productos</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_inventario_lotes'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Inventario por Lotes</a>
+                        <a href="#" class="block py-2 text-xs font-medium text-gray-700 hover:text-primary transition-colors">Inventario por Lotes</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_categorias_marcas'))
                         <a href="{{ route('admin.categorias.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Categorías</a>
@@ -121,13 +121,13 @@
                 </summary>
                 <div class="mt-1 pl-12 pr-2 space-y-1">
                     @if(Auth::user()->tienePermiso('gestionar_zonas_delivery'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Zonas de Delivery</a>
+                        <a href="#" class="block py-2 text-xs font-medium text-gray-700 hover:text-primary transition-colors">Zonas de Delivery</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_repartidores'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Repartidores</a>
+                        <a href="#" class="block py-2 text-xs font-medium text-gray-700 hover:text-primary transition-colors">Repartidores</a>
                     @endif
                     @if(Auth::user()->tienePermiso('ver_seguimiento_rutas'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Seguimiento Entregas</a>
+                        <a href="#" class="block py-2 text-xs font-medium text-gray-700 hover:text-primary transition-colors">Seguimiento Entregas</a>
                     @endif
                 </div>
             </details>
@@ -172,10 +172,10 @@
                 </summary>
                 <div class="mt-1 pl-12 pr-2 space-y-1">
                     @if(Auth::user()->tienePermiso('ver_recetas'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Listado de Recetas</a>
+                        <a href="#" class="block py-2 text-xs font-medium text-gray-700 hover:text-primary transition-colors">Listado de Recetas</a>
                     @endif
                     @if(Auth::user()->tienePermiso('auditar_recetas'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Revisión Pendientes</a>
+                        <a href="#" class="block py-2 text-xs font-medium text-gray-700 hover:text-primary transition-colors">Revisión Pendientes</a>
                     @endif
                 </div>
             </details>
@@ -186,7 +186,7 @@
             <details class="group/menu">
                 <summary class="flex items-center justify-between px-4 py-2.5 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer select-none font-bold text-sm">
                     <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-[20px] text-gray-400">settings_suggest</span>
+                        <span class="material-symbols-outlined text-[20px] text-gray-700">settings_suggest</span>
                         Sistema y Ajustes
                     </div>
                     <span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-open/menu:rotate-180">expand_more</span>
@@ -199,13 +199,13 @@
                         <a href="{{ route('admin.cuentas_bancarias.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Cuentas Bancarias</a>
                     @endif
                     @if(Auth::user()->tienePermiso('configurar_apis'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">APIs Externas</a>
+                        <a href="#" class="block py-2 text-xs font-medium text-gray-700 hover:text-primary transition-colors">APIs Externas</a>
                     @endif
                     @if(Auth::user()->tienePermiso('gestionar_horarios'))
                         <a href="{{ route('admin.horarios.index') }}" class="block py-2 text-xs font-medium text-red-400 hover:text-primary transition-colors">Horarios Físicos</a>
                     @endif
                     @if(Auth::user()->tienePermiso('ver_logs_auditoria'))
-                        <a href="#" class="block py-2 text-xs font-medium text-gray-400 hover:text-primary transition-colors">Logs de Auditoría</a>
+                        <a href="#" class="block py-2 text-xs font-medium text-gray-700 hover:text-primary transition-colors">Logs de Auditoría</a>
                     @endif
                 </div>
             </details>

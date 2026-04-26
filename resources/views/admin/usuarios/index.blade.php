@@ -29,14 +29,14 @@
                 <div class="flex overflow-x-auto custom-scrollbar border-b border-gray-100 px-4 pt-2 gap-6">
                     <button class="role-tab active pb-3 text-sm font-black border-b-2 border-primary text-agro-dark whitespace-nowrap" data-rol="all">Todos</button>
                     @foreach($roles as $rol)
-                        <button class="role-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-rol="{{ $rol->id }}">{{ $rol->nombre }}</button>
+                        <button class="role-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-rol="{{ $rol->id }}">{{ $rol->nombre }}</button>
                     @endforeach
                 </div>
 
                 {{-- Buscador y Selects --}}
                 <div class="p-4 flex flex-col sm:flex-row gap-4 bg-gray-50/50 rounded-b-2xl">
                     <div class="flex-1 relative">
-                        <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
+                        <span class="material-symbols-outlined absolute left-3 top-3 text-gray-700">search</span>
                         <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-medium text-agro-dark" placeholder="Buscar por correo, CI, nombre...">
                     </div>
                     <div class="w-full sm:w-48 relative">
@@ -46,7 +46,7 @@
                             <option value="az">Alfabético (A-Z)</option>
                             <option value="za">Alfabético (Z-A)</option>
                         </select>
-                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">sort</span>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 pointer-events-none">sort</span>
                     </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                         <h3 class="text-xl font-black text-agro-dark" id="modalTitle">Configuración de Accesos</h3>
                         <p class="text-xs text-indigo-600 font-bold mt-1" id="modalUserName">Cargando...</p>
                     </div>
-                    <button type="button" onclick="closePermisosModal()" class="text-gray-400 hover:text-red-500 transition-colors p-1 bg-gray-50 rounded-lg border border-gray-200">
+                    <button type="button" onclick="closePermisosModal()" class="text-gray-700 hover:text-red-500 transition-colors p-1 bg-gray-50 rounded-lg border border-gray-200">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -161,9 +161,9 @@
         tab.addEventListener('click', function() {
             document.querySelectorAll('.role-tab').forEach(t => {
                 t.classList.remove('border-primary', 'text-agro-dark', 'active');
-                t.classList.add('border-transparent', 'text-gray-400');
+                t.classList.add('border-transparent', 'text-gray-700');
             });
-            this.classList.remove('border-transparent', 'text-gray-400');
+            this.classList.remove('border-transparent', 'text-gray-700');
             this.classList.add('border-primary', 'text-agro-dark', 'active');
             
             currentRole = this.getAttribute('data-rol');

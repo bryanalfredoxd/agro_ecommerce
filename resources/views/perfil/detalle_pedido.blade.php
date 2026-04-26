@@ -14,7 +14,7 @@
                 <span class="sm:hidden">Volver</span>
             </a>
             <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">Orden</span>
+                <span class="text-[11px] font-black text-gray-700 uppercase tracking-wider">Orden</span>
                 <span class="text-base font-black text-agro-dark">#{{ $pedido->id }}</span>
             </div>
         </div>
@@ -110,7 +110,7 @@
                                         {{ $detalle->producto ? $detalle->producto->nombre : 'Producto no disponible' }}
                                     </p>
                                     <div class="flex items-center gap-3 mb-2">
-                                        <p class="text-sm font-black text-primary">${{ number_format($detalle->precio_historico_usd, 2) }} <span class="text-[10px] font-bold text-gray-400 uppercase">c/u</span></p>
+                                        <p class="text-sm font-black text-primary">${{ number_format($detalle->precio_historico_usd, 2) }} <span class="text-[10px] font-bold text-gray-700 uppercase">c/u</span></p>
                                         <span class="inline-block text-[11px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-lg">Cant: {{ (int)$detalle->cantidad_solicitada }}</span>
                                     </div>
                                     
@@ -128,7 +128,7 @@
                                 
                                 {{-- Total del Item --}}
                                 <div class="w-full sm:w-auto text-right border-t border-gray-100 sm:border-0 pt-3 sm:pt-0 mt-2 sm:mt-0 flex justify-between sm:block">
-                                    <span class="text-xs font-bold text-gray-400 uppercase sm:hidden">Subtotal</span>
+                                    <span class="text-xs font-bold text-gray-700 uppercase sm:hidden">Subtotal</span>
                                     <p class="font-black text-agro-dark text-lg">
                                         ${{ number_format($detalle->cantidad_solicitada * $detalle->precio_historico_usd, 2) }}
                                     </p>
@@ -147,7 +147,7 @@
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                            <p class="text-[11px] font-black text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                            <p class="text-[11px] font-black text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1">
                                 <span class="material-symbols-outlined text-[16px]">location_on</span> Dirección de Destino
                             </p>
                             <p class="text-sm text-gray-700 font-medium leading-relaxed">{{ $pedido->direccion_texto }}</p>
@@ -200,7 +200,7 @@
                                 <span class="font-black text-agro-dark text-lg">Total Pagado</span>
                                 <div class="text-right">
                                     <span class="block font-black text-agro-dark text-3xl leading-none">${{ number_format($pedido->total_usd, 2) }}</span>
-                                    <span class="block text-[10px] font-bold text-gray-400 uppercase mt-1">USD</span>
+                                    <span class="block text-[10px] font-bold text-gray-700 uppercase mt-1">USD</span>
                                 </div>
                             </div>
                             
@@ -222,7 +222,7 @@
                     
                     <div class="space-y-3">
                         <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-100 rounded-xl">
-                            <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Método</span>
+                            <span class="text-[11px] font-bold text-gray-700 uppercase tracking-wider">Método</span>
                             <span class="text-sm font-bold text-gray-800 flex items-center gap-1.5">
                                 @php
                                     $iconoPago = match($pedido->pago->metodo) {
@@ -238,7 +238,7 @@
                         
                         @if($pedido->pago->referencia_bancaria)
                         <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-100 rounded-xl">
-                            <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Referencia</span>
+                            <span class="text-[11px] font-bold text-gray-700 uppercase tracking-wider">Referencia</span>
                             <span class="text-sm font-mono font-black text-gray-700 bg-white px-2 py-0.5 rounded shadow-sm">{{ $pedido->pago->referencia_bancaria }}</span>
                         </div>
                         @endif

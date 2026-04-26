@@ -2,11 +2,11 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest w-16">Estado</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Prefijo / Serie</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Siguiente Correlativo</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Impuesto Asignado</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acciones</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest w-16">Estado</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Prefijo / Serie</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Siguiente Correlativo</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Impuesto Asignado</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Acciones</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
@@ -33,7 +33,7 @@
                     <p class="font-mono text-base font-black text-teal-600">
                         {{ str_pad($ajuste->proximo_numero, 7, '0', STR_PAD_LEFT) }}
                     </p>
-                    <p class="text-[10px] text-gray-400 font-bold mt-1">Siguiente factura a emitir</p>
+                    <p class="text-[10px] text-gray-700 font-bold mt-1">Siguiente factura a emitir</p>
                 </td>
 
                 {{-- Impuesto (IVA) --}}

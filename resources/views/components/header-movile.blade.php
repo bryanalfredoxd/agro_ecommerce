@@ -21,7 +21,7 @@
                         <span class="text-agro-accent text-xl font-black tracking-tight leading-none">Agrícola</span>
                     </div>
                 </a>
-                <button type="button" class="group p-2 -mr-2 text-gray-400 hover:text-agro-dark hover:bg-gray-50 rounded-full transition-all" onclick="toggleMobileMenu()">
+                <button type="button" class="group p-2 -mr-2 text-gray-700 hover:text-agro-dark hover:bg-gray-50 rounded-full transition-all" onclick="toggleMobileMenu()">
                     <span class="material-symbols-outlined text-[26px]">close</span>
                 </button>
             </div>
@@ -32,17 +32,17 @@
                     
                     {{-- 2. MENÚ DE NAVEGACIÓN --}}
                     <div>
-                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block px-2">Navegación</span>
+                        <span class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-3 block px-2">Navegación</span>
                         <ul class="space-y-1">
                             <li>
                                 <a href="{{ route('home') }}" onclick="toggleMobileMenu(); window.scrollTo(0,0);" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
-                                    <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">home</span>
+                                    <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-primary transition-colors">home</span>
                                     Inicio
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('catalogo') }}" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
-                                    <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">storefront</span>
+                                    <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-primary transition-colors">storefront</span>
                                     Catálogo
                                 </a>
                             </li>
@@ -51,7 +51,7 @@
                             <li>
                                 <a href="{{ route('carrito.index') }}" onclick="toggleMobileMenu()" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
                                     <div class="flex items-center gap-3">
-                                        <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">shopping_cart</span>
+                                        <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-primary transition-colors">shopping_cart</span>
                                         Mi Carrito
                                     </div>
                                     {{-- Badge del carrito en móvil --}}
@@ -63,13 +63,13 @@
 
                             <li>
                                 <a href="#nosotros" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
-                                    <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">groups</span>
+                                    <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-primary transition-colors">groups</span>
                                     Nosotros
                                 </a>
                             </li>
                              <li>
                                 <a href="#contacto" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
-                                    <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">contact_support</span>
+                                    <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-primary transition-colors">contact_support</span>
                                     Contacto
                                 </a>
                             </li>
@@ -78,19 +78,19 @@
 
                     {{-- 3. SECCIÓN MI CUENTA --}}
                     <div>
-                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block px-2">Mi Cuenta</span>
+                        <span class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-3 block px-2">Mi Cuenta</span>
                         
                         @guest
                             <ul class="space-y-1">
                                 <li>
                                     <a href="{{ route('login') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
-                                        <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">login</span>
+                                        <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-primary transition-colors">login</span>
                                         Ingresar
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('register') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
-                                        <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">person_add</span>
+                                        <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-primary transition-colors">person_add</span>
                                         Registrarse
                                     </a>
                                 </li>
@@ -122,13 +122,13 @@
 
                                 <li>
                                     <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
-                                        <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">account_circle</span>
+                                        <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-primary transition-colors">account_circle</span>
                                         Mi Perfil
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('perfil.pedidos') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-primary/5 hover:text-primary font-medium transition-colors group">
-                                        <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-primary transition-colors">local_shipping</span>
+                                        <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-primary transition-colors">local_shipping</span>
                                         Mis Pedidos
                                     </a>
                                 </li>

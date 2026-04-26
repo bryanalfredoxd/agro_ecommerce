@@ -44,7 +44,7 @@
                                id="search-input"
                                class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-sm font-medium text-agro-dark placeholder-gray-400" 
                                placeholder="Buscar producto...">
-                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 group-focus-within:text-primary transition-colors text-[20px]">search</span>
+                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-gray-700 group-focus-within:text-primary transition-colors text-[20px]">search</span>
                     </form>
 
                     <hr class="border-gray-100 mb-6">
@@ -123,7 +123,7 @@
             <h4 id="toast-title" class="font-bold text-gray-900 text-sm">Notificación</h4>
             <p id="toast-message" class="text-xs font-medium text-gray-500 mt-0.5">Mensaje</p>
         </div>
-        <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100">
+        <button onclick="hideToast()" class="text-gray-700 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100">
             <span class="material-symbols-outlined text-xl">close</span>
         </button>
     </div>

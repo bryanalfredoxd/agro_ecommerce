@@ -61,19 +61,19 @@
                             </a>
                             
                             <a href="#direcciones" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-agro-dark transition-colors">location_on</span>
+                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">location_on</span>
                                 Direcciones de Envío
                             </a>
 
                             <a href="#seguridad" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-agro-dark transition-colors">lock</span>
+                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">lock</span>
                                 Seguridad y Contraseña
                             </a>
 
                             <div class="h-px bg-gray-100 my-2 mx-4"></div>
                             
                             <a href="{{ route('perfil.pedidos') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-agro-dark transition-colors">receipt_long</span>
+                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">receipt_long</span>
                                 Historial de Pedidos
                             </a>
                         </nav>
@@ -129,9 +129,9 @@
                                 <div class="relative">
                                     <input type="text" value="{{ auth()->user()->documento_identidad }}" disabled
                                            class="w-full h-12 bg-gray-100 border border-gray-200 rounded-xl px-4 text-sm font-medium text-gray-500 cursor-not-allowed opacity-70">
-                                    <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 text-[20px]">lock</span>
+                                    <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 text-[20px]">lock</span>
                                 </div>
-                                <p class="text-[10px] text-gray-400 font-medium flex items-center gap-1 mt-1">
+                                <p class="text-[10px] text-gray-700 font-medium flex items-center gap-1 mt-1">
                                     <span class="material-symbols-outlined text-[14px]">info</span> Dato inmutable por seguridad.
                                 </p>
                             </div>
@@ -165,7 +165,7 @@
                                         Para mantener tu cuenta segura, ingresa tu contraseña actual antes de guardar los cambios.
                                     </p>
                                     <input type="password" name="password_actual_auth" placeholder="Tu contraseña actual..." autocomplete="new-password"
-                                           class="w-full h-11 bg-white border border-orange-200 rounded-xl px-4 text-sm font-medium text-gray-800 focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-all placeholder:text-gray-400 shadow-sm">
+                                           class="w-full h-11 bg-white border border-orange-200 rounded-xl px-4 text-sm font-medium text-gray-800 focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-all placeholder:text-gray-700 shadow-sm">
                                     @error('password_actual_auth') 
                                         <p class="text-xs text-red-500 font-bold mt-2 flex items-center gap-1">
                                             <span class="material-symbols-outlined text-[16px]">error</span> {{ $message }}
@@ -215,14 +215,14 @@
                                     @endif
 
                                     <div class="flex items-start gap-4 flex-1">
-                                        <div class="bg-white p-2.5 rounded-full shadow-sm text-gray-400 group-hover:text-primary transition-colors flex-shrink-0 border border-gray-100">
+                                        <div class="bg-white p-2.5 rounded-full shadow-sm text-gray-700 group-hover:text-primary transition-colors flex-shrink-0 border border-gray-100">
                                             <span class="material-symbols-outlined text-[24px]">home_pin</span>
                                         </div>
                                         <div class="min-w-0 pr-4">
                                             <h4 class="font-black text-agro-dark text-base mb-1 truncate">{{ $direccion->alias ?? 'Ubicación' }}</h4>
                                             <p class="text-sm text-gray-600 leading-snug mb-2">{{ $direccion->direccion_texto }}</p>
                                             @if($direccion->referencia_punto)
-                                                <p class="text-xs text-gray-400 font-medium flex items-start gap-1">
+                                                <p class="text-xs text-gray-700 font-medium flex items-start gap-1">
                                                     <span class="material-symbols-outlined text-[16px]">info</span> {{ $direccion->referencia_punto }}
                                                 </p>
                                             @endif
@@ -238,7 +238,7 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <span class="text-xs font-bold text-gray-400 flex items-center gap-1">
+                                            <span class="text-xs font-bold text-gray-700 flex items-center gap-1">
                                                 <span class="material-symbols-outlined text-[16px]">verified</span> Predeterminada
                                             </span>
                                         @endif
@@ -258,7 +258,7 @@
                     @else
                         <div class="text-center py-10 bg-white rounded-2xl border border-dashed border-gray-300">
                             <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <span class="material-symbols-outlined text-[32px] text-gray-400">wrong_location</span>
+                                <span class="material-symbols-outlined text-[32px] text-gray-700">wrong_location</span>
                             </div>
                             <p class="text-gray-800 font-bold text-base mb-1">Aún no tienes direcciones</p>
                             <p class="text-gray-500 text-sm">Registra una dirección para agilizar tus compras.</p>
@@ -379,7 +379,7 @@
                         <div class="w-full h-40 sm:h-48 rounded-xl border border-gray-200 overflow-hidden relative z-0 shadow-inner">
                             <div id="map-canvas" class="w-full h-full bg-gray-100"></div>
                         </div>
-                        <p class="text-[10px] font-medium text-gray-400 mt-1 flex items-center gap-1">
+                        <p class="text-[10px] font-medium text-gray-700 mt-1 flex items-center gap-1">
                             <span class="material-symbols-outlined text-[14px]">info</span> Mueve el mapa para posicionar el pin en tu puerta.
                         </p>
                     </div>
@@ -431,7 +431,7 @@
                         @foreach(auth()->user()->direcciones->sortByDesc('es_principal') as $direccion)
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border rounded-2xl {{ $direccion->es_principal ? 'border-primary shadow-sm shadow-primary/10' : 'border-gray-200 shadow-sm' }} gap-4">
                                 <div class="flex items-start gap-3 overflow-hidden">
-                                    <div class="text-gray-400 flex-shrink-0 mt-0.5">
+                                    <div class="text-gray-700 flex-shrink-0 mt-0.5">
                                         <span class="material-symbols-outlined {{ $direccion->es_principal ? 'text-primary' : '' }}">home_pin</span>
                                     </div>
                                     <div class="min-w-0">
@@ -509,7 +509,7 @@
             <h4 id="toast-title" class="font-bold text-gray-900 text-sm">Notificación</h4>
             <p id="toast-message" class="text-xs font-medium text-gray-500 mt-0.5">Mensaje...</p>
         </div>
-        <button onclick="window.PerfilConfig.hideToast()" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100">
+        <button onclick="window.PerfilConfig.hideToast()" class="text-gray-700 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100">
             <span class="material-symbols-outlined text-xl">close</span>
         </button>
     </div>

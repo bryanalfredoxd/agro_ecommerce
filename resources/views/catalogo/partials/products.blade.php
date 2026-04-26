@@ -12,7 +12,7 @@
         </p>
         
         <div class="flex items-center gap-3 w-full sm:w-auto">
-            <label class="text-xs font-bold text-gray-400 uppercase tracking-wider hidden sm:block">Ordenar por:</label>
+            <label class="text-xs font-bold text-gray-700 uppercase tracking-wider hidden sm:block">Ordenar por:</label>
             <div class="relative w-full sm:w-auto group">
                 <select name="orden" 
                         onchange="window.dispatchEvent(new CustomEvent('catalogo:orden-change', {detail: {value: this.value}}))" 
@@ -22,7 +22,7 @@
                     <option value="precio_desc" {{ request('orden') == 'precio_desc' ? 'selected' : '' }}>Mayor Precio</option>
                     <option value="nombre_asc" {{ request('orden') == 'nombre_asc' ? 'selected' : '' }}>Nombre (A-Z)</option>
                 </select>
-                <span class="material-symbols-outlined absolute right-3 top-2.5 text-gray-400 pointer-events-none text-[20px] group-hover:text-primary transition-colors">expand_more</span>
+                <span class="material-symbols-outlined absolute right-3 top-2.5 text-gray-700 pointer-events-none text-[20px] group-hover:text-primary transition-colors">expand_more</span>
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@
 
                         {{-- Botón Favorito Superior Derecha (Estándar e-commerce) --}}
                         <div class="absolute top-3 right-3 z-20">
-                            <button class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 hover:shadow-md transition-all duration-300" title="Añadir a favoritos">
+                            <button class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-700 hover:text-red-500 hover:bg-red-50 hover:shadow-md transition-all duration-300" title="Añadir a favoritos">
                                 <span class="material-symbols-outlined text-[18px] hover:fill-current">favorite</span>
                             </button>
                         </div>
@@ -116,13 +116,13 @@
                                 <div class="flex items-baseline gap-1.5">
                                     @if($producto->precio_oferta_usd)
                                         <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_oferta_usd, 2) }}</span>
-                                        <span class="text-xs text-gray-400 line-through font-semibold">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                                        <span class="text-xs text-gray-700 line-through font-semibold">${{ number_format($producto->precio_venta_usd, 2) }}</span>
                                     @else
                                         <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                        <span class="text-[10px] text-gray-400 font-bold self-start mt-1">USD</span>
+                                        <span class="text-[10px] text-gray-700 font-bold self-start mt-1">USD</span>
                                     @endif
                                 </div>
-                                <span class="text-[11px] text-gray-400 font-medium mt-0.5">
+                                <span class="text-[11px] text-gray-700 font-medium mt-0.5">
                                     ≈ Bs. {{ number_format(($producto->precio_oferta_usd ?? $producto->precio_venta_usd) * 60.50, 2, ',', '.') }}
                                 </span>
                             </div>
@@ -146,7 +146,7 @@
         {{-- 4. ESTADO VACÍO (NO HAY RESULTADOS) --}}
         <div class="bg-white rounded-2xl border border-gray-200 p-12 flex flex-col items-center justify-center text-center shadow-sm animate-fade-in-up">
             <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
-                <span class="material-symbols-outlined text-4xl text-gray-400">search_off</span>
+                <span class="material-symbols-outlined text-4xl text-gray-700">search_off</span>
             </div>
             <h3 class="text-xl font-black text-agro-dark mb-2">No encontramos resultados</h3>
             <p class="text-gray-500 text-sm max-w-sm mx-auto mb-6 leading-relaxed">

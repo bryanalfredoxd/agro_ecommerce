@@ -24,7 +24,7 @@
                     <h2 class="font-black text-agro-dark flex items-center gap-1.5 text-lg">
                         <span class="material-symbols-outlined text-primary">receipt_long</span> Ticket
                     </h2>
-                    <p class="text-[10px] text-gray-400 font-bold uppercase mt-0.5">Tasa BCV: Bs. <span id="tasa_bcv">{{ number_format($valorTasa, 2) }}</span></p>
+                    <p class="text-[10px] text-gray-700 font-bold uppercase mt-0.5">Tasa BCV: Bs. <span id="tasa_bcv">{{ number_format($valorTasa, 2) }}</span></p>
                 </div>
                 <button onclick="vaciarCarrito()" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors" title="Vaciar Ticket">
                     <span class="material-symbols-outlined text-[20px]">delete_sweep</span>
@@ -65,7 +65,7 @@
         <section class="flex-1 flex flex-col min-w-0 bg-gray-50 relative">
             <div class="p-4 bg-white border-b border-gray-200 shadow-sm z-10 flex gap-2">
                 <div class="relative flex-1">
-                    <span class="material-symbols-outlined absolute left-4 top-3.5 text-gray-400 text-[28px]">barcode_scanner</span>
+                    <span class="material-symbols-outlined absolute left-4 top-3.5 text-gray-700 text-[28px]">barcode_scanner</span>
                     <input type="text" id="pos-search" autofocus autocomplete="off" placeholder="Escanea código o busca por nombre..." class="w-full h-14 pl-14 pr-4 rounded-2xl bg-gray-100 border border-transparent focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all text-lg font-bold text-agro-dark outline-none placeholder-gray-400">
                 </div>
             </div>
@@ -94,7 +94,7 @@
             
             <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-agro-dark text-white">
                 <h3 class="text-xl font-black flex items-center gap-2"><span class="material-symbols-outlined text-primary">point_of_sale</span> Procesar Pago</h3>
-                <button type="button" onclick="cerrarModalCobro()" class="text-gray-400 hover:text-white transition-colors">
+                <button type="button" onclick="cerrarModalCobro()" class="text-gray-700 hover:text-white transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -107,12 +107,12 @@
                     </div>
                     <div class="text-right">
                         <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Equivalente</p>
-                        <p class="text-xl font-black text-gray-400 mt-1" id="checkout_total_ves">Bs. 0.00</p>
+                        <p class="text-xl font-black text-gray-700 mt-1" id="checkout_total_ves">Bs. 0.00</p>
                     </div>
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Método de Pago</label>
+                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Método de Pago</label>
                     <select id="metodo_pago" onchange="verificarMetodo()" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-primary focus:bg-white outline-none font-bold text-agro-dark text-sm">
                         <option value="efectivo_usd">Efectivo USD</option>
                         <option value="efectivo_bs">Efectivo Bs</option>
@@ -128,7 +128,7 @@
                 <div id="caja_referencia" class="hidden">
                     <label class="block text-[10px] font-black text-blue-500 uppercase tracking-widest mb-2 ml-1">Referencia Bancaria / Recibo</label>
                     <div class="relative">
-                        <span class="absolute left-4 top-3.5 font-bold text-gray-400 text-lg material-symbols-outlined">receipt</span>
+                        <span class="absolute left-4 top-3.5 font-bold text-gray-700 text-lg material-symbols-outlined">receipt</span>
                         <input type="text" id="referencia_pago" class="w-full h-14 pl-12 pr-4 rounded-xl bg-blue-50/50 border border-blue-200 focus:border-blue-500 focus:bg-white text-base font-bold text-agro-dark outline-none uppercase" placeholder="Ej: 12345678">
                     </div>
                 </div>
@@ -160,15 +160,15 @@
                 <p class="text-sm text-gray-500 mb-4 text-center">Cuenta los billetes físicos en tu gaveta y escribe el monto total para que el sistema calcule el cuadre de caja.</p>
                 
                 <div>
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Efectivo Físico Contado (USD)</label>
+                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Efectivo Físico Contado (USD)</label>
                     <div class="relative">
-                        <span class="absolute left-4 top-3.5 font-bold text-gray-400 text-lg">$</span>
+                        <span class="absolute left-4 top-3.5 font-bold text-gray-700 text-lg">$</span>
                         <input type="number" step="0.01" id="dinero_fisico_usd" class="w-full h-14 pl-10 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-red-500 focus:bg-white text-xl font-black text-agro-dark outline-none" placeholder="0.00">
                     </div>
                 </div>
 
                 <div class="mt-4">
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Observaciones (Opcional)</label>
+                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Observaciones (Opcional)</label>
                     <textarea id="observaciones_cierre" rows="2" class="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-red-500 outline-none text-sm"></textarea>
                 </div>
             </div>
@@ -260,7 +260,7 @@
                             </div>
                             
                             <div class="p-3 flex flex-col flex-1">
-                                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 truncate">${catNombre}</p>
+                                <p class="text-[9px] font-black text-gray-700 uppercase tracking-widest mb-1 truncate">${catNombre}</p>
                                 <h4 class="font-bold text-agro-dark text-xs leading-snug mb-2 line-clamp-2 flex-1">${prod.nombre}</h4>
                                 
                                 <div class="flex justify-between items-end mt-1 pt-2 border-t border-gray-100">
@@ -272,7 +272,7 @@
                     `;
                 });
             } else {
-                grid.innerHTML = `<div class="col-span-full text-center text-gray-400 py-10 font-bold">No se encontraron productos.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center text-gray-700 py-10 font-bold">No se encontraron productos.</div>`;
             }
         });
     }

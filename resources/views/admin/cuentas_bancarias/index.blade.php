@@ -34,7 +34,7 @@
             {{-- Filtros --}}
             <div class="bg-white rounded-t-3xl shadow-sm border border-gray-100 p-4 flex gap-4 relative z-10 flex-col sm:flex-row">
                 <div class="flex-1 relative">
-                    <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
+                    <span class="material-symbols-outlined absolute left-3 top-3 text-gray-700">search</span>
                     <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none font-medium text-agro-dark" placeholder="Buscar por banco, titular o correo...">
                 </div>
                 <div class="w-full sm:w-56 relative">
@@ -45,7 +45,7 @@
                         <option value="transferencia">Transferencia</option>
                         <option value="binance">Binance</option>
                     </select>
-                    <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">filter_list</span>
+                    <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 pointer-events-none">filter_list</span>
                 </div>
             </div>
 
@@ -71,7 +71,7 @@
             
             <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h3 class="text-lg font-black text-agro-dark leading-none" id="modalTitle">Nuevo Método de Pago</h3>
-                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
+                <button type="button" onclick="closeModal()" class="text-gray-700 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -83,7 +83,7 @@
                     
                     {{-- Selector de Tipo (Controla la UI) --}}
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Tipo de Operación <span class="text-red-500">*</span></label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Tipo de Operación <span class="text-red-500">*</span></label>
                         <select id="tipo_metodo" name="tipo_metodo" onchange="actualizarCamposVisibles()" required class="w-full h-12 px-4 rounded-xl bg-blue-50/50 border border-blue-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-black text-blue-800 outline-none cursor-pointer">
                             <option value="pago_movil">Pago Móvil</option>
                             <option value="zelle">Zelle</option>
@@ -99,32 +99,32 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         
                         <div class="grupo-titular">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nombre del Titular</label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Nombre del Titular</label>
                             <input type="text" id="nombre_titular" name="nombre_titular" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white outline-none font-medium text-agro-dark">
                         </div>
 
                         <div class="grupo-banco hidden">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Banco / Entidad</label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Banco / Entidad</label>
                             <input type="text" id="banco_entidad" name="banco_entidad" placeholder="Ej: Banesco, Mercantil..." class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white outline-none font-medium text-agro-dark">
                         </div>
 
                         <div class="grupo-cuenta hidden">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Número de Cuenta</label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Número de Cuenta</label>
                             <input type="text" id="numero_cuenta" name="numero_cuenta" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white outline-none font-mono font-bold text-agro-dark tracking-widest">
                         </div>
 
                         <div class="grupo-telefono hidden">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Teléfono</label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Teléfono</label>
                             <input type="text" id="telefono" name="telefono" placeholder="0414..." class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white outline-none font-mono font-bold text-agro-dark">
                         </div>
 
                         <div class="grupo-identificacion hidden">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">CI / RIF</label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">CI / RIF</label>
                             <input type="text" id="identificacion" name="identificacion" placeholder="V-12345678" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white outline-none font-mono font-bold text-agro-dark uppercase">
                         </div>
 
                         <div class="grupo-email hidden">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Correo Electrónico (Zelle/Binance)</label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Correo Electrónico (Zelle/Binance)</label>
                             <input type="email" id="email" name="email" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white outline-none font-medium text-agro-dark">
                         </div>
 
@@ -132,7 +132,7 @@
 
                     {{-- Instrucciones Generales --}}
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Instrucciones Adicionales (Opcional)</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Instrucciones Adicionales (Opcional)</label>
                         <textarea id="instrucciones_adicionales" name="instrucciones_adicionales" rows="2" placeholder="Ej: Indicar número de pedido en la nota de Zelle..." class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white outline-none text-sm text-gray-600 font-medium"></textarea>
                     </div>
 

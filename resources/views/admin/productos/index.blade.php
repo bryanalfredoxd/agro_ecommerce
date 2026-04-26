@@ -46,7 +46,7 @@
                 
                 {{-- Buscador Principal --}}
                 <div class="flex-1 relative">
-                    <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
+                    <span class="material-symbols-outlined absolute left-3 top-3 text-gray-700">search</span>
                     <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none font-medium text-agro-dark" placeholder="Buscar por Nombre, SKU o Código...">
                 </div>
 
@@ -59,7 +59,7 @@
                                 <option value="{{ $cat->id }}">{{ $cat->nombre }}</option>
                             @endforeach
                         </select>
-                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">folder</span>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 pointer-events-none">folder</span>
                     </div>
 
                     {{-- Filtro Rápido (Chips) --}}

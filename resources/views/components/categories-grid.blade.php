@@ -1,87 +1,74 @@
-<section class="py-16 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+<section class="py-2 md:py-2 bg-white relative overflow-hidden">
     
-    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
-
     <div class="layout-container w-full relative z-10 px-4 sm:px-0">
         
-        <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+        {{-- Encabezado de la sección --}}
+        <div class="flex flex-col md:flex-row justify-between items-end mb-4 gap-4 border-b border-gray-100 pb-2">
             <div class="text-center md:text-left w-full md:w-auto">
-                <h3 class="text-primary font-black uppercase tracking-widest text-xs mb-2">Departamentos</h3>
-                <h2 class="text-3xl md:text-4xl font-black text-agro-dark">
-                    Categorías <span class="relative inline-block">
-                        Principales
-                        <span class="absolute bottom-1 left-0 w-full h-2 bg-primary/20 -z-10 rounded-sm"></span>
-                    </span>
+                <h2 class="text-2xl md:text-4xl font-black text-agro-dark tracking-tight">
+                    Categorías <span class="text-gray-700 font-light">Destacadas</span>
                 </h2>
             </div>
             
-            <a href="{{ route('catalogo') }}" class="hidden md:flex items-center gap-2 text-agro-dark font-bold hover:text-primary transition-all group bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 hover:shadow-md">
+            <a href="{{ route('catalogo') }}" class="hidden md:flex items-center gap-2 text-agro-dark font-bold hover:text-primary transition-all group bg-gray-50 px-5 py-2.5 rounded-full border border-gray-200 hover:border-primary/30 hover:bg-primary/5">
                 <span>Ver todo el catálogo</span>
                 <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
         </div>
         
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+        {{-- Grid de Tarjetas Inmersivas --}}
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
+    
+    @foreach($categoriasPrincipales->take(10) as $categoria)
+        <a href="{{ route('catalogo', ['categoria' => $categoria->id]) }}" 
+           class="group relative h-40 sm:h-48 md:h-56 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-1 bg-gray-900">
             
-            @foreach($categoriasPrincipales->take(15) as $categoria)
-                <a href="{{ route('catalogo', ['categoria' => $categoria->id]) }}" 
-                   class="group relative flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-primary/5 border border-gray-100 overflow-hidden transition-all duration-500 hover:-translate-y-1.5 h-full">
-                    
-                    <div class="aspect-[4/3] w-full bg-gray-50 relative overflow-hidden flex items-center justify-center">
-                        @if($categoria->imagen_url)
-                            {{-- Verificar si la imagen existe físicamente --}}
-                            @php
-                                $imagePath = public_path($categoria->imagen_url);
-                                $imageExists = file_exists($imagePath);
-                            @endphp
-                            
-                            @if($imageExists)
-                                {{-- Usar asset directamente sin storage --}}
-                                <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-in-out" 
-                                     style="background-image: url('{{ asset($categoria->imagen_url) }}');">
-                                </div>
-                            @else
-                                {{-- Fallback si la imagen no existe físicamente --}}
-                                <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-in-out" 
-                                     style="background-image: url('https://placehold.co/400x300/F3F4F6/10B981?text={{ urlencode($categoria->nombre) }}');">
-                                </div>
-                            @endif
-                        @else
-                            {{-- Placeholder si no hay imagen --}}
-                            <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-in-out" 
-                                 style="background-image: url('https://placehold.co/400x300/F3F4F6/10B981?text={{ urlencode($categoria->nombre) }}');">
-                            </div>
-                        @endif
-                        
-                        {{-- Overlay sutil que le da profundidad a la imagen --}}
-                        <div class="absolute inset-0 bg-agro-dark/5 group-hover:bg-agro-dark/10 transition-colors duration-500"></div>
+            {{-- 1. Imagen de Fondo --}}
+            @if($categoria->imagen_url)
+                @php
+                    $imagePath = public_path($categoria->imagen_url);
+                    $imageExists = file_exists($imagePath);
+                @endphp
+                
+                @if($imageExists)
+                    <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-out" 
+                         style="background-image: url('{{ asset($categoria->imagen_url) }}');">
                     </div>
-
-                    <div class="p-4 md:p-5 text-center flex-1 flex flex-col justify-start relative bg-white transition-colors z-10">
-                        
-                        {{-- Contenedor del ícono --}}
-                        <div class="w-12 h-12 md:w-14 md:h-14 bg-white text-agro-dark rounded-xl shadow-md flex items-center justify-center mx-auto mb-3 -mt-10 md:-mt-12 relative z-20 group-hover:-translate-y-1 group-hover:bg-primary group-hover:shadow-lg transition-all duration-300 border-2 border-white">
-                             <span class="font-black text-xl md:text-2xl">{{ substr($categoria->nombre, 0, 1) }}</span>
-                        </div>
-
-                        <h4 class="font-bold text-agro-dark text-sm md:text-base group-hover:text-primary transition-colors line-clamp-2 leading-tight">
-                            {{ $categoria->nombre }}
-                        </h4>
-                        
-                        {{-- Cambié $categoria->hijos por $categoria->subcategorias basado en el Modelo que creamos --}}
-                        <p class="text-[10px] md:text-[11px] font-semibold uppercase tracking-wider text-gray-400 mt-2">
-                            {{ $categoria->subcategorias ? $categoria->subcategorias->count() : 0 }} Subcategorías
-                        </p>
+                @else
+                    <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-out" 
+                         style="background-image: url('https://placehold.co/400x400/1e293b/10B981?text={{ urlencode($categoria->nombre) }}');">
                     </div>
-                </a>
-            @endforeach
-        </div>
+                @endif
+            @else
+                <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-out" 
+                     style="background-image: url('https://placehold.co/400x400/1e293b/10B981?text={{ urlencode($categoria->nombre) }}');">
+                </div>
+            @endif
+            
+            {{-- 2. Textos (Centrados y con sombra localizada) --}}
+            <div class="absolute bottom-0 left-0 w-full p-4 sm:p-5 pt-16 flex flex-col justify-end items-center text-center bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+                
+                <h4 class="font-black text-white text-sm sm:text-base md:text-lg leading-tight group-hover:text-primary transition-colors line-clamp-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                    {{ $categoria->nombre }}
+                </h4>
+                
+                <p class="text-[9px] sm:text-[10px] text-gray-200 uppercase tracking-widest font-bold mt-1.5 opacity-100 flex items-center justify-center gap-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                    <span class="material-symbols-outlined text-[12px]">inventory_2</span>
+                    {{ $categoria->subcategorias ? $categoria->subcategorias->count() : 0 }} Opciones
+                </p>
+                
+            </div>
+        </a>
+    @endforeach
+</div>
 
+        {{-- Botón Móvil --}}
         <div class="mt-8 md:hidden">
-            <a href="{{ route('catalogo') }}" class="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-agro-dark text-white font-bold text-sm shadow-lg shadow-agro-dark/20 active:scale-95 transition-all">
-                <span>Explorar todos los departamentos</span>
-                <span class="material-symbols-outlined text-[20px]">grid_view</span>
+            <a href="{{ route('catalogo') }}" class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-gray-50 text-agro-dark font-bold text-sm border border-gray-200 active:bg-gray-100 transition-colors">
+                <span>Ver todo el catálogo</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
             </a>
         </div>
+        
     </div>
 </section>

@@ -10,7 +10,7 @@
         @if(Auth::user()->tienePermiso('ver_pedidos') || Auth::user()->tienePermiso('gestionar_pagos') || Auth::user()->tienePermiso('crear_venta_manual') || Auth::user()->tienePermiso('procesar_devoluciones'))
         <details class="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group open:ring-2 open:ring-blue-500/20">
             <summary class="p-6 cursor-pointer list-none [&::-webkit-details-marker]:hidden relative outline-none">
-                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-400 rounded-full group-open:bg-blue-50 group-open:text-blue-600 transition-colors">
+                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-700 rounded-full group-open:bg-blue-50 group-open:text-blue-600 transition-colors">
                     <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
                 </div>
                 <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
@@ -53,7 +53,7 @@
         @if(Auth::user()->tienePermiso('ver_productos') || Auth::user()->tienePermiso('gestionar_inventario_lotes') || Auth::user()->tienePermiso('gestionar_categorias_marcas') || Auth::user()->tienePermiso('ver_historico_precios'))
         <details class="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group open:ring-2 open:ring-green-500/20">
             <summary class="p-6 cursor-pointer list-none [&::-webkit-details-marker]:hidden relative outline-none">
-                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-400 rounded-full group-open:bg-green-50 group-open:text-green-600 transition-colors">
+                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-700 rounded-full group-open:bg-green-50 group-open:text-green-600 transition-colors">
                     <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
                 </div>
                 <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-colors">
@@ -99,7 +99,7 @@
         @if(Auth::user()->tienePermiso('ver_usuarios') || Auth::user()->tienePermiso('gestionar_roles_permisos'))
         <details class="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group open:ring-2 open:ring-indigo-500/20">
             <summary class="p-6 cursor-pointer list-none [&::-webkit-details-marker]:hidden relative outline-none">
-                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-400 rounded-full group-open:bg-indigo-50 group-open:text-indigo-600 transition-colors">
+                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-700 rounded-full group-open:bg-indigo-50 group-open:text-indigo-600 transition-colors">
                     <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
                 </div>
                 <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
@@ -132,7 +132,7 @@
         @if(Auth::user()->tienePermiso('ver_seguimiento_rutas') || Auth::user()->tienePermiso('gestionar_zonas_delivery') || Auth::user()->tienePermiso('gestionar_repartidores'))
         <details class="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group open:ring-2 open:ring-orange-500/20">
             <summary class="p-6 cursor-pointer list-none [&::-webkit-details-marker]:hidden relative outline-none">
-                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-400 rounded-full group-open:bg-orange-50 group-open:text-orange-600 transition-colors">
+                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-700 rounded-full group-open:bg-orange-50 group-open:text-orange-600 transition-colors">
                     <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
                 </div>
                 <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-orange-600 group-hover:text-white transition-colors">
@@ -170,7 +170,7 @@
         @if(Auth::user()->tienePermiso('ver_facturas') || Auth::user()->tienePermiso('gestionar_caja_diaria') || Auth::user()->tienePermiso('gestionar_tasas_cambio') || Auth::user()->tienePermiso('configurar_facturacion'))
         <details class="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group open:ring-2 open:ring-teal-500/20">
             <summary class="p-6 cursor-pointer list-none [&::-webkit-details-marker]:hidden relative outline-none">
-                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-400 rounded-full group-open:bg-teal-50 group-open:text-teal-600 transition-colors">
+                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-700 rounded-full group-open:bg-teal-50 group-open:text-teal-600 transition-colors">
                     <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
                 </div>
                 <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors">
@@ -213,7 +213,7 @@
         @if(Auth::user()->tienePermiso('ver_recetas') || Auth::user()->tienePermiso('auditar_recetas'))
         <details class="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group open:ring-2 open:ring-purple-500/20">
             <summary class="p-6 cursor-pointer list-none [&::-webkit-details-marker]:hidden relative outline-none">
-                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-400 rounded-full group-open:bg-purple-50 group-open:text-purple-600 transition-colors">
+                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-700 rounded-full group-open:bg-purple-50 group-open:text-purple-600 transition-colors">
                     <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
                 </div>
                 <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
@@ -246,7 +246,7 @@
         @if(Auth::user()->tienePermiso('configurar_tienda') || Auth::user()->tienePermiso('gestionar_cuentas_banco') || Auth::user()->tienePermiso('configurar_apis') || Auth::user()->tienePermiso('gestionar_horarios') || Auth::user()->tienePermiso('ver_logs_auditoria'))
         <details class="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group open:ring-2 open:ring-gray-500/20 md:col-span-2 xl:col-span-3">
             <summary class="p-6 cursor-pointer list-none [&::-webkit-details-marker]:hidden relative outline-none">
-                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-400 rounded-full group-open:bg-gray-100 group-open:text-gray-800 transition-colors">
+                <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-700 rounded-full group-open:bg-gray-100 group-open:text-gray-800 transition-colors">
                     <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
                 </div>
                 <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-gray-800 group-hover:text-white transition-colors">

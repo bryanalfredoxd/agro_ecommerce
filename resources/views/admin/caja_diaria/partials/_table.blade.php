@@ -2,12 +2,12 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Apertura / Turno</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Cajero</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Monto Inicial</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ventas Sistema</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Cuadre (Diferencia)</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Detalles</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Apertura / Turno</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Cajero</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Monto Inicial</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Ventas Sistema</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Cuadre (Diferencia)</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Detalles</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
@@ -24,7 +24,7 @@
                         @endif
                         <span class="text-xs text-gray-800 font-bold mt-1">Abre: {{ \Carbon\Carbon::parse($sesion->fecha_apertura)->format('d M, h:i A') }}</span>
                         @if($sesion->fecha_cierre)
-                            <span class="text-[10px] text-gray-400 font-bold">Cierra: {{ \Carbon\Carbon::parse($sesion->fecha_cierre)->format('d M, h:i A') }}</span>
+                            <span class="text-[10px] text-gray-700 font-bold">Cierra: {{ \Carbon\Carbon::parse($sesion->fecha_cierre)->format('d M, h:i A') }}</span>
                         @endif
                     </div>
                 </td>
@@ -43,13 +43,13 @@
                 {{-- Columna 4: Ventas del Sistema --}}
                 <td class="px-6 py-4">
                     <p class="font-black text-agro-dark text-sm">${{ number_format($sesion->total_ventas_sistema_usd, 2) }}</p>
-                    <p class="text-[10px] font-bold text-gray-400">Bs. {{ number_format($sesion->total_ventas_sistema_ves, 2) }}</p>
+                    <p class="text-[10px] font-bold text-gray-700">Bs. {{ number_format($sesion->total_ventas_sistema_ves, 2) }}</p>
                 </td>
 
                 {{-- Columna 5: Cuadre y Diferencia --}}
                 <td class="px-6 py-4 text-center">
                     @if(is_null($sesion->fecha_cierre))
-                        <span class="text-xs text-gray-400 italic">Esperando cierre...</span>
+                        <span class="text-xs text-gray-700 italic">Esperando cierre...</span>
                     @else
                         @if($sesion->diferencia_usd == 0)
                             <span class="inline-flex items-center gap-1 text-[11px] font-black text-green-600 bg-green-50 px-3 py-1 rounded-lg border border-green-200">
@@ -79,7 +79,7 @@
                 <td colspan="6" class="px-6 py-16 text-center text-gray-500">
                     <div class="flex flex-col items-center justify-center">
                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                            <span class="material-symbols-outlined text-3xl text-gray-400">store</span>
+                            <span class="material-symbols-outlined text-3xl text-gray-700">store</span>
                         </div>
                         <p class="font-bold text-gray-600">No hay historial de cajas</p>
                     </div>

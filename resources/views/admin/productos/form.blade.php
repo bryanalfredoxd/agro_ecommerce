@@ -51,13 +51,13 @@
                             
                             <div class="space-y-5">
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nombre del Producto <span class="text-red-500">*</span></label>
+                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Nombre del Producto <span class="text-red-500">*</span></label>
                                     <input type="text" name="nombre" value="{{ old('nombre', $producto->nombre ?? '') }}" required class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none">
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
-                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Categoría</label>
+                                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Categoría</label>
                                         <select name="categoria_id" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none cursor-pointer">
                                             <option value="">Seleccione...</option>
                                             @foreach($categorias as $cat)
@@ -66,7 +66,7 @@
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Marca</label>
+                                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Marca</label>
                                         <select name="marca_id" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none cursor-pointer">
                                             <option value="">Seleccione...</option>
                                             @foreach($marcas as $marca)
@@ -77,7 +77,7 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Descripción / Detalles</label>
+                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Descripción / Detalles</label>
                                     <textarea name="descripcion" rows="4" class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-agro-dark outline-none">{{ old('descripcion', $producto->descripcion ?? '') }}</textarea>
                                 </div>
                             </div>
@@ -89,24 +89,40 @@
                                 <span class="material-symbols-outlined text-green-600">shelves</span> Control de Inventario y Medidas
                             </h3>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6 items-start">
+                                
+                                {{-- COLUMNA 1: SKU --}}
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">SKU / Código Interno</label>
+                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">SKU / Código Interno</label>
                                     <input type="text" name="sku" value="{{ old('sku', $producto->sku ?? '') }}" oninput="this.value = this.value.toUpperCase().replace(/\s/g, '')" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-mono font-bold text-agro-dark outline-none uppercase">
                                 </div>
+                                
+                                {{-- COLUMNA 2: CÓDIGO DE BARRAS (Selector + Input Oculto) --}}
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Código de Barras</label>
-                                    <input type="text" name="codigo_barras" value="{{ old('codigo_barras', $producto->codigo_barras ?? '') }}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white transition-all font-mono font-bold text-agro-dark outline-none">
+                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Código de Barras</label>
+                                    
+                                    {{-- Selector Principal --}}
+                                    <select name="tipo_codigo_barras" id="tipo_codigo_barras" onchange="toggleCodigoBarras()" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white transition-all font-bold text-agro-dark outline-none cursor-pointer">
+                                        <option value="no" {{ (old('tipo_codigo_barras') == 'no' || !isset($producto) || (isset($producto) && $producto->codigo_barras == $producto->id)) ? 'selected' : '' }}>NO (Autogenerar ID)</option>
+                                        <option value="si" {{ (old('tipo_codigo_barras') == 'si' || (isset($producto) && $producto->codigo_barras != $producto->id && !empty($producto->codigo_barras))) ? 'selected' : '' }}>SÍ (Ingresar Manual)</option>
+                                    </select>
+
+                                    {{-- Input Condicional (Oculto por defecto) --}}
+                                    <div id="contenedor_codigo_barras" class="mt-3 {{ (old('tipo_codigo_barras') == 'si' || (isset($producto) && $producto->codigo_barras != $producto->id && !empty($producto->codigo_barras))) ? '' : 'hidden' }} animate-fade-in-up">
+                                        <input type="text" name="codigo_barras" id="codigo_barras_input" value="{{ old('codigo_barras', $producto->codigo_barras ?? '') }}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white transition-all font-mono font-bold text-agro-dark outline-none shadow-sm" placeholder="Escriba el código aquí...">
+                                    </div>
                                 </div>
+
+                                {{-- COLUMNA 3: STOCK --}}
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1 text-green-600">Stock Físico Total</label>
+                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1 text-green-600">Stock Físico Total</label>
                                     <input type="number" step="1" name="stock_total" id="stock_total" onblur="validarStock()" value="{{ old('stock_total', $producto->stock_total ?? 0) }}" class="limit-decimals w-full h-12 px-4 rounded-xl bg-green-50/50 border border-green-200 focus:border-green-500 focus:bg-white transition-all font-black text-green-700 outline-none">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
                                 <div>
-                                    <label class="block text-[9px] font-black text-gray-400 uppercase mb-1 ml-1" title="Cómo vendes el producto">U. de Medida (Venta)</label>
+                                    <label class="block text-[9px] font-black text-gray-700 uppercase mb-1 ml-1" title="Cómo vendes el producto">U. de Medida (Venta)</label>
                                     <select name="unidad_medida" id="unidadMedidaSelect" onchange="automatizarUnidadesVenta()" class="w-full h-10 px-3 rounded-xl bg-white border border-gray-200 focus:border-green-500 outline-none font-bold text-gray-700 text-sm">
                                         @foreach(['unidad', 'kg', 'g', 'mg', 'litro', 'ml', 'galon', 'saco', 'bulto', 'paquete', 'caja', 'tambor', 'paila', 'frasco', 'metro', 'rollo', 'dosis', 'blister'] as $unidad)
                                             <option value="{{ $unidad }}" {{ (old('unidad_medida', $producto->unidad_medida ?? '') == $unidad) ? 'selected' : '' }}>{{ ucfirst($unidad) }}</option>
@@ -114,11 +130,11 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-[9px] font-black text-gray-400 uppercase mb-1 ml-1">Venta Mínima</label>
+                                    <label class="block text-[9px] font-black text-gray-700 uppercase mb-1 ml-1">Venta Mínima</label>
                                     <input type="number" step="0.01" name="venta_minima" id="venta_minima" value="{{ old('venta_minima', $producto->venta_minima ?? 1.00) }}" class="limit-decimals auto-int-venta w-full h-10 px-3 rounded-xl bg-white border border-gray-200 focus:border-green-500 outline-none font-bold text-gray-700 text-sm">
                                 </div>
                                 <div>
-                                    <label class="block text-[9px] font-black text-gray-400 uppercase mb-1 ml-1">Incremento (Paso)</label>
+                                    <label class="block text-[9px] font-black text-gray-700 uppercase mb-1 ml-1">Incremento (Paso)</label>
                                     <input type="number" step="0.01" name="paso_venta" id="paso_venta" value="{{ old('paso_venta', $producto->paso_venta ?? 1.00) }}" class="limit-decimals auto-int-venta w-full h-10 px-3 rounded-xl bg-white border border-gray-200 focus:border-green-500 outline-none font-bold text-gray-700 text-sm">
                                 </div>
                                 <div>
@@ -132,11 +148,11 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Contenido Neto Real</label>
+                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Contenido Neto Real</label>
                                     <input type="number" step="0.01" name="contenido_neto" id="contenido_neto" value="{{ old('contenido_neto', $producto->contenido_neto ?? '') }}" class="limit-decimals auto-int-contenido w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white outline-none font-bold text-agro-dark">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Unidad del Contenido</label>
+                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Unidad del Contenido</label>
                                     <select name="unidad_contenido" id="unidadContenidoSelect" onchange="automatizarContenido()" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white outline-none font-bold text-gray-700">
                                         @foreach(['kg', 'g', 'mg', 'l', 'ml', 'cc', 'galon', 'oz', 'm', 'cm', 'dosis', 'unidad'] as $unidadC)
                                             <option value="{{ $unidadC }}" {{ (old('unidad_contenido', $producto->unidad_contenido ?? '') == $unidadC) ? 'selected' : '' }}>{{ ucfirst($unidadC) }}</option>
@@ -152,7 +168,7 @@
                                 <h3 class="text-lg font-black text-agro-dark flex items-center gap-2">
                                     <span class="material-symbols-outlined text-green-600">tune</span> Atributos Extra
                                 </h3>
-                                <button type="button" onclick="agregarAtributo()" class="bg-gray-100 hover:bg-green-100 text-gray-600 hover:text-green-700 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                                <button type="button" onclick="agregarAtributo()" class="bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-700 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
                                     + Añadir Fila
                                 </button>
                             </div>
@@ -203,7 +219,7 @@
                                 @endif
                                 <input type="file" name="imagen" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)">
                             </div>
-                            <p class="text-[10px] text-center text-gray-400">Clic para cambiar imagen (Max 2MB)</p>
+                            <p class="text-[10px] text-center text-gray-700">Clic para cambiar imagen (Max 2MB)</p>
                         </div>
 
                         {{-- Panel Precios --}}
@@ -214,25 +230,25 @@
                             
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Precio de Venta <span class="text-red-500">*</span></label>
+                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Precio de Venta <span class="text-red-500">*</span></label>
                                     <div class="relative">
-                                        <span class="absolute left-4 top-3.5 font-bold text-gray-400">$</span>
+                                        <span class="absolute left-4 top-3.5 font-bold text-gray-700">$</span>
                                         <input type="number" step="0.01" name="precio_venta_usd" id="precio_venta" onblur="validarPrecios()" value="{{ old('precio_venta_usd', $producto->precio_venta_usd ?? '') }}" required class="limit-decimals w-full h-12 pl-8 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white text-xl font-black text-agro-dark outline-none">
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-red-400 uppercase tracking-widest mb-1.5 ml-1">Precio Oferta (Opcional)</label>
+                                    <label class="block text-[10px] font-black text-red-500 uppercase tracking-widest mb-1.5 ml-1">Precio Oferta (Opcional)</label>
                                     <div class="relative">
-                                        <span class="absolute left-4 top-3.5 font-bold text-gray-400">$</span>
+                                        <span class="absolute left-4 top-3.5 font-bold text-red-500">$</span>
                                         <input type="number" step="0.01" name="precio_oferta_usd" id="precio_oferta" onblur="validarPrecios()" value="{{ old('precio_oferta_usd', $producto->precio_oferta_usd ?? '') }}" class="limit-decimals w-full h-12 pl-8 pr-4 rounded-xl bg-red-50/50 border border-red-100 focus:border-red-400 focus:bg-white text-lg font-bold text-red-600 outline-none">
                                     </div>
                                     <p id="error-oferta" class="text-[10px] text-red-500 font-bold hidden mt-1 ml-1">Error: La oferta debe ser menor al precio de venta.</p>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Costo Promedio (Interno)</label>
+                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Costo Promedio (Interno)</label>
                                     <div class="relative">
-                                        <span class="absolute left-4 top-3.5 font-bold text-gray-400">$</span>
-                                        <input type="number" step="0.01" name="costo_promedio_usd" id="costo_promedio" onblur="validarPrecios()" value="{{ old('costo_promedio_usd', $producto->costo_promedio_usd ?? '0.00') }}" class="w-full h-12 pl-8 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-gray-400 focus:bg-white text-sm font-bold text-gray-600 outline-none">
+                                        <span class="absolute left-4 top-3.5 font-bold text-gray-700">$</span>
+                                        <input type="number" step="0.01" name="costo_promedio_usd" id="costo_promedio" onblur="validarPrecios()" value="{{ old('costo_promedio_usd', $producto->costo_promedio_usd ?? '0.00') }}" class="w-full h-12 pl-8 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-gray-400 focus:bg-white text-sm font-bold text-gray-700 outline-none">
                                     </div>
                                     <p id="error-costo" class="text-[10px] text-red-500 font-bold hidden mt-1 ml-1">Error: Costo mayor al precio (Pérdida).</p>
                                 </div>
@@ -264,7 +280,7 @@
 
                 {{-- Barra Fija Abajo para Guardar --}}
                 <div class="fixed bottom-0 left-0 lg:left-72 right-0 bg-white/80 backdrop-blur-md border-t border-gray-200 p-4 sm:px-8 flex justify-end gap-4 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-                    <a href="{{ route('admin.productos.index') }}" class="px-6 py-3 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Cancelar</a>
+                    <a href="{{ route('admin.productos.index') }}" class="px-6 py-3 rounded-xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors">Cancelar</a>
                     <button type="submit" id="btnSubmitForm" class="px-8 py-3 rounded-xl font-black text-white bg-green-600 hover:bg-green-700 shadow-lg shadow-green-600/30 hover:-translate-y-1 transition-all flex items-center gap-2">
                         <span class="material-symbols-outlined">save</span>
                         {{ isset($producto) ? 'Guardar Cambios' : 'Crear Producto' }}
@@ -280,6 +296,33 @@
 
 @push('scripts')
 <script>
+    // ==========================================
+    // SISTEMA DE CÓDIGO DE BARRAS (AUTOMÁTICO VS MANUAL)
+    // ==========================================
+    function toggleCodigoBarras() {
+        const select = document.getElementById('tipo_codigo_barras');
+        const container = document.getElementById('contenedor_codigo_barras');
+        const input = document.getElementById('codigo_barras_input');
+        
+        if (select.value === 'no') {
+            // Ocultamos el contenedor visualmente
+            container.classList.add('hidden');
+            // Limpiamos el valor para que no se envíe basura al backend
+            input.value = ''; 
+        } else {
+            // Mostramos el contenedor
+            container.classList.remove('hidden');
+            // Hacemos focus automáticamente para que el usuario escriba o escanee de inmediato
+            input.focus(); 
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        automatizarUnidadesVenta();
+        automatizarContenido();
+        toggleCodigoBarras(); // Disparar en la carga inicial
+    });
+    
     // ==========================================
     // SISTEMA DE NOTIFICACIONES VISUALES (TOAST)
     // ==========================================

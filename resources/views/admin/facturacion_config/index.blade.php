@@ -53,7 +53,7 @@
             
             <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h3 class="text-lg font-black text-agro-dark leading-none" id="modalTitle">Nueva Serie de Facturación</h3>
-                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
+                <button type="button" onclick="closeModal()" class="text-gray-700 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -65,14 +65,14 @@
                     
                     <div class="grid grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Prefijo / Serie <span class="text-red-500">*</span></label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Prefijo / Serie <span class="text-red-500">*</span></label>
                             <input type="text" id="serie" name="serie" placeholder="Ej: F, NE, A" required maxlength="10" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all font-black text-agro-dark outline-none uppercase tracking-widest">
                         </div>
 
                         <div>
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Impuesto a aplicar (%) <span class="text-red-500">*</span></label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Impuesto a aplicar (%) <span class="text-red-500">*</span></label>
                             <div class="relative">
-                                <span class="absolute left-4 top-3.5 font-bold text-gray-400">%</span>
+                                <span class="absolute left-4 top-3.5 font-bold text-gray-700">%</span>
                                 <input type="number" id="porcentaje_iva" name="porcentaje_iva" step="0.01" min="0" max="100" value="16.00" required class="w-full h-12 pl-10 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all font-bold text-agro-dark outline-none">
                             </div>
                         </div>

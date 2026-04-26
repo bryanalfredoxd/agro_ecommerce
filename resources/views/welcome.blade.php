@@ -4,8 +4,7 @@
 
 @section('content')
     @include('components.hero')
-    @include('components.trust-banner')
+    
     @include('components.categories-grid')
     @include('components.featured-products')
-    @include('components.newsletter-cta')
 @endsection

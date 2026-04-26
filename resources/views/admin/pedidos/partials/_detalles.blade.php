@@ -3,8 +3,8 @@
     <div>
         <h4 class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Datos del Cliente</h4>
         <p class="font-bold text-agro-dark text-sm capitalize">{{ $pedido->usuario->nombre ?? 'Anónimo' }} {{ $pedido->usuario->apellido ?? '' }}</p>
-        <p class="text-xs text-gray-500 mt-0.5"><span class="font-medium text-gray-400">CI/RIF:</span> {{ $pedido->usuario->documento_identidad ?? 'N/A' }}</p>
-        <p class="text-xs text-gray-500"><span class="font-medium text-gray-400">Tel:</span> {{ $pedido->usuario->telefono ?? 'N/A' }}</p>
+        <p class="text-xs text-gray-500 mt-0.5"><span class="font-medium text-gray-700">CI/RIF:</span> {{ $pedido->usuario->documento_identidad ?? 'N/A' }}</p>
+        <p class="text-xs text-gray-500"><span class="font-medium text-gray-700">Tel:</span> {{ $pedido->usuario->telefono ?? 'N/A' }}</p>
     </div>
     <div class="sm:text-right">
         <h4 class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Entrega</h4>
@@ -23,7 +23,7 @@
 
 {{-- Lista de Productos a Empacar --}}
 <div class="p-6">
-    <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Artículos a Empacar</h4>
+    <h4 class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-3">Artículos a Empacar</h4>
     
     <div class="space-y-3">
         @foreach($pedido->detalles as $detalle)
@@ -42,14 +42,14 @@
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-bold text-agro-dark truncate">{{ $detalle->producto->nombre ?? 'Producto Eliminado' }}</p>
                     <div class="flex items-center gap-2 mt-0.5">
-                        <span class="text-[10px] text-gray-400 font-medium">SKU: {{ $detalle->producto->sku ?? 'N/A' }}</span>
+                        <span class="text-[10px] text-gray-700 font-medium">SKU: {{ $detalle->producto->sku ?? 'N/A' }}</span>
                         <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 rounded uppercase tracking-wider">{{ $detalle->producto->marca->nombre ?? 'GENÉRICO' }}</span>
                     </div>
                 </div>
                 
                 {{-- Cantidad a despachar (MUY GRANDE) --}}
                 <div class="text-right">
-                    <p class="text-xs text-gray-400 font-bold mb-0.5">Cantidad</p>
+                    <p class="text-xs text-gray-700 font-bold mb-0.5">Cantidad</p>
                     <p class="text-xl font-black text-blue-600 leading-none">
                         {{ rtrim(rtrim(number_format($detalle->cantidad_solicitada, 3), '0'), '.') }} 
                         <span class="text-xs text-blue-400 uppercase tracking-widest">{{ $detalle->producto->unidad_medida ?? 'UND' }}</span>

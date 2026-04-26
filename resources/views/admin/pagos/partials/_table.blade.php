@@ -2,11 +2,11 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Pedido / Cliente</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Método / Ref.</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Monto Reportado</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Estado / Verificador</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acciones</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Pedido / Cliente</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Método / Ref.</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Monto Reportado</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Estado / Verificador</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Acciones</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
@@ -44,7 +44,7 @@
                         {{ str_replace('_', ' ', $pago->metodo) }}
                     </span>
                     <div class="mt-1.5 flex items-center gap-2">
-                        <span class="text-xs text-gray-400 font-bold">REF:</span>
+                        <span class="text-xs text-gray-700 font-bold">REF:</span>
                         <span class="font-mono text-sm font-black text-agro-dark bg-gray-100 px-1.5 py-0.5 rounded">{{ $pago->referencia_bancaria ?? 'S/R' }}</span>
                     </div>
                 </td>
@@ -52,7 +52,7 @@
                 {{-- Columna 3: Monto --}}
                 <td class="px-6 py-4">
                     <p class="font-black text-agro-dark text-base">${{ number_format($pago->monto_usd, 2) }}</p>
-                    <p class="text-[10px] font-bold text-gray-400">Bs. {{ number_format($pago->monto_ves, 2) }}</p>
+                    <p class="text-[10px] font-bold text-gray-700">Bs. {{ number_format($pago->monto_ves, 2) }}</p>
                 </td>
 
                 {{-- Columna 4: Estado --}}
@@ -75,7 +75,7 @@
                             {{ $pago->estado }}
                         </span>
                         @if($pago->verificador)
-                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">Por: {{ $pago->verificador->nombre }}</span>
+                            <span class="text-[9px] font-bold text-gray-700 uppercase tracking-widest mt-1">Por: {{ $pago->verificador->nombre }}</span>
                         @endif
                     </div>
                 </td>
@@ -108,7 +108,7 @@
                 <td colspan="5" class="px-6 py-16 text-center text-gray-500">
                     <div class="flex flex-col items-center justify-center">
                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                            <span class="material-symbols-outlined text-3xl text-gray-400">fact_check</span>
+                            <span class="material-symbols-outlined text-3xl text-gray-700">fact_check</span>
                         </div>
                         <p class="font-bold text-gray-600">No hay pagos para mostrar</p>
                         <p class="text-xs mt-1">Prueba seleccionando otra pestaña.</p>

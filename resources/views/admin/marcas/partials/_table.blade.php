@@ -2,28 +2,28 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest w-16">ID</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Marca</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">País de Origen</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest w-16">ID</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Marca</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">País de Origen</th>
                 
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acciones</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Acciones</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
             @forelse($marcas as $marca)
             <tr class="hover:bg-gray-50/50 transition-colors group">
-                <td class="px-6 py-4 text-xs font-bold text-gray-400">#{{ $marca->id }}</td>
+                <td class="px-6 py-4 text-xs font-bold text-gray-700">#{{ $marca->id }}</td>
                 <td class="px-6 py-4">
                     <p class="font-black text-agro-dark uppercase tracking-wide">{{ $marca->nombre }}</p>
                 </td>
                 <td class="px-6 py-4">
                     @if($marca->pais_origen)
                         <span class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-600 bg-white border border-gray-200 px-3 py-1 rounded-lg shadow-sm">
-                            <span class="material-symbols-outlined text-[16px] text-gray-400">public</span>
+                            <span class="material-symbols-outlined text-[16px] text-gray-700">public</span>
                             {{ $marca->pais_origen }}
                         </span>
                     @else
-                        <span class="text-xs font-bold text-gray-400 italic">No especificado</span>
+                        <span class="text-xs font-bold text-gray-700 italic">No especificado</span>
                     @endif
                 </td>
                 

@@ -45,7 +45,7 @@
                 
                 {{-- Buscador --}}
                 <div class="flex-1 relative">
-                    <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
+                    <span class="material-symbols-outlined absolute left-3 top-3 text-gray-700">search</span>
                     <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none font-medium text-agro-dark" placeholder="Buscar categoría por nombre...">
                 </div>
 
@@ -57,7 +57,7 @@
                             <option value="principales">Solo Principales</option>
                             <option value="subcategorias">Solo Subcategorías</option>
                         </select>
-                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">account_tree</span>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 pointer-events-none">account_tree</span>
                     </div>
 
                     {{-- Filtro Estado (Soft Deletes) --}}
@@ -67,7 +67,7 @@
                             <option value="deshabilitadas">Deshabilitadas (Borradas)</option>
                             <option value="todas">Mostrar Todas</option>
                         </select>
-                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">filter_list</span>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 pointer-events-none">filter_list</span>
                     </div>
                 </div>
             </div>
@@ -96,7 +96,7 @@
             
             <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h3 class="text-lg font-black text-agro-dark leading-none" id="modalTitle">Nueva Categoría</h3>
-                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
+                <button type="button" onclick="closeModal()" class="text-gray-700 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -108,12 +108,12 @@
                 <div class="p-6 space-y-5">
                     
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nombre</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Nombre</label>
                         <input type="text" id="nombre" name="nombre" required class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none">
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Categoría Padre (Opcional)</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Categoría Padre (Opcional)</label>
                         <select id="categoria_padre_id" name="categoria_padre_id" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none cursor-pointer appearance-none">
                             <option value="">-- Ninguna (Es Categoría Principal) --</option>
                             @foreach($categoriasPadre as $padre)
@@ -123,9 +123,9 @@
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Imagen (Opcional)</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Imagen (Opcional)</label>
                         <input type="file" id="imagen" name="imagen" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 transition-all border border-gray-200 rounded-xl bg-gray-50 cursor-pointer">
-                        <p class="text-[10px] text-gray-400 mt-2 ml-1">Recomendado: PNG o WEBP con fondo transparente. Max 2MB.</p>
+                        <p class="text-[10px] text-gray-700 mt-2 ml-1">Recomendado: PNG o WEBP con fondo transparente. Max 2MB.</p>
                     </div>
 
                 </div>

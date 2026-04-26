@@ -2,11 +2,11 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fecha y Hora</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Valor Tasa (Bs)</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fuente</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Autor / Editor</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Impacto (Pedidos)</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Fecha y Hora</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Valor Tasa (Bs)</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Fuente</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Autor / Editor</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Impacto (Pedidos)</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
@@ -34,7 +34,7 @@
                 </td>
                 <td class="px-6 py-4">
                     @if($tasa->fuente === 'API')
-                        <span class="text-sm font-bold text-gray-400 italic">Sistema (Job Cron)</span>
+                        <span class="text-sm font-bold text-gray-700 italic">Sistema (Job Cron)</span>
                     @else
                         <p class="font-bold text-gray-800 capitalize">{{ $tasa->editor->nombre ?? 'Admin Desconocido' }}</p>
                         <p class="text-[10px] text-gray-500">ID: {{ $tasa->usuario_editor_id }}</p>

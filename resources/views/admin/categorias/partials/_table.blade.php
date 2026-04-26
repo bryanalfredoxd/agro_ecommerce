@@ -2,10 +2,10 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest w-20">Imagen</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Categoría</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Jerarquía (Padre)</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Acciones</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest w-20">Imagen</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Categoría</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Jerarquía (Padre)</th>
+                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Acciones</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
@@ -16,18 +16,18 @@
                         @if($cat->imagen_url)
                             <img src="{{ asset($cat->imagen_url) }}" alt="{{ $cat->nombre }}" class="w-full h-full object-cover">
                         @else
-                            <span class="material-symbols-outlined text-gray-400">image</span>
+                            <span class="material-symbols-outlined text-gray-700">image</span>
                         @endif
                     </div>
                 </td>
                 <td class="px-6 py-4">
                     <p class="font-bold text-agro-dark capitalize text-base flex items-center gap-2">
-                        <span class="{{ $cat->trashed() ? 'line-through text-gray-400' : '' }}">{{ $cat->nombre }}</span>
+                        <span class="{{ $cat->trashed() ? 'line-through text-gray-700' : '' }}">{{ $cat->nombre }}</span>
                         @if($cat->trashed())
                             <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black bg-red-100 text-red-600 uppercase tracking-widest">Inactiva</span>
                         @endif
                     </p>
-                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">ID: {{ $cat->id }}</p>
+                    <p class="text-[10px] text-gray-700 font-bold uppercase tracking-wider mt-0.5">ID: {{ $cat->id }}</p>
                 </td>
                 <td class="px-6 py-4">
                     @if($cat->padre)

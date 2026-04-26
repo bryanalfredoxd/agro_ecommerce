@@ -88,18 +88,14 @@ class ProductoController extends Controller
 
     public function store(Request $request)
     {
-        // REGLAS ANTI-BUGS EN EL BACKEND
         $request->validate([
             'nombre' => 'required|string|max:255',
             'sku' => 'nullable|string|unique:productos,sku',
             'precio_venta_usd' => 'required|numeric|min:0',
-            // La oferta debe ser estrictamente MENOR (lt) al precio de venta
             'precio_oferta_usd' => 'nullable|numeric|min:0|lt:precio_venta_usd',
-            // El costo debe ser MENOR O IGUAL (lte) al precio de venta
             'costo_promedio_usd' => 'nullable|numeric|min:0|lte:precio_venta_usd',
             'imagen' => 'nullable|image|max:2048',
             'stock_total' => 'nullable|numeric|min:0',
-            // La alerta nunca puede ser mayor al stock total
             'stock_minimo_alerta' => 'nullable|numeric|min:0|lte:stock_total',
             'venta_minima' => 'nullable|numeric|min:0',
             'paso_venta' => 'nullable|numeric|min:0',
@@ -110,7 +106,8 @@ class ProductoController extends Controller
             'stock_minimo_alerta.lte' => 'La alerta de stock no puede ser mayor al stock físico total.',
         ]);
 
-        $data = $request->except(['imagen', '_token', 'attr_keys', 'attr_values']);
+        // Evitamos enviar el campo 'tipo_codigo_barras' a la BD porque no existe esa columna
+        $data = $request->except(['imagen', '_token', 'attr_keys', 'attr_values', 'tipo_codigo_barras']);
         
         $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
@@ -129,7 +126,16 @@ class ProductoController extends Controller
             $data['imagen_url'] = $this->uploadImage($request->file('imagen'));
         }
 
-        Producto::create($data);
+        // 1. Creamos el producto primero
+        $producto = Producto::create($data);
+
+        // 2. LÓGICA DE CÓDIGO DE BARRAS AUTOMÁTICO
+        // Si el usuario eligió 'NO' (autogenerado), asignamos el ID recién creado
+        if ($request->tipo_codigo_barras === 'no' || empty($producto->codigo_barras)) {
+            $producto->codigo_barras = (string)$producto->id;
+            $producto->save();
+        }
+
         return redirect()->route('admin.productos.index')->with('success', 'Producto creado exitosamente.');
     }
 
@@ -163,10 +169,15 @@ class ProductoController extends Controller
             'stock_minimo_alerta.lte' => 'La alerta de stock no puede ser mayor al stock físico total.',
         ]);
 
-        $data = $request->except(['imagen', '_token', '_method', 'attr_keys', 'attr_values']);
+        $data = $request->except(['imagen', '_token', '_method', 'attr_keys', 'attr_values', 'motivo_cambio', 'tipo_codigo_barras']);
         
         $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
+
+        // LÓGICA DE CÓDIGO DE BARRAS AUTOMÁTICO EN LA EDICIÓN
+        if ($request->tipo_codigo_barras === 'no') {
+            $data['codigo_barras'] = (string)$producto->id;
+        }
 
         if ($request->has('attr_keys') && is_array($request->attr_keys)) {
             $atributos = [];
@@ -187,9 +198,6 @@ class ProductoController extends Controller
             $data['imagen_url'] = $this->uploadImage($request->file('imagen'));
         }
 
-        // ==========================================
-        // NUEVA LÓGICA: AUDITORÍA DE PRECIOS
-        // ==========================================
         $precioViejo = (float) $producto->precio_venta_usd;
         $precioNuevo = (float) $request->precio_venta_usd;
 
@@ -199,7 +207,7 @@ class ProductoController extends Controller
                 'precio_anterior_usd' => $precioViejo,
                 'precio_nuevo_usd' => $precioNuevo,
                 'motivo_cambio' => $request->filled('motivo_cambio') ? $request->motivo_cambio : 'Actualización regular desde catálogo',
-                'usuario_editor_id' => \Illuminate\Support\Facades\Auth::id() // Aquí obtenemos al usuario real
+                'usuario_editor_id' => \Illuminate\Support\Facades\Auth::id()
             ]);
         }
 

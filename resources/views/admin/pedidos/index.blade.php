@@ -36,17 +36,17 @@
                 {{-- Tabs de Estados --}}
                 <div class="flex overflow-x-auto custom-scrollbar border-b border-gray-100 px-4 pt-2 gap-6">
                     <button class="status-tab active pb-3 text-sm font-black border-b-2 border-primary text-agro-dark whitespace-nowrap" data-estado="todos">Todos los Pedidos</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="pendientes">Pendientes (Validar)</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="en_proceso">Por Despachar</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="en_ruta">En Ruta</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="completados">Completados</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="cancelados">Devueltos / Cancelados</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="pendientes">Pendientes (Validar)</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="en_proceso">Por Despachar</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="en_ruta">En Ruta</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="completados">Completados</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="cancelados">Devueltos / Cancelados</button>
                 </div>
 
                 {{-- Buscador --}}
                 <div class="p-4 bg-gray-50/50 rounded-b-2xl">
                     <div class="w-full relative">
-                        <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
+                        <span class="material-symbols-outlined absolute left-3 top-3 text-gray-700">search</span>
                         <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none font-medium text-agro-dark" placeholder="Buscar por Número de Pedido, Nombre del Cliente, CI o Email...">
                     </div>
                 </div>
@@ -78,7 +78,7 @@
             
             <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h3 class="text-lg font-black text-agro-dark leading-none">Despacho y Logística</h3>
-                <button type="button" onclick="closeStatusModal()" class="text-gray-400 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
+                <button type="button" onclick="closeStatusModal()" class="text-gray-700 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -87,7 +87,7 @@
                 <input type="hidden" id="pedido_id">
                 
                 <div class="p-6">
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Fase Operativa del Pedido</label>
+                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Fase Operativa del Pedido</label>
                     <select id="estado_select" name="estado" required class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-agro-dark outline-none cursor-pointer appearance-none">
                         {{-- Logística SOLO ve lo que le interesa --}}
                         <option value="preparacion">En Preparación / Empaque</option>
@@ -125,10 +125,10 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-black text-agro-dark leading-none">Orden de Despacho</h3>
-                        <p class="text-xs text-gray-400 font-bold mt-1" id="detalle_pedido_titulo">Pedido #000000</p>
+                        <p class="text-xs text-gray-700 font-bold mt-1" id="detalle_pedido_titulo">Pedido #000000</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeDetalleModal()" class="text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-xl transition-colors">
+                <button type="button" onclick="closeDetalleModal()" class="text-gray-700 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-xl transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -173,9 +173,9 @@
         tab.addEventListener('click', function() {
             document.querySelectorAll('.status-tab').forEach(t => {
                 t.classList.remove('border-primary', 'text-agro-dark', 'active');
-                t.classList.add('border-transparent', 'text-gray-400');
+                t.classList.add('border-transparent', 'text-gray-700');
             });
-            this.classList.remove('border-transparent', 'text-gray-400');
+            this.classList.remove('border-transparent', 'text-gray-700');
             this.classList.add('border-primary', 'text-agro-dark', 'active');
             currentFiltroEstado = this.getAttribute('data-estado');
             fetchData(1);

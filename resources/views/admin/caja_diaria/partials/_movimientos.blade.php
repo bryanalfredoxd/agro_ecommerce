@@ -2,11 +2,11 @@
     
     <div class="grid grid-cols-2 gap-4 mb-6">
         <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Efectivo Inicial</p>
+            <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1">Efectivo Inicial</p>
             <p class="text-xl font-black text-gray-800">${{ number_format($sesion->monto_inicial_usd, 2) }}</p>
         </div>
         <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Ventas del Turno</p>
+            <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1">Ventas del Turno</p>
             <p class="text-xl font-black text-teal-600">${{ number_format($sesion->total_ventas_sistema_usd, 2) }}</p>
         </div>
     </div>
@@ -14,11 +14,11 @@
     @if($sesion->fecha_cierre)
         <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm mb-6 flex justify-between items-center {{ $sesion->diferencia_usd < 0 ? 'border-red-300 bg-red-50' : '' }}">
             <div>
-                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Efectivo Declarado al Cerrar</p>
+                <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1">Efectivo Declarado al Cerrar</p>
                 <p class="text-xl font-black text-gray-800">${{ number_format($sesion->dinero_real_en_caja_usd, 2) }}</p>
             </div>
             <div class="text-right">
-                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Diferencia</p>
+                <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1">Diferencia</p>
                 <p class="text-xl font-black {{ $sesion->diferencia_usd < 0 ? 'text-red-600' : 'text-green-600' }}">
                     ${{ number_format($sesion->diferencia_usd, 2) }}
                 </p>
@@ -39,10 +39,10 @@
         <table class="w-full text-left text-sm">
             <thead class="bg-gray-50 border-b border-gray-100">
                 <tr>
-                    <th class="px-4 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">Hora</th>
-                    <th class="px-4 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">Motivo</th>
-                    <th class="px-4 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">USD</th>
-                    <th class="px-4 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">VES</th>
+                    <th class="px-4 py-2 text-[10px] font-black text-gray-700 uppercase tracking-widest">Hora</th>
+                    <th class="px-4 py-2 text-[10px] font-black text-gray-700 uppercase tracking-widest">Motivo</th>
+                    <th class="px-4 py-2 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">USD</th>
+                    <th class="px-4 py-2 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">VES</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -59,13 +59,13 @@
                     <td class="px-4 py-3 text-right font-black {{ $mov->tipo == 'ingreso' ? 'text-green-600' : 'text-red-600' }}">
                         {{ $mov->tipo == 'ingreso' ? '+' : '-' }}${{ number_format($mov->monto_usd, 2) }}
                     </td>
-                    <td class="px-4 py-3 text-right text-xs font-bold text-gray-400">
+                    <td class="px-4 py-3 text-right text-xs font-bold text-gray-700">
                         {{ number_format($mov->monto_ves, 2) }}
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="px-4 py-6 text-center text-gray-400 italic">No se registraron movimientos en este turno.</td>
+                    <td colspan="4" class="px-4 py-6 text-center text-gray-700 italic">No se registraron movimientos en este turno.</td>
                 </tr>
                 @endforelse
             </tbody>

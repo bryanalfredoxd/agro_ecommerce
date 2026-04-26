@@ -6,7 +6,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">Ventas de Hoy</span>
+                <span class="text-[11px] font-black text-gray-700 uppercase tracking-wider">Ventas de Hoy</span>
                 <div class="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined">payments</span></div>
             </div>
             <h3 class="text-3xl font-black text-agro-dark">${{ number_format($ventasHoyUsd ?? 0, 2) }}</h3>
@@ -24,7 +24,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">Pedidos Pendientes</span>
+                <span class="text-[11px] font-black text-gray-700 uppercase tracking-wider">Pedidos Pendientes</span>
                 <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined">shopping_bag</span></div>
             </div>
             <h3 class="text-3xl font-black text-agro-dark">{{ $pedidosPendientes ?? 0 }}</h3>
@@ -41,7 +41,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">Pagos en Revisión</span>
+                <span class="text-[11px] font-black text-gray-700 uppercase tracking-wider">Pagos en Revisión</span>
                 <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined">fact_check</span></div>
             </div>
             <h3 class="text-3xl font-black text-agro-dark">{{ $pagosPendientes ?? 0 }}</h3>
@@ -58,10 +58,10 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-teal-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">Tasa de Cambio</span>
+                <span class="text-[11px] font-black text-gray-700 uppercase tracking-wider">Tasa de Cambio</span>
                 <div class="w-10 h-10 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined">currency_exchange</span></div>
             </div>
-            <h3 class="text-3xl font-black text-agro-dark"><span class="text-xl text-gray-400 font-bold">Bs</span> {{ number_format($tasaCambioActual ?? 0, 2) }}</h3>
+            <h3 class="text-3xl font-black text-agro-dark"><span class="text-xl text-gray-700 font-bold">Bs</span> {{ number_format($tasaCambioActual ?? 0, 2) }}</h3>
             <p class="text-xs font-bold text-teal-600 flex items-center gap-1 mt-2">
                 <span class="material-symbols-outlined text-[14px]">update</span> {{ $fuenteTasa ?? 'Sin Tasa' }}
             </p>
@@ -75,7 +75,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">Stock Crítico</span>
+                <span class="text-[11px] font-black text-gray-700 uppercase tracking-wider">Stock Crítico</span>
                 <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined">inventory_2</span></div>
             </div>
             <h3 class="text-3xl font-black text-agro-dark">{{ $alertasStock ?? 0 }}</h3>
@@ -92,7 +92,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-rose-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">Lotes por Vencer</span>
+                <span class="text-[11px] font-black text-gray-700 uppercase tracking-wider">Lotes por Vencer</span>
                 <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined">event_busy</span></div>
             </div>
             <h3 class="text-3xl font-black text-agro-dark">{{ $lotesPorVencer ?? 0 }}</h3>
@@ -109,7 +109,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">Récipes por Aprobar</span>
+                <span class="text-[11px] font-black text-gray-700 uppercase tracking-wider">Récipes por Aprobar</span>
                 <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined">stethoscope</span></div>
             </div>
             <h3 class="text-3xl font-black text-agro-dark">{{ $recetasPendientes ?? 0 }}</h3>
@@ -126,7 +126,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-[11px] font-black text-gray-400 uppercase tracking-wider">Nuevos Clientes</span>
+                <span class="text-[11px] font-black text-gray-700 uppercase tracking-wider">Nuevos Clientes</span>
                 <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined">group_add</span></div>
             </div>
             <h3 class="text-3xl font-black text-agro-dark">{{ $nuevosUsuariosMes ?? 0 }}</h3>

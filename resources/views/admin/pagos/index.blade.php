@@ -32,15 +32,15 @@
                 {{-- Tabs de Estados --}}
                 <div class="flex overflow-x-auto custom-scrollbar border-b border-gray-100 px-4 pt-2 gap-6">
                     <button class="status-tab active pb-3 text-sm font-black border-b-2 border-primary text-agro-dark whitespace-nowrap" data-estado="revision">En Revisión (Pendientes)</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="aprobado">Aprobados</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="rechazado">Rechazados</button>
-                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-gray-700 whitespace-nowrap" data-estado="todos">Historial Completo</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="aprobado">Aprobados</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="rechazado">Rechazados</button>
+                    <button class="status-tab pb-3 text-sm font-bold border-b-2 border-transparent text-gray-700 hover:text-gray-700 whitespace-nowrap" data-estado="todos">Historial Completo</button>
                 </div>
 
                 {{-- Buscador y Filtro por Método --}}
                 <div class="p-4 bg-gray-50/50 rounded-b-2xl flex flex-col sm:flex-row gap-4">
                     <div class="flex-1 relative">
-                        <span class="material-symbols-outlined absolute left-3 top-3 text-gray-400">search</span>
+                        <span class="material-symbols-outlined absolute left-3 top-3 text-gray-700">search</span>
                         <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none font-medium text-agro-dark" placeholder="Buscar por Número de Referencia o ID de Pedido...">
                     </div>
                     
@@ -55,7 +55,7 @@
                             <option value="efectivo_usd">Efectivo USD</option>
                             <option value="efectivo_bs">Efectivo Bs</option>
                         </select>
-                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-400 pointer-events-none">account_balance_wallet</span>
+                        <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 pointer-events-none">account_balance_wallet</span>
                     </div>
                 </div>
             </div>
@@ -86,7 +86,7 @@
             
             <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center bg-black">
                 <h3 class="text-sm font-bold text-white tracking-widest uppercase">Referencia: <span id="visor_referencia" class="text-blue-400"></span></h3>
-                <button type="button" onclick="closeComprobante()" class="text-gray-400 hover:text-white bg-gray-900 p-1.5 rounded-lg border border-gray-800 transition-colors">
+                <button type="button" onclick="closeComprobante()" class="text-gray-700 hover:text-white bg-gray-900 p-1.5 rounded-lg border border-gray-800 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -114,10 +114,10 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-black text-agro-dark leading-none">Detalles de la Compra</h3>
-                        <p class="text-xs text-gray-400 font-bold mt-1" id="detalle_pedido_titulo">Pedido #000000</p>
+                        <p class="text-xs text-gray-700 font-bold mt-1" id="detalle_pedido_titulo">Pedido #000000</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeDetalleModal()" class="text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-xl transition-colors">
+                <button type="button" onclick="closeDetalleModal()" class="text-gray-700 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-xl transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -155,9 +155,9 @@
         tab.addEventListener('click', function() {
             document.querySelectorAll('.status-tab').forEach(t => {
                 t.classList.remove('border-primary', 'text-agro-dark', 'active');
-                t.classList.add('border-transparent', 'text-gray-400');
+                t.classList.add('border-transparent', 'text-gray-700');
             });
-            this.classList.remove('border-transparent', 'text-gray-400');
+            this.classList.remove('border-transparent', 'text-gray-700');
             this.classList.add('border-primary', 'text-agro-dark', 'active');
             currentFiltroEstado = this.getAttribute('data-estado');
             fetchData(1);

@@ -29,13 +29,13 @@
                 <div class="lg:col-span-1 bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 relative overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-teal-50 rounded-full z-0"></div>
                     <div class="relative z-10">
-                        <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Tasa Vigente (USD a VES)</h3>
+                        <h3 class="text-xs font-black text-gray-700 uppercase tracking-widest mb-4">Tasa Vigente (USD a VES)</h3>
                         
                         <div class="flex items-baseline gap-2 mb-2">
                             <span class="text-4xl sm:text-5xl font-black text-agro-dark tracking-tight" id="currentRateText">
                                 {{ number_format($tasaActual->valor_tasa ?? 0, 2) }}
                             </span>
-                            <span class="text-xl font-bold text-gray-400">Bs</span>
+                            <span class="text-xl font-bold text-gray-700">Bs</span>
                         </div>
 
                         @if(isset($tasaActual) && $tasaActual->fuente === 'MANUAL')
@@ -68,10 +68,10 @@
 
                     <form id="formManualRate" onsubmit="saveManualRate(event)" class="mt-6 flex flex-col sm:flex-row gap-4 items-end">
                         <div class="w-full sm:w-1/2 group">
-                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-orange-600">Nuevo Valor (Bs)</label>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-orange-600">Nuevo Valor (Bs)</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <span class="font-black text-gray-400 group-focus-within:text-orange-600 transition-colors">Bs.</span>
+                                    <span class="font-black text-gray-700 group-focus-within:text-orange-600 transition-colors">Bs.</span>
                                 </div>
                                 <input type="number" name="valor_tasa" id="input_valor_tasa" step="0.0001" min="1" required 
                                        class="w-full h-12 rounded-xl bg-gray-50 border border-gray-200 focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-500/20 transition-all duration-300 pl-12 pr-4 text-lg font-black text-agro-dark outline-none shadow-inner" placeholder="Ej: 36.50">
@@ -89,7 +89,7 @@
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 relative">
                 <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h3 class="text-lg font-black text-agro-dark flex items-center gap-2">
-                        <span class="material-symbols-outlined text-gray-400">history</span>
+                        <span class="material-symbols-outlined text-gray-700">history</span>
                         Historial de Movimientos
                     </h3>
                     

@@ -49,17 +49,17 @@
                         <nav class="flex flex-col space-y-1">
                             {{-- Enlaces hacia Perfil --}}
                             <a href="{{ route('perfil') }}#datos-personales" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-agro-dark transition-colors">person</span>
+                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">person</span>
                                 Información Personal
                             </a>
                             
                             <a href="{{ route('perfil') }}#direcciones" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-agro-dark transition-colors">location_on</span>
+                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">location_on</span>
                                 Direcciones de Envío
                             </a>
 
                             <a href="{{ route('perfil') }}#seguridad" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-400 group-hover:text-agro-dark transition-colors">lock</span>
+                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">lock</span>
                                 Seguridad y Contraseña
                             </a>
 
@@ -124,7 +124,7 @@
                                 <div class="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div class="flex items-center gap-4">
                                         <div class="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm text-center min-w-[80px]">
-                                            <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">Orden</span>
+                                            <span class="block text-[10px] text-gray-700 font-bold uppercase tracking-wider">Orden</span>
                                             <span class="block text-lg font-black text-agro-dark">#{{ $pedido->id }}</span>
                                         </div>
                                         <div>
@@ -147,7 +147,7 @@
                                         
                                         {{-- Lista de Productos (Resumida) --}}
                                         <div class="flex-1">
-                                            <h4 class="text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-2 mb-4">
+                                            <h4 class="text-[11px] font-bold text-gray-700 uppercase tracking-wider border-b border-gray-100 pb-2 mb-4">
                                                 Artículos del Pedido
                                             </h4>
                                             
@@ -200,12 +200,12 @@
                                                 </div>
                                                 
                                                 <div class="flex justify-between items-end border-b border-gray-200 pb-4">
-                                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total VES</p>
+                                                    <p class="text-[10px] font-bold text-gray-700 uppercase tracking-wider">Total VES</p>
                                                     <p class="text-sm font-bold text-gray-600">Bs {{ number_format($pedido->total_ves_calculado, 2) }}</p>
                                                 </div>
 
                                                 <div>
-                                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Método de Pago</p>
+                                                    <p class="text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-2">Método de Pago</p>
                                                     @if($pedido->pago)
                                                         <div class="flex items-center gap-2 text-sm font-bold text-agro-dark bg-white px-3 py-2.5 rounded-xl border border-gray-200 shadow-sm">
                                                             @php

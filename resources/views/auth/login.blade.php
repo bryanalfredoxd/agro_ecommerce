@@ -33,13 +33,13 @@
 
                 {{-- Input: Correo --}}
                 <div class="group">
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Correo Electrónico</label>
+                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Correo Electrónico</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="material-symbols-outlined text-gray-400 text-[20px] group-focus-within:text-primary transition-colors">mail</span>
+                            <span class="material-symbols-outlined text-gray-700 text-[20px] group-focus-within:text-primary transition-colors">mail</span>
                         </div>
                         <input type="email" name="email" value="{{ old('email') }}" 
-                               class="w-full h-12 rounded-xl bg-gray-50 border @error('email') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-12 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-400 placeholder:font-medium shadow-inner" 
+                               class="w-full h-12 rounded-xl bg-gray-50 border @error('email') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-12 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-700 placeholder:font-medium shadow-inner" 
                                placeholder="usuario@correo.com" required autofocus>
                     </div>
                     @error('email')
@@ -52,17 +52,17 @@
                 {{-- Input: Contraseña --}}
                 <div class="group">
                     <div class="flex items-center justify-between mb-1.5 ml-1">
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest transition-colors group-focus-within:text-primary">Contraseña</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest transition-colors group-focus-within:text-primary">Contraseña</label>
                         @if (Route::has('password.request'))
                             <a href="{{ route('password.request') }}" class="text-[10px] font-bold text-primary hover:text-agro-dark transition-colors">¿Olvidaste tu contraseña?</a>
                         @endif
                     </div>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="material-symbols-outlined text-gray-400 text-[20px] group-focus-within:text-primary transition-colors">key</span>
+                            <span class="material-symbols-outlined text-gray-700 text-[20px] group-focus-within:text-primary transition-colors">key</span>
                         </div>
                         <input type="password" name="password" 
-                               class="w-full h-12 rounded-xl bg-gray-50 border border-gray-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-12 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-400 tracking-widest shadow-inner" 
+                               class="w-full h-12 rounded-xl bg-gray-50 border border-gray-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-12 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-700 tracking-widest shadow-inner" 
                                placeholder="••••••••" required>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                     <div class="w-full border-t border-gray-200"></div>
                 </div>
                 <div class="relative flex justify-center">
-                    <span class="bg-white px-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    <span class="bg-white px-3 text-[10px] font-black text-gray-700 uppercase tracking-widest">
                         ¿No tienes cuenta?
                     </span>
                 </div>
