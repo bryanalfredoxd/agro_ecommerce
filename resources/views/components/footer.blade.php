@@ -16,17 +16,17 @@
                             <span class="text-white text-xl font-bold tracking-tight">Corpo</span>
                             <span class="text-agro-gold text-xl font-bold tracking-tight">Agrícola</span>
                         </div>
-                        <span class="text-[10px] text-gray-700 font-medium tracking-wider uppercase mt-0.5">Venezuela</span>
+                        <span class="text-[10px] text-gray-300 font-medium tracking-wider uppercase mt-0.5">Venezuela</span>
                     </div>
                 </div>
                 
-                <p class="text-gray-700 text-sm leading-relaxed text-pretty">
+                <p class="text-gray-300 text-sm leading-relaxed text-pretty">
                     Su aliado estratégico en el campo venezolano. Ofrecemos insumos, maquinaria y asesoría técnica especializada para garantizar el éxito de su cosecha.
                 </p>
                 
                 <div class="flex gap-3">
                     @foreach(['facebook', 'instagram', 'youtube'] as $social)
-                    <a href="#" class="size-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-700 hover:text-primary transition-all duration-300 group">
+                    <a href="#" class="size-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-primary transition-all duration-300 group">
                         <img src="https://cdn.simpleicons.org/{{ $social }}/ffffff" class="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity" alt="{{ $social }}">
                     </a>
                     @endforeach
@@ -41,7 +41,7 @@
                 <ul class="space-y-3">
                     @foreach(['Inicio', 'Nosotros', 'Catálogo', 'Servicios', 'Blog', 'Contacto'] as $link)
                     <li>
-                        <a href="#" class="text-sm text-gray-700 hover:text-primary hover:pl-1 transition-all duration-200 flex items-center gap-2">
+                        <a href="#" class="text-sm text-gray-300 hover:text-primary hover:pl-1 transition-all duration-200 flex items-center gap-2">
                             <span class="w-1 h-1 bg-gray-600 rounded-full"></span>
                             {{ $link }}
                         </a>
@@ -66,7 +66,7 @@
                     @endphp
                     @foreach($cats as $cat)
                     <a href="#" class="group flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
-                        <span class="text-sm text-gray-700 group-hover:text-white transition-colors">{{ $cat['name'] }}</span>
+                        <span class="text-sm text-gray-300 group-hover:text-white transition-colors">{{ $cat['name'] }}</span>
                         <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-gray-500 group-hover:bg-primary/20 group-hover:text-primary transition-colors">{{ $cat['count'] }}</span>
                     </a>
                     @endforeach
@@ -139,7 +139,7 @@
         </div>
 
         <div class="mt-8 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-            <p>© {{ date('Y') }} Corpo Agrícola C.A. - RIF: J-12345678-9. Todos los derechos reservados.</p>
+            <p>© {{ date('Y') }} <a href="https://www.corpoasia.net/">Corpoasia C.A. </a> - RIF: J-405304138. Todos los derechos reservados.</p>
             <div class="flex gap-4">
                 <a href="#" class="hover:text-primary transition-colors">Privacidad</a>
                 <a href="#" class="hover:text-primary transition-colors">Términos</a>

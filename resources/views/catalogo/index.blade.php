@@ -17,7 +17,7 @@
                     <span class="material-symbols-outlined text-primary text-[28px] sm:text-[32px]">inventory_2</span>
                     Catálogo de <span class="text-primary">Insumos</span>
                 </h1>
-                <p class="text-sm text-gray-500 mt-1">Explora nuestra selección de productos agrícolas y veterinarios.</p>
+                <p class="text-sm text-gray-300 mt-1">Explora nuestra selección de productos agrícolas y veterinarios.</p>
             </div>
         </div>
     </div>

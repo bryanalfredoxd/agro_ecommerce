@@ -50,9 +50,9 @@
                     </span>
                     <span class="font-medium whitespace-nowrap flex items-center gap-1">
                         <span class="text-primary font-bold">USD</span> 
-                        <span class="text-gray-700">→</span>
+                        <span class="text-gray-300">→</span>
                         <span class="font-bold text-white">{{ $tasaDolar }}</span> 
-                        <span class="text-gray-700">Bs</span>
+                        <span class="text-gray-300">Bs</span>
                     </span>
                 </div>
                 

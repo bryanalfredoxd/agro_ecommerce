@@ -6,12 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Marca;
+use App\Models\TasaCambio; 
+use App\Models\SolicitudProducto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CatalogoController extends Controller
 {
     public function index(Request $request)
     {
+        // ==========================================
+        // OBTENEMOS LA TASA DE CAMBIO ACTUAL
+        // ==========================================
+        $tasaDolar = TasaCambio::obtenerValorUSD() ?? 1;
+
         // 1. Consulta base
         $query = Producto::where('stock_total', '>', 0)
                          ->whereNull('eliminado_at');
@@ -53,12 +61,33 @@ class CatalogoController extends Controller
         $categorias = Categoria::has('productos')->get();
         $marcas = Marca::where('activo', 1)->get();
 
-        // Si es petición AJAX, devolver solo la vista parcial
+        // Si es petición AJAX, devolver solo la vista parcial (INYECTAMOS TASA AQUÍ)
         if ($request->ajax()) {
-            return view('catalogo.partials.products', compact('productos'))->render();
+            return view('catalogo.partials.products', compact('productos', 'tasaDolar'))->render();
         }
 
-        // Para petición normal, devolver vista completa
-        return view('catalogo.index', compact('productos', 'categorias', 'marcas'));
+        // Para petición normal, devolver vista completa (INYECTAMOS TASA AQUÍ TAMBIÉN)
+        return view('catalogo.index', compact('productos', 'categorias', 'marcas', 'tasaDolar'));
+    }
+
+    public function solicitarProducto(Request $request)
+    {
+        // Validación sencilla
+        $request->validate([
+            'nombre_producto' => 'required|string|max:255',
+            'descripcion_adicional' => 'nullable|string'
+        ]);
+
+        // Crear el registro
+        SolicitudProducto::create([
+            // Laravel checkea si hay sesión, sino guarda null
+            'usuario_id' => Auth::check() ? Auth::id() : null,
+            'nombre_producto' => $request->nombre_producto,
+            'descripcion_adicional' => $request->descripcion_adicional,
+            'estado' => 'pendiente'
+        ]);
+
+        // Retornar a la vista con un mensaje de éxito
+        return redirect()->back()->with('success', '¡Gracias por tu sugerencia! Trabajaremos para agregar el producto pronto.');
     }
 }

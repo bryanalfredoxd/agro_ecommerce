@@ -45,6 +45,7 @@ Route::get('/', HomeController::class)->name('home');
 
 // --- 2. CATÁLOGO ---
 Route::get('/catalogo', [CatalogoController::class, 'index'])->name('catalogo');
+Route::post('/catalogo/solicitar', [CatalogoController::class, 'solicitarProducto'])->name('catalogo.solicitar');
 
 
 // --- 3. RUTAS DE GUEST (INVITADOS) ---

@@ -46,21 +46,28 @@
                         </h2>
                         
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <label class="relative cursor-pointer group">
-                                <input type="radio" name="metodo_entrega" value="delivery" class="peer sr-only" checked onchange="window.CheckoutConfig.toggleDirecciones(true)">
-                                <div class="p-4 rounded-2xl border-2 border-gray-100 bg-white peer-checked:border-primary peer-checked:bg-primary/5 hover:border-gray-200 transition-all h-full flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-700 peer-checked:text-primary peer-checked:bg-white peer-checked:shadow-sm transition-all flex-shrink-0">
+                            
+                            {{-- OPCIÓN DELIVERY (Bloqueada temporalmente) --}}
+                            <label class="relative cursor-not-allowed group opacity-50">
+                                {{-- Se agregó 'disabled', se quitó 'checked' y el 'onchange' --}}
+                                <input type="radio" name="metodo_entrega" value="delivery" class="peer sr-only" disabled>
+                                
+                                {{-- Se quitaron las clases de hover y peer-checked para evitar interactividad visual --}}
+                                <div class="p-4 rounded-2xl border-2 border-gray-100 bg-gray-50 h-full flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 flex-shrink-0">
                                         <span class="material-symbols-outlined text-[28px]">local_shipping</span>
                                     </div>
                                     <div>
-                                        <span class="font-bold text-agro-dark block">Delivery / Envío</span>
-                                        <p class="text-xs text-gray-500 font-medium leading-tight mt-0.5">Lo llevamos a tu dirección registrada.</p>
+                                        <span class="font-bold text-gray-500 block">Delivery / Envío</span>
+                                        <p class="text-xs text-red-500 font-bold leading-tight mt-0.5">Temporalmente deshabilitado</p>
                                     </div>
                                 </div>
                             </label>
                             
+                            {{-- OPCIÓN PICKUP (Ahora seleccionada por defecto) --}}
                             <label class="relative cursor-pointer group">
-                                <input type="radio" name="metodo_entrega" value="pickup" class="peer sr-only" onchange="window.CheckoutConfig.toggleDirecciones(false)">
+                                {{-- Se agregó 'checked' aquí --}}
+                                <input type="radio" name="metodo_entrega" value="pickup" class="peer sr-only" checked onchange="window.CheckoutConfig.toggleDirecciones(false)">
                                 <div class="p-4 rounded-2xl border-2 border-gray-100 bg-white peer-checked:border-primary peer-checked:bg-primary/5 hover:border-gray-200 transition-all h-full flex items-center gap-4">
                                     <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-700 peer-checked:text-primary peer-checked:bg-white peer-checked:shadow-sm transition-all flex-shrink-0">
                                         <span class="material-symbols-outlined text-[28px]">storefront</span>

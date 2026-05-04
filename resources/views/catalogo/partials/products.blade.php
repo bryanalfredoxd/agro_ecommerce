@@ -1,6 +1,7 @@
 @php
-    // Esta variable viene del controlador
-    $productos = $productos ?? [];
+    // Estas variables vienen del CatalogoController.php
+    $productos = $productos ?? collect([]);
+    $tasaDolar = $tasaDolar ?? 1; 
 @endphp
 
 <div id="products-content">
@@ -47,24 +48,18 @@
                             </div>
                         @endif
 
-                        {{-- Badges Superior Izquierda --}}
+                        {{-- Badges Superior Izquierda (Solo Venta Controlada) --}}
                         <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start z-10 pointer-events-none">
                             @if($producto->es_controlado)
                                 <span class="inline-flex items-center gap-1 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase shadow-sm tracking-wide">
                                     <span class="material-symbols-outlined text-[12px]">lock</span> Controlado
                                 </span>
                             @endif
-
-                            @if($producto->precio_oferta_usd)
-                                <span class="inline-flex items-center gap-1 bg-primary text-agro-dark text-[10px] font-black px-2 py-1 rounded-md uppercase shadow-sm tracking-wide">
-                                    Oferta
-                                </span>
-                            @endif
                         </div>
 
                         {{-- Botón Favorito Superior Derecha (Estándar e-commerce) --}}
                         <div class="absolute top-3 right-3 z-20">
-                            <button class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-700 hover:text-red-500 hover:bg-red-50 hover:shadow-md transition-all duration-300" title="Añadir a favoritos">
+                            <button class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 hover:shadow-md transition-all duration-300" title="Añadir a favoritos">
                                 <span class="material-symbols-outlined text-[18px] hover:fill-current">favorite</span>
                             </button>
                         </div>
@@ -101,7 +96,7 @@
                             </div>
                         </div>
                         
-                        {{-- Título clickeable en toda la tarjeta --}}
+                        {{-- Título --}}
                         <h3 class="font-bold text-agro-dark text-base leading-snug mb-2 line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors">
                             <a href="#" class="focus:outline-none before:absolute before:inset-0">
                                 {{ $producto->nombre }}
@@ -112,24 +107,23 @@
 
                         {{-- Precios y Call to Action --}}
                         <div class="mt-auto pt-4 border-t border-gray-100 flex items-end justify-between relative z-20">
+                            
                             <div class="flex flex-col">
-                                <div class="flex items-baseline gap-1.5">
-                                    @if($producto->precio_oferta_usd)
-                                        <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_oferta_usd, 2) }}</span>
-                                        <span class="text-xs text-gray-700 line-through font-semibold">${{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                    @else
-                                        <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                        <span class="text-[10px] text-gray-700 font-bold self-start mt-1">USD</span>
-                                    @endif
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">USD</span>
                                 </div>
-                                <span class="text-[11px] text-gray-700 font-medium mt-0.5">
-                                    ≈ Bs. {{ number_format(($producto->precio_oferta_usd ?? $producto->precio_venta_usd) * 60.50, 2, ',', '.') }}
+                                <span class="text-[11px] text-gray-400 font-bold mt-0.5 tracking-wide">
+                                    Bs. {{ number_format($producto->precio_venta_usd * $tasaDolar, 2, ',', '.') }}
                                 </span>
                             </div>
                             
                             {{-- BOTÓN AÑADIR AL CARRITO SIEMPRE VISIBLE --}}
-                            <button type="button" onclick="addToCart({{ $producto->id }})" class="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-agro-dark hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group/btn" title="Añadir al carrito">
-                                <span class="material-symbols-outlined text-[22px] group-active/btn:scale-95 transition-transform">add_shopping_cart</span>
+                            <button type="button" 
+                                    onclick="addToCart({{ $producto->id }})" 
+                                    class="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-agro-dark hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group/btn shrink-0" 
+                                    title="Añadir al carrito">
+                                <span class="material-symbols-outlined text-[20px] group-active/btn:scale-95 transition-transform pointer-events-none">add_shopping_cart</span>
                             </button>
                         </div>
                     </div>
@@ -152,11 +146,74 @@
             <p class="text-gray-500 text-sm max-w-sm mx-auto mb-6 leading-relaxed">
                 No hay productos que coincidan con los filtros aplicados. Intenta cambiar de categoría o buscar con otro término.
             </p>
-            {{-- Usando onclick en lugar de event listeners para que sobreviva al AJAX --}}
-            <button onclick="if(window.catalogoClearFilters) window.catalogoClearFilters(event)" class="inline-flex items-center justify-center gap-2 px-6 py-3 border border-transparent text-sm font-bold rounded-xl text-agro-dark bg-primary/10 hover:bg-primary hover:text-white transition-all duration-300 group">
-                <span class="material-symbols-outlined text-[20px] group-hover:-rotate-180 transition-transform duration-500">restart_alt</span>
-                Limpiar Búsqueda
-            </button>
+            
+            {{-- BOTONES DEL ESTADO VACÍO --}}
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+                <button onclick="if(window.catalogoClearFilters) window.catalogoClearFilters(event)" class="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 text-sm font-bold rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-300 group w-full sm:w-auto">
+                    <span class="material-symbols-outlined text-[20px] group-hover:-rotate-180 transition-transform duration-500">restart_alt</span>
+                    Limpiar Búsqueda
+                </button>
+                
+                {{-- Botón para abrir el Modal --}}
+                <button onclick="document.getElementById('modal-solicitar-producto').classList.remove('hidden')" class="inline-flex items-center justify-center gap-2 px-6 py-3 border border-transparent text-sm font-bold rounded-xl text-agro-dark bg-primary/20 hover:bg-primary hover:text-white hover:shadow-md hover:shadow-primary/20 transition-all duration-300 group w-full sm:w-auto">
+                    <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">inventory_2</span>
+                    Solicitar Producto
+                </button>
+            </div>
         </div>
     @endif
+</div>
+
+{{-- ================= MODAL DE SOLICITUD ================= --}}
+<div id="modal-solicitar-producto" class="fixed inset-0 z-[120] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    {{-- Backdrop --}}
+    <div class="fixed inset-0 bg-agro-dark/60 backdrop-blur-sm transition-opacity" onclick="document.getElementById('modal-solicitar-producto').classList.add('hidden')"></div>
+    
+    {{-- Panel --}}
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md animate-fade-in-up">
+                
+                {{-- Formulario apunta a la ruta web --}}
+                <form action="{{ route('catalogo.solicitar') }}" method="POST">
+                    @csrf
+                    <div class="bg-white px-6 pb-6 pt-8">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="text-xl font-black text-agro-dark flex items-center gap-2" id="modal-title">
+                                <span class="material-symbols-outlined text-primary text-[28px]">box_add</span>
+                                Solicitar Producto
+                            </h3>
+                            <button type="button" onclick="document.getElementById('modal-solicitar-producto').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">close</span>
+                            </button>
+                        </div>
+                        
+                        <p class="text-sm text-gray-500 font-medium leading-relaxed mb-6">
+                            Dinos qué producto estás buscando y haremos lo posible por agregarlo a nuestro catálogo pronto.
+                        </p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="nombre_producto" class="block text-[11px] font-black text-gray-700 uppercase tracking-wider mb-2">Nombre del producto *</label>
+                                <input type="text" name="nombre_producto" id="nombre_producto" required placeholder="Ej: Fertilizante Triple 15 (Saco 50kg)" class="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 text-agro-dark placeholder:text-gray-400 transition-all shadow-sm">
+                            </div>
+                            
+                            <div>
+                                <label for="descripcion_adicional" class="block text-[11px] font-black text-gray-700 uppercase tracking-wider mb-2">Detalles adicionales (Opcional)</label>
+                                <textarea name="descripcion_adicional" id="descripcion_adicional" rows="3" placeholder="Marca de tu preferencia, cantidad aproximada que buscas, etc..." class="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 text-agro-dark placeholder:text-gray-400 transition-all shadow-sm resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-5 border-t border-gray-100 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                        <button type="button" onclick="document.getElementById('modal-solicitar-producto').classList.add('hidden')" class="w-full sm:w-auto inline-flex justify-center items-center rounded-xl bg-white px-6 py-2.5 text-sm font-bold text-gray-700 shadow-sm border border-gray-200 hover:bg-gray-50 transition-all duration-300">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-black text-agro-dark shadow-sm shadow-primary/30 hover:bg-green-500 transition-all duration-300 transform hover:-translate-y-0.5">
+                            <span class="material-symbols-outlined text-[18px]">send</span> Enviar Solicitud
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

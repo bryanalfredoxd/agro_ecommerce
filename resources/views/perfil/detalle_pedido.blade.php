@@ -256,7 +256,7 @@
                 @endif
 
                 {{-- Botón de Soporte --}}
-                <a href="https://wa.me/584120000000?text=Hola,%20necesito%20ayuda%20con%20mi%20pedido%20%23{{ $pedido->id }}" target="_blank" class="w-full py-4 bg-white border-2 border-green-500 text-green-600 font-black rounded-2xl hover:bg-green-500 hover:text-white transition-all flex items-center justify-center gap-2 shadow-sm group">
+                <a href="https://wa.me/584129614615?text=Hola, CorpoAgricola%20necesito%20ayuda%20con%20mi%20pedido%20%23{{ $pedido->id }}" target="_blank" class="w-full py-4 bg-white border-2 border-green-500 text-green-600 font-black rounded-2xl hover:bg-green-500 hover:text-white transition-all flex items-center justify-center gap-2 shadow-sm group">
                     <span class="material-symbols-outlined text-[24px] group-hover:animate-bounce">support_agent</span>
                     ¿Necesitas ayuda con esta orden?
                 </a>
