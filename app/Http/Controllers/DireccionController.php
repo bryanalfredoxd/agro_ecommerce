@@ -12,30 +12,33 @@ class DireccionController extends Controller
         // 1. Validamos también latitud y longitud
         $validated = $request->validate([
             'alias' => 'required|string|max:50',
+            'zona_delivery_id' => 'nullable|exists:zonas_delivery,id',
             'direccion_texto' => 'required|string',
             'referencia_punto' => 'nullable|string',
-            'geo_latitud' => 'nullable|numeric',  // Nuevo
-            'geo_longitud' => 'nullable|numeric', // Nuevo
+            'geo_latitud' => 'nullable|numeric',
+            'geo_longitud' => 'nullable|numeric',
             'es_principal' => 'nullable|boolean'
         ]);
 
         $user = auth()->user();
 
         // 2. LÓGICA DE PRINCIPAL:
-        // Si el usuario marcó el check (viene como '1'), buscamos TODAS las direcciones 
-        // de este usuario que sean principales y las ponemos en 0.
         if ($request->has('es_principal') && $request->es_principal == 1) {
             $user->direcciones()->where('es_principal', 1)->update(['es_principal' => 0]);
         }
 
+        // Si es la primera dirección, marcarla como principal por defecto
+        $esPrincipal = ($request->has('es_principal') && $request->es_principal == 1) || ($user->direcciones()->count() === 0);
+
         // 3. Crear registro
         $user->direcciones()->create([
             'alias' => $validated['alias'],
+            'zona_delivery_id' => $validated['zona_delivery_id'] ?? null,
             'direccion_texto' => $validated['direccion_texto'],
-            'referencia_punto' => $validated['referencia_punto'],
-            'geo_latitud' => $validated['geo_latitud'],   // Guardamos Lat
-            'geo_longitud' => $validated['geo_longitud'], // Guardamos Lng
-            'es_principal' => $request->has('es_principal') ? 1 : 0,
+            'referencia_punto' => $validated['referencia_punto'] ?? null,
+            'geo_latitud' => $validated['geo_latitud'] ?? null,
+            'geo_longitud' => $validated['geo_longitud'] ?? null,
+            'es_principal' => $esPrincipal ? 1 : 0,
         ]);
 
         return back()->with('success-message', 'Dirección y ubicación guardadas correctamente.');

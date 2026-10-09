@@ -18,6 +18,7 @@ class DireccionUsuario extends Model
 
     protected $fillable = [
         'usuario_id',
+        'zona_delivery_id',
         'alias',
         'direccion_texto',
         'referencia_punto',
@@ -29,5 +30,10 @@ class DireccionUsuario extends Model
     public function usuario()
     {
         return $this->belongsTo(User::class, 'usuario_id');
+    }
+
+    public function zonaDelivery()
+    {
+        return $this->belongsTo(ZonaDelivery::class, 'zona_delivery_id');
     }
 }

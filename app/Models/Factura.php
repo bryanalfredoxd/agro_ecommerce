@@ -29,37 +29,59 @@ class Factura extends Model
     // ==========================================
     // MÉTODO GENERADOR DE FACTURAS
     // ==========================================
-    public static function emitirParaPedido(Pedido $pedido)
+    public static function emitirParaPedido(Pedido $pedido, array $datosCliente = [])
     {
-        // 1. Llamar a tu Procedimiento Almacenado SQL para el número correlativo
-        $pdo = DB::getPdo();
-        $pdo->exec("CALL sp_generar_numero_factura('F', @numero)");
-        $resultado = $pdo->query("SELECT @numero AS numero")->fetch();
-        $numeroFactura = $resultado['numero'];
+        // 1. Obtener la serie activa de facturación
+        $ajuste = FacturaAjuste::where('activo', 1)->first();
+        $serie = $ajuste ? $ajuste->serie : 'F';
 
-        // Fallback de seguridad por si falla la BD
+        // 2. Llamar al Procedimiento Almacenado SQL para el correlativo de la serie activa
+        $numeroFactura = null;
+        try {
+            $pdo = DB::getPdo();
+            $pdo->exec("CALL sp_generar_numero_factura('{$serie}', @numero)");
+            $resultado = $pdo->query("SELECT @numero AS numero")->fetch();
+            $numeroFactura = $resultado['numero'] ?? null;
+        } catch (\Throwable $e) {
+            $numeroFactura = null;
+        }
+
+        // Fallback de seguridad por si el procedimiento retorna null o no encuentra la serie
         if (!$numeroFactura) {
-            $numeroFactura = 'F-' . str_pad($pedido->id, 7, '0', STR_PAD_LEFT);
+            if ($ajuste) {
+                $proximo = (int) $ajuste->proximo_numero;
+                $numeroFactura = $serie . '-' . str_pad($proximo, 7, '0', STR_PAD_LEFT);
+                $ajuste->increment('proximo_numero');
+            } else {
+                $numeroFactura = 'F-' . str_pad($pedido->id, 7, '0', STR_PAD_LEFT);
+            }
         }
 
         $serieUsada = explode('-', $numeroFactura)[0];
 
-        // 2. Extraer datos del cliente
+        // 2. Extraer datos del cliente (prioriza datosCliente pasados explícitamente)
         $cliente = $pedido->usuario;
-        $nombre = $cliente ? trim($cliente->nombre . ' ' . $cliente->apellido) : 'Consumidor Final';
-        $documento = $cliente ? $cliente->documento_identidad : 'V-00000000';
-        $direccion = $pedido->direccion_texto ?? 'Compra en Tienda Física';
+        $nombre = !empty($datosCliente['nombre_razon_social']) 
+            ? trim($datosCliente['nombre_razon_social']) 
+            : ($cliente ? trim($cliente->nombre . ' ' . $cliente->apellido) : 'Consumidor Final');
+
+        $documento = !empty($datosCliente['cedula_rif_cliente']) 
+            ? trim($datosCliente['cedula_rif_cliente']) 
+            : ($cliente ? $cliente->documento_identidad : 'V-00000000');
+
+        $direccion = !empty($datosCliente['direccion_fiscal']) 
+            ? trim($datosCliente['direccion_fiscal']) 
+            : ($pedido->direccion_texto ?? 'Compra en Tienda Física');
 
         // 3. Extraer cálculos monetarios
-        // Si el pedido tiene subtotal (como los del POS), lo usamos. Si no, asumimos que el total es el subtotal.
         $subtotal = $pedido->subtotal_usd ?? $pedido->total_usd;
         $impuesto = $pedido->total_usd - $subtotal;
         
         // Calcular la tasa exacta aplicada en ese momento
         $tasa = $pedido->total_usd > 0 ? ($pedido->total_ves_calculado / $pedido->total_usd) : 1;
 
-        // 4. Insertar en la tabla facturas
-        self::create([
+        // 4. Insertar y retornar la factura creada
+        return self::create([
             'pedido_id' => $pedido->id,
             'serie_usada' => $serieUsada,
             'numero_factura' => $numeroFactura,

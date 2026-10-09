@@ -15,7 +15,7 @@ class ConfiguracionTiendaController extends Controller
         $config = ConfiguracionTienda::firstOrCreate(
             ['id' => 1], 
             [
-                'nombre_empresa' => 'Corpo Agrícola',
+                'nombre_empresa' => 'Agrosuministros Rodríguez',
                 'iva_porcentaje' => 16.00,
                 'modo_operativo' => 'automatico',
                 'mensaje_cierre_emergencia' => 'Nuestra tienda se encuentra temporalmente cerrada por mantenimiento. Disculpe las molestias.'

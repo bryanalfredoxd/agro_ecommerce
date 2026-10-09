@@ -1,13 +1,25 @@
+@php
+    if (!isset($favoritosIds)) {
+        $favoritosIds = auth()->check()
+            ? \Illuminate\Support\Facades\DB::table('favoritos')->where('usuario_id', auth()->id())->pluck('producto_id')->toArray()
+            : [];
+    }
+@endphp
+
 <section class="py-12 sm:py-16 bg-white relative">
     
     <div class="layout-container w-full relative z-10 px-4 sm:px-0">
         
         <div class="mb-10 md:mb-12 max-w-3xl">
-            <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-agro-dark leading-tight">
-                Productos Más <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-agro-dark">Vendidos</span>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e5f2fb] text-[#1e549e] text-xs font-bold mb-3 border border-[#aad6f3]">
+                <span class="material-symbols-outlined text-[16px] text-[#3492cf]">verified</span>
+                Insumos Seleccionados
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-black text-[#1e549e] leading-tight">
+                Productos Más <span class="text-[#3492cf]">Solicitados</span>
             </h2>
-            <p class="text-gray-500 text-sm md:text-base mt-4 leading-relaxed">
-                Nuestra selección premium de insumos agropecuarios, avalada por la compra recurrente de nuestros productores certificados.
+            <p class="text-slate-600 text-sm md:text-base mt-2 leading-relaxed">
+                Nuestra selección recomendada para garantizar el rendimiento y sanidad de tu unidad productiva.
             </p>
         </div>
         
@@ -38,10 +50,16 @@
                         @endif
                     </div>
 
-                    {{-- Botón Favorito --}}
+                    @php
+                        $esFavorito = in_array($producto->id, $favoritosIds);
+                    @endphp
+                    {{-- Botón Favorito Funcional --}}
                     <div class="absolute top-3 right-3 z-20">
-                        <button class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-700 hover:text-red-500 hover:bg-red-50 hover:shadow-md transition-all duration-300" title="Añadir a favoritos">
-                            <span class="material-symbols-outlined text-[18px] hover:fill-current">favorite</span>
+                        <button type="button" 
+                                data-producto-id="{{ $producto->id }}"
+                                class="btn-favorito-destacado flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 shadow-xs {{ $esFavorito ? 'bg-red-50 text-red-500 shadow-md ring-1 ring-red-200' : 'bg-white/95 text-slate-400 hover:text-red-500 hover:bg-white hover:shadow-md' }}" 
+                                title="{{ $esFavorito ? 'Quitar de favoritos' : 'Añadir a favoritos' }}">
+                            <span class="material-symbols-outlined text-[19px] transition-transform duration-200 pointer-events-none {{ $esFavorito ? 'fill-1 text-red-500' : '' }}">favorite</span>
                         </button>
                     </div>
                     
@@ -81,31 +99,29 @@
                         </div>
                     </div>
                     
-                    {{-- Título --}}
-                    <h3 class="text-agro-dark font-bold text-base leading-snug mb-2 line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors">
-                        <a href="#" class="focus:outline-none before:absolute before:inset-0">
-                            {{ $producto->nombre }}
-                        </a>
+                    {{-- Título (Sin redirección) --}}
+                    <h3 class="text-slate-900 font-bold text-base leading-snug mb-2 line-clamp-2 min-h-[2.5rem] group-hover:text-[#3492cf] transition-colors cursor-default select-text">
+                        {{ $producto->nombre }}
                     </h3>
                     
                     {{-- Descripción --}}
-                    <p class="text-xs text-gray-600 mb-4 line-clamp-2 flex-grow leading-relaxed relative z-20">
+                    <p class="text-xs text-slate-500 mb-4 line-clamp-2 flex-grow leading-relaxed relative z-20">
                         {{ $producto->descripcion }}
                     </p>
                     
                     {{-- Fila Inferior: Precios (USD y VES) y Call to Action (CTA) --}}
-                    <div class="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between relative z-20">
+                    <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between relative z-20">
                         
                         {{-- Contenedor de Precios --}}
                         <div class="flex flex-col">
                             {{-- Precio en Dólares (Principal) --}}
                             <div class="flex items-baseline gap-1">
-                                <span class="text-xl font-black text-agro-dark">${{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                <span class="text-[10px] text-gray-700 font-bold uppercase tracking-wider">USD</span>
+                                <span class="text-xl font-black text-[#1e549e]">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                                <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">USD</span>
                             </div>
                             
                             {{-- NUEVO: Precio en Bolívares (Calculado Dinámicamente) --}}
-                            <span class="text-[11px] text-gray-600 font-bold mt-0.5 tracking-wide">
+                            <span class="text-[11px] text-slate-500 font-bold mt-0.5 tracking-wide">
                                 Bs. {{ number_format($producto->precio_venta_usd * $tasaDolar, 2, ',', '.') }}
                             </span>
                         </div>
@@ -113,7 +129,7 @@
                         {{-- BOTÓN AÑADIR AL CARRITO --}}
                         <button type="button" 
                                 data-producto-id="{{ $producto->id }}"
-                                class="btn-add-cart-destacado flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-agro-dark hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group/btn shrink-0" 
+                                class="btn-add-cart-destacado flex items-center justify-center size-10 rounded-xl bg-[#e5f2fb] text-[#1e549e] hover:bg-[#1e549e] hover:text-white transition-all duration-200 group/btn shrink-0" 
                                 title="Añadir al carrito">
                             <span class="material-symbols-outlined text-[20px] group-active/btn:scale-95 transition-transform pointer-events-none">add_shopping_cart</span>
                         </button>
@@ -126,7 +142,7 @@
         </div>
         
         <div class="mt-12 md:mt-16 text-center">
-            <a href="{{ route('catalogo') }}" class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-agro-dark hover:bg-primary text-white font-bold text-sm md:text-base transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 transform hover:-translate-y-1 group">
+            <a href="{{ route('catalogo') }}" class="btn-primary h-12 px-8 text-base shadow-md group">
                 <span>Explorar Catálogo Completo</span>
                 <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
@@ -138,7 +154,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         
-        // 1. Capturar todos los botones de esta sección específica
+        // 1. Capturar todos los botones de añadir al carrito
         const botonesCart = document.querySelectorAll('.btn-add-cart-destacado');
 
         botonesCart.forEach(boton => {
@@ -149,14 +165,89 @@
             });
         });
 
-        // 2. Lógica principal de AJAX
+        // 2. Capturar todos los botones de favoritos
+        const botonesFavoritos = document.querySelectorAll('.btn-favorito-destacado');
+
+        botonesFavoritos.forEach(boton => {
+            boton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const productoId = this.getAttribute('data-producto-id');
+                toggleFavorito(productoId, this);
+            });
+        });
+
+        // 3. Lógica principal para Alternar Favorito (AJAX)
+        function toggleFavorito(productoId, botonElement) {
+            const icono = botonElement.querySelector('.material-symbols-outlined');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            // Feedback visual instantáneo
+            if (icono) {
+                icono.classList.add('scale-125');
+                setTimeout(() => icono.classList.remove('scale-125'), 200);
+            }
+            botonElement.disabled = true;
+
+            fetch("{{ route('favoritos.toggle') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ producto_id: productoId })
+            })
+            .then(async response => {
+                if (response.status === 401) {
+                    mostrarToastIndependiente('Debes iniciar sesión para guardar favoritos', 'error');
+                    setTimeout(() => {
+                        window.location.href = "{{ route('login') }}";
+                    }, 1200);
+                    return Promise.reject('Requiere autenticación');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.status === 'success') {
+                    if (data.is_favorite) {
+                        // Cambiar a estado Activo (Rojo / Relleno)
+                        botonElement.className = 'btn-favorito-destacado flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 shadow-xs bg-red-50 text-red-500 shadow-md ring-1 ring-red-200';
+                        if (icono) {
+                            icono.className = 'material-symbols-outlined text-[19px] transition-transform duration-200 pointer-events-none fill-1 text-red-500';
+                        }
+                        botonElement.setAttribute('title', 'Quitar de favoritos');
+                        mostrarToastIndependiente(data.message || '¡Guardado en tus favoritos!', 'success');
+                    } else {
+                        // Cambiar a estado Inactivo (Gris / Línea)
+                        botonElement.className = 'btn-favorito-destacado flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 shadow-xs bg-white/95 text-slate-400 hover:text-red-500 hover:bg-white hover:shadow-md';
+                        if (icono) {
+                            icono.className = 'material-symbols-outlined text-[19px] transition-transform duration-200 pointer-events-none text-slate-400';
+                        }
+                        botonElement.setAttribute('title', 'Añadir a favoritos');
+                        mostrarToastIndependiente(data.message || 'Eliminado de tus favoritos', 'info');
+                    }
+                } else {
+                    mostrarToastIndependiente(data.message || 'Error al actualizar favoritos', 'error');
+                }
+            })
+            .catch(error => {
+                if (error !== 'Requiere autenticación') {
+                    console.error('Error al alternar favorito:', error);
+                    mostrarToastIndependiente('Error de conexión con el servidor', 'error');
+                }
+            })
+            .finally(() => {
+                botonElement.disabled = false;
+            });
+        }
+
+        // 4. Lógica principal de Carrito (AJAX)
         function agregarAlCarrito(productoId, botonElement) {
-            // Guardar el ícono original y poner un spinner de carga
             const iconoOriginal = botonElement.innerHTML;
             botonElement.innerHTML = '<span class="material-symbols-outlined text-[22px] animate-spin">sync</span>';
             botonElement.disabled = true;
 
-            // Obtener el token CSRF del meta tag de Laravel
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
             fetch("{{ route('carrito.add') }}", {
@@ -169,7 +260,6 @@
                 body: JSON.stringify({ producto_id: productoId, cantidad: 1 })
             })
             .then(response => {
-                // Si el usuario no está logueado, Laravel devuelve un 401
                 if (response.status === 401) {
                     window.location.href = "{{ route('login') }}";
                     return Promise.reject('Requiere autenticación');
@@ -180,7 +270,6 @@
                 if (data && data.status === 'success') {
                     mostrarToastIndependiente('Producto agregado al carrito', 'success');
 
-                    // Actualizar el contador del menú superior (si tienes los IDs configurados así)
                     const badge = document.getElementById('cart-count-badge');
                     const badgeContainer = document.getElementById('cart-badge-container');
                     
@@ -201,34 +290,39 @@
                 }
             })
             .finally(() => {
-                // Devolver el botón a su estado normal
                 botonElement.innerHTML = iconoOriginal;
                 botonElement.disabled = false;
             });
         }
 
-        // 3. Mini sistema de notificaciones (Toast) inyectado dinámicamente
+        // 5. Mini sistema de notificaciones (Toast) corporativo inyectado dinámicamente
         function mostrarToastIndependiente(mensaje, tipo) {
-            // Definir colores según el tipo
-            const bgClase = tipo === 'success' ? 'bg-green-600' : 'bg-red-600';
-            const icono = tipo === 'success' ? 'check_circle' : 'error';
+            let bgClase = 'bg-[#1e549e] border border-[#3492cf]/40 shadow-[#1e549e]/30';
+            let icono = 'info';
 
-            // Crear el elemento HTML del toast
+            if (tipo === 'success') {
+                bgClase = 'bg-[#0f3d6e] border border-[#3492cf] shadow-[#1e549e]/40';
+                icono = 'check_circle';
+            } else if (tipo === 'error') {
+                bgClase = 'bg-rose-600 border border-rose-400 shadow-rose-900/40';
+                icono = 'error';
+            } else if (tipo === 'info') {
+                bgClase = 'bg-slate-800 border border-slate-600 shadow-slate-900/40';
+                icono = 'bookmark_remove';
+            }
+
             const toast = document.createElement('div');
-            toast.className = `fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 rounded-xl shadow-2xl text-white transform transition-all duration-300 translate-y-20 opacity-0 font-sans text-sm font-medium ${bgClase}`;
-            toast.innerHTML = `<span class="material-symbols-outlined text-xl">${icono}</span> ${mensaje}`;
+            toast.className = `fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-white transform transition-all duration-300 translate-y-20 opacity-0 font-sans text-sm font-semibold backdrop-blur-md ${bgClase}`;
+            toast.innerHTML = `<span class="material-symbols-outlined text-xl text-[#aad6f3] shrink-0">${icono}</span> <span>${mensaje}</span>`;
 
-            // Insertarlo en el documento
             document.body.appendChild(toast);
 
-            // Animar entrada (usando setTimeout para que el DOM registre el elemento primero)
             requestAnimationFrame(() => {
                 setTimeout(() => {
                     toast.classList.remove('translate-y-20', 'opacity-0');
                 }, 10);
             });
 
-            // Animar salida y destruir elemento después de 3.5 segundos
             setTimeout(() => {
                 toast.classList.add('translate-y-20', 'opacity-0');
                 setTimeout(() => {

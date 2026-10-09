@@ -1,20 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Crear Cuenta - Corpo Agrícola')
+@section('title', 'Crear Cuenta - Agrosuministros Rodríguez')
 
 @section('content')
-{{-- Usamos relative y overflow-hidden para que el fondo no afecte el footer de la página --}}
-<div class="min-h-[calc(100vh-80px)] flex items-center justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
+<div class="min-h-[calc(100vh-80px)] flex items-center justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-slate-900">
     
-    {{-- FONDO ABSOLUTO (Atrapado solo en este contenedor, igual que en el login) --}}
+    {{-- FONDO ABSOLUTO CORPORATIVO --}}
     <div class="absolute inset-0 z-0">
-        {{-- Reemplaza la URL por tu asset local: src="{{ asset('img/photo-1500382017468-9049fed747ef.jpg') }}" --}}
         <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2070&auto=format&fit=crop" 
-             alt="Fondo de campo de trigo" 
-             class="w-full h-full object-cover object-center">
-        
-        {{-- DEGRADADO OVERLAY --}}
-        <div class="absolute inset-0 bg-gradient-to-br from-agro-dark/95 via-agro-dark/20 to-primary/40 backdrop-blur-[2px]"></div>
+             alt="Fondo agrícola" 
+             class="w-full h-full object-cover object-center opacity-40">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#0b1d38]/95 via-[#1e549e]/80 to-[#3492cf]/40 backdrop-blur-[2px]"></div>
     </div>
 
     {{-- CONTENIDO PRINCIPAL --}}
@@ -33,12 +29,15 @@
             </div>
         @endif
 
-        {{-- TARJETA EFECTO CRISTAL --}}
-        <div class="bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-white/50 p-6 sm:p-10 relative overflow-hidden" id="mainCard">
+        {{-- TARJETA GLASSMORPHISM --}}
+        <div class="bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(11,29,56,0.45)] border border-white/60 p-6 sm:p-10 relative overflow-hidden" id="mainCard">
             
             <div class="text-center mb-8">
+                <a href="{{ route('home') }}" class="inline-block group mb-4">
+                    <img src="{{ asset('img/logo.png') }}" alt="Agrosuministros Rodríguez" class="h-16 mx-auto object-contain transition-transform group-hover:scale-105 duration-300">
+                </a>
                 <h1 class="text-2xl sm:text-3xl font-black text-agro-dark tracking-tight">Crear Cuenta</h1>
-                <p class="text-sm text-gray-500 font-medium mt-2">Únete al ecosistema líder del agro venezolano.</p>
+                <p class="text-sm text-gray-500 font-medium mt-1.5">Únete a la plataforma oficial de Agrosuministros Rodríguez.</p>
             </div>
 
             <form method="POST" action="{{ route('register') }}" id="registerForm" class="space-y-5" novalidate>
@@ -185,7 +184,7 @@
                 </div>
 
                 {{-- Botón Enviar --}}
-                <button type="submit" class="w-full h-12 mt-2 rounded-xl bg-primary text-agro-dark font-black text-sm uppercase tracking-wide hover:bg-green-500 hover:text-white shadow-lg shadow-primary/30 transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group">
+                <button type="submit" class="btn-primary w-full h-12 mt-2 rounded-xl text-sm uppercase tracking-wider justify-center shadow-lg shadow-primary/25 group">
                     <span>Completar Registro</span>
                     <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">rocket_launch</span>
                 </button>
@@ -198,21 +197,21 @@
                     <div class="w-full border-t border-gray-200"></div>
                 </div>
                 <div class="relative flex justify-center">
-                    <span class="bg-white px-3 text-[10px] font-black text-gray-700 uppercase tracking-widest">
+                    <span class="bg-white px-3 text-[10px] font-black text-gray-500 uppercase tracking-widest">
                         ¿Ya eres parte de nosotros?
                     </span>
                 </div>
             </div>
 
-            <a href="{{ route('login') }}" class="w-full h-12 rounded-xl border-2 border-gray-100 text-gray-500 font-bold text-sm flex items-center justify-center hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-300">
+            <a href="{{ route('login') }}" class="btn-outline w-full h-12 rounded-xl text-sm font-bold justify-center">
                 Iniciar Sesión
             </a>
 
         </div>
         
-        {{-- Footer - Este texto se queda fuera del glass y dentro del contenedor base --}}
-        <p class="text-center mt-6 text-[10px] text-white/60 font-black uppercase tracking-[0.2em] drop-shadow-sm pb-6">
-            Corpo Agrícola &copy; {{ date('Y') }}
+        {{-- Footer --}}
+        <p class="text-center mt-6 text-[11px] text-white/75 font-black uppercase tracking-[0.2em] drop-shadow-sm pb-6">
+            Agrosuministros Rodríguez &copy; {{ date('Y') }}
         </p>
 
     </div>

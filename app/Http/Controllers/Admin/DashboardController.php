@@ -19,6 +19,34 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user && !$user->tienePermiso('ver_dashboard')) {
+            if ($user->tienePermiso('crear_venta_manual')) {
+                return redirect()->route('admin.pos.index');
+            }
+            if ($user->tienePermiso('ver_pedidos') || $user->tienePermiso('gestionar_pagos')) {
+                return redirect()->route('admin.pedidos.index');
+            }
+            if ($user->tienePermiso('ver_productos')) {
+                return redirect()->route('admin.productos.index');
+            }
+            if ($user->tienePermiso('gestionar_caja_diaria')) {
+                return redirect()->route('admin.caja_diaria.index');
+            }
+            if ($user->tienePermiso('ver_facturas')) {
+                return redirect()->route('admin.facturas.index');
+            }
+            if ($user->tienePermiso('gestionar_zonas_delivery') || $user->tienePermiso('ver_logistica')) {
+                return redirect()->route('admin.zonas_delivery.index');
+            }
+            if ($user->tienePermiso('ver_usuarios')) {
+                return redirect()->route('admin.usuarios.index');
+            }
+            return redirect('/')->with('error', 'No tienes permisos asignados para visualizar módulos administrativos.');
+        }
+
         $hoy = Carbon::today();
         $inicioMes = Carbon::now()->startOfMonth();
 
@@ -163,10 +191,61 @@ class DashboardController extends Controller
             }
         }
 
+        // 5. Último Pedido Pendiente para Alertas Nativas (Windows)
+        $ultimoPedidoData = null;
+        if ($user->tienePermiso('ver_pedidos') || $user->tienePermiso('ver_kpis_operativos')) {
+            $ultimoPedido = Pedido::with('usuario')
+                ->where('estado', 'pendiente')
+                ->latest('id')
+                ->first();
+
+            if ($ultimoPedido) {
+                $clienteNombre = $ultimoPedido->usuario 
+                    ? trim($ultimoPedido->usuario->nombre . ' ' . ($ultimoPedido->usuario->apellido ?? ''))
+                    : 'Cliente Web';
+                
+                $ultimoPedidoData = [
+                    'id' => $ultimoPedido->id,
+                    'cliente' => $clienteNombre,
+                    'total_usd' => number_format($ultimoPedido->total_usd, 2),
+                    'canal' => $ultimoPedido->canal_venta,
+                    'creado_at' => $ultimoPedido->creado_at ? \Carbon\Carbon::parse($ultimoPedido->creado_at)->diffForHumans() : 'Reciente',
+                    'url' => route('admin.pedidos.index', ['filtro_estado' => 'pendientes'])
+                ];
+            }
+        }
+
+        // 6. Último Pago por Verificar para Alertas Nativas (Windows)
+        $ultimoPagoData = null;
+        if ($user->tienePermiso('gestionar_pagos') || $user->tienePermiso('ver_kpis_financieros')) {
+            $ultimoPago = Pago::with('pedido.usuario')
+                ->where('estado', 'revision')
+                ->latest('id')
+                ->first();
+
+            if ($ultimoPago) {
+                $clienteNombre = $ultimoPago->pedido && $ultimoPago->pedido->usuario
+                    ? trim($ultimoPago->pedido->usuario->nombre . ' ' . ($ultimoPago->pedido->usuario->apellido ?? ''))
+                    : 'Cliente';
+
+                $ultimoPagoData = [
+                    'id' => $ultimoPago->id,
+                    'pedido_id' => $ultimoPago->pedido_id,
+                    'cliente' => $clienteNombre,
+                    'monto_usd' => number_format($ultimoPago->monto_usd, 2),
+                    'metodo' => strtoupper(str_replace('_', ' ', $ultimoPago->metodo)),
+                    'referencia' => $ultimoPago->referencia_bancaria ?? 'S/R',
+                    'url' => route('admin.pagos.index', ['filtro_estado' => 'revision'])
+                ];
+            }
+        }
+
         return response()->json([
             'total' => count($alertas),
             'cantidad_eventos' => $totalAlertas,
-            'alertas' => $alertas
+            'alertas' => $alertas,
+            'ultimo_pedido' => $ultimoPedidoData,
+            'ultimo_pago' => $ultimoPagoData
         ]);
     }
 }

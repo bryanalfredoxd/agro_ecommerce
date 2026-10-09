@@ -39,12 +39,16 @@ class FacturaController extends Controller
 
     public function show($id)
     {
-        // Cargamos la factura con toda la estructura de productos del pedido asociado
+        // Cargamos la factura con toda la estructura de productos y pagos del pedido asociado
         $factura = Factura::with([
-            'pedido.detalles.producto'
+            'pedido.detalles.producto',
+            'pedido.pago',
+            'pedido.usuario'
         ])->findOrFail($id);
 
-        return view('admin.facturas.partials._detalle', compact('factura'))->render();
+        $config = \App\Models\ConfiguracionTienda::first();
+
+        return view('admin.facturas.partials._detalle', compact('factura', 'config'))->render();
     }
 
     public function anular($id)
@@ -59,5 +63,55 @@ class FacturaController extends Controller
         $factura->save();
 
         return response()->json(['success' => true, 'message' => 'Factura anulada correctamente en el sistema.']);
+    }
+
+    /**
+     * Vista de impresión en formato Ticket Térmico (80mm)
+     */
+    public function ticket($id)
+    {
+        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.usuario'])->findOrFail($id);
+        $config = \App\Models\ConfiguracionTienda::first();
+
+        return view('facturas.ticket', compact('factura', 'config'));
+    }
+
+    /**
+     * Vista de impresión en formato Factura A4 / Fiscal
+     */
+    public function imprimir($id)
+    {
+        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.usuario'])->findOrFail($id);
+        $config = \App\Models\ConfiguracionTienda::first();
+
+        return view('facturas.factura', compact('factura', 'config'));
+    }
+
+    /**
+     * Ticket térmico accediendo mediante el ID del pedido
+     */
+    public function ticketPorPedido($pedidoId)
+    {
+        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.usuario'])
+            ->where('pedido_id', $pedidoId)
+            ->first();
+
+        if (!$factura) {
+            // Si el pedido aún no tiene factura pero está pagado, intentamos generarla
+            $pedido = \App\Models\Pedido::findOrFail($pedidoId);
+            if ($pedido->estado === 'pagado' || $pedido->estado === 'completado_caja') {
+                \App\Models\Factura::emitirParaPedido($pedido);
+                $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.usuario'])
+                    ->where('pedido_id', $pedidoId)
+                    ->first();
+            }
+        }
+
+        if (!$factura) {
+            abort(404, 'No hay factura emitida para este pedido.');
+        }
+
+        $config = \App\Models\ConfiguracionTienda::first();
+        return view('facturas.ticket', compact('factura', 'config'));
     }
 }

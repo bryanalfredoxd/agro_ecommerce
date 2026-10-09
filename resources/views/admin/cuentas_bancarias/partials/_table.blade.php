@@ -14,10 +14,14 @@
                 
                 {{-- Columna 1: Toggle Switch --}}
                 <td class="px-6 py-4">
+                    @if(Auth::user()->tienePermiso('gestionar_cuentas_banco'))
                     <label class="relative inline-flex items-center cursor-pointer" title="{{ $cuenta->activo ? 'Desactivar' : 'Activar' }}">
                         <input type="checkbox" class="sr-only peer" {{ $cuenta->activo ? 'checked' : '' }} onchange="toggleCuenta({{ $cuenta->id }})">
                         <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
                     </label>
+                    @else
+                    <span class="inline-flex size-2 rounded-full {{ $cuenta->activo ? 'bg-emerald-500' : 'bg-gray-300' }}"></span>
+                    @endif
                 </td>
 
                 {{-- Columna 2: Tipo de Método --}}
@@ -56,6 +60,7 @@
 
                 {{-- Columna 4: Acciones --}}
                 <td class="px-6 py-4 text-right">
+                    @if(Auth::user()->tienePermiso('gestionar_cuentas_banco'))
                     <div class="flex items-center justify-end gap-2">
                         <button onclick='openModal(@json($cuenta))' class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 flex items-center justify-center transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[18px]">edit</span>
@@ -64,6 +69,9 @@
                             <span class="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                     </div>
+                    @else
+                    <span class="text-xs text-gray-400 italic">Solo lectura</span>
+                    @endif
                 </td>
             </tr>
             @empty

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Marcas - Corpo Agrícola')
+@section('title', 'Directorio de Marcas - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">
@@ -10,56 +10,171 @@
     <main class="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto">
         @include('admin.partials.topbar')
 
-        <div class="p-4 sm:p-8 animate-fade-in-up pb-20">
+        <div class="p-4 sm:p-8 animate-fade-in-up pb-12">
             
-            {{-- Encabezado --}}
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-
-                {{-- Contenedor Flex para alinear el botón y los textos horizontalmente --}}
-                <div class="flex items-center gap-4">
-                        
-                    {{-- Botón Retroceder --}}
-                    <a href="{{ route('admin.dashboard') }}" class="w-10 h-10 flex-shrink-0 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-200 transition-colors shadow-sm">
-                        <span class="material-symbols-outlined">arrow_back</span>
+            {{-- ENCABEZADO --}}
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-3.5">
+                    <a href="{{ route('admin.dashboard') }}" class="size-10 flex-shrink-0 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-200 transition-colors shadow-2xs">
+                        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
                     </a>
-                    
-                    {{-- Textos (Título y Subtítulo) --}}
                     <div>
-                        <h2 class="text-2xl font-black text-agro-dark flex items-center gap-2">
-                            <span class="material-symbols-outlined text-green-600 text-[32px]">sell</span>
+                        <h2 class="text-2xl sm:text-3xl font-black text-agro-dark flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[#1e549e] text-[32px]">sell</span>
                             Directorio de Marcas
                         </h2>
-                        <p class="text-sm text-gray-500 mt-1">Registra y administra los fabricantes de tus productos.</p>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-0.5 font-medium">Registra, administra y audita los fabricantes y marcas comerciales de tus productos.</p>
                     </div>
-    
                 </div>
 
-                <button onclick="openModal()" class="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-green-700 hover:shadow-lg hover:shadow-green-500/30 transition-all transform hover:-translate-y-0.5">
-                    <span class="material-symbols-outlined text-[20px]">add_circle</span>
-                    Nueva Marca
-                </button>
-            </div>
-
-            {{-- Filtros y Buscador --}}
-            <div class="bg-white rounded-t-3xl shadow-sm border border-gray-100 p-4 flex flex-col sm:flex-row gap-4 relative z-10">
-                <div class="flex-1 relative">
-                    <span class="material-symbols-outlined absolute left-3 top-3 text-gray-700">search</span>
-                    <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none font-medium text-agro-dark" placeholder="Buscar por nombre o país...">
-                </div>
-                <div class="w-full sm:w-48 relative">
-                    <select id="statusSelect" class="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none font-bold text-gray-600 appearance-none cursor-pointer">
-                        <option value="all">Todos los estados</option>
-                        <option value="1">Activas</option>
-                        <option value="0">Inactivas</option>
-                    </select>
-                    <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 pointer-events-none">filter_list</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="fetchData(1)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 shadow-2xs transition-all active:scale-95" title="Actualizar lista">
+                        <span class="material-symbols-outlined text-[17px] text-blue-600">sync</span>
+                        Refrescar
+                    </button>
+                    @if(Auth::user()->tienePermiso('gestionar_categorias_marcas'))
+                    <button onclick="openModal()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all hover:scale-105 active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                        <span>Nueva Marca</span>
+                    </button>
+                    @endif
                 </div>
             </div>
 
-            {{-- Contenedor de la Tabla --}}
-            <div class="bg-white rounded-b-3xl shadow-sm border border-t-0 border-gray-100 relative" id="tableContainer">
-                <div id="loadingOverlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 hidden items-center justify-center rounded-b-3xl">
-                    <span class="material-symbols-outlined animate-spin text-green-600 text-4xl">autorenew</span>
+            {{-- KPI METRICS CARDS --}}
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+                
+                {{-- KPI 1: Total Marcas --}}
+                <div onclick="filtrarPorEstado('all')" class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all cursor-pointer group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Marcas</span>
+                        <div class="size-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[18px]">sell</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span id="kpi_total_marcas" class="text-2xl font-black text-gray-900 leading-none">{{ $stats['total'] }}</span>
+                        <span class="text-[10px] text-gray-400 font-bold uppercase">Fabricantes</span>
+                    </div>
+                </div>
+
+                {{-- KPI 2: Marcas Activas --}}
+                <div onclick="filtrarPorEstado('1')" class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all cursor-pointer group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Activas en Tienda</span>
+                        <div class="size-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span id="kpi_activas_marcas" class="text-2xl font-black text-emerald-600 leading-none">{{ $stats['activas'] }}</span>
+                        <span class="text-[10px] text-emerald-700 font-bold uppercase">Habilitadas</span>
+                    </div>
+                </div>
+
+                {{-- KPI 3: Con Productos Asociados --}}
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Con Catálogo</span>
+                        <div class="size-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span id="kpi_con_productos_marcas" class="text-2xl font-black text-gray-900 leading-none">{{ $stats['con_productos'] }}</span>
+                        <span class="text-[10px] text-indigo-600 font-bold uppercase">Con Productos</span>
+                    </div>
+                </div>
+
+                {{-- KPI 4: Inactivas / Pausadas --}}
+                <div onclick="filtrarPorEstado('0')" class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all cursor-pointer group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Inactivas</span>
+                        <div class="size-8 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[18px]">pause_circle</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span id="kpi_inactivas_marcas" class="text-2xl font-black text-gray-600 leading-none">{{ $stats['inactivas'] }}</span>
+                        <span class="text-[10px] text-gray-400 font-bold uppercase">Ocultas</span>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- BARRA DE FILTROS ELEVADA --}}
+            <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xs border border-gray-100 mb-6 overflow-hidden">
+                <div class="p-3.5 sm:p-4 flex flex-col gap-3">
+                    <div class="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center">
+                        
+                        {{-- 1. Buscador en Vivo Avanzado --}}
+                        <div class="flex-1 relative group">
+                            <span class="material-symbols-outlined absolute left-3.5 top-2.5 text-gray-400 group-focus-within:text-[#1e549e] text-[20px] transition-colors pointer-events-none">search</span>
+                            
+                            <input type="text" 
+                                   id="searchInput" 
+                                   value="{{ request('buscar', '') }}"
+                                   autocomplete="off"
+                                   class="w-full pl-10 pr-20 py-2.5 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-[#1e549e]/15 focus:border-[#1e549e] transition-all outline-none font-medium text-gray-800 placeholder-gray-400 shadow-2xs" 
+                                   placeholder="Buscar por nombre de marca o país de origen...">
+                            
+                            {{-- Controles auxiliares en el buscador --}}
+                            <div class="absolute right-2.5 top-2.5 flex items-center gap-1.5">
+                                <span id="search_spinner" style="display: none;" class="material-symbols-outlined text-[#1e549e] text-[18px] animate-spin">progress_activity</span>
+                                
+                                <button type="button" 
+                                        id="btn_clear_search" 
+                                        onclick="limpiarBuscador()" 
+                                        style="{{ request('buscar') ? 'display: flex;' : 'display: none;' }}"
+                                        class="size-6 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-800 items-center justify-center transition-colors" 
+                                        title="Limpiar búsqueda (Escape)">
+                                    <span class="material-symbols-outlined text-[15px]">close</span>
+                                </button>
+                                
+                                <kbd class="hidden sm:inline-block px-1.5 py-0.5 text-[9px] font-mono font-bold text-gray-400 bg-gray-50 border border-gray-200 rounded shadow-2xs">ESC</kbd>
+                            </div>
+                        </div>
+
+                        {{-- 2. Filtro por Estado (Flex Input Group sin solapamientos) --}}
+                        <div id="statusWrapper" class="w-full sm:w-56 flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-xl shadow-2xs transition-all focus-within:ring-2 focus-within:ring-[#1e549e]/15 focus-within:border-[#1e549e]">
+                            <span id="statusIcon" class="material-symbols-outlined text-gray-400 text-[20px] shrink-0 pointer-events-none transition-colors">tune</span>
+                            <select id="statusSelect" class="w-full bg-transparent border-none p-0 outline-none focus:ring-0 text-xs sm:text-sm font-bold text-gray-700 cursor-pointer">
+                                <option value="all" {{ request('estado', 'all') === 'all' ? 'selected' : '' }}>Todos los estados</option>
+                                <option value="1" {{ request('estado') === '1' ? 'selected' : '' }}>Solo Activas</option>
+                                <option value="0" {{ request('estado') === '0' ? 'selected' : '' }}>Solo Inactivas</option>
+                            </select>
+                        </div>
+
+                        {{-- 3. Botón Limpiar Todos los Filtros --}}
+                        <button type="button" 
+                                id="btn_reset_filtros" 
+                                onclick="resetearTodosFiltros()" 
+                                style="display: none;"
+                                class="items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 transition-all shadow-2xs whitespace-nowrap active:scale-95" 
+                                title="Restablecer todos los filtros aplicados">
+                            <span class="material-symbols-outlined text-[16px]">filter_alt_off</span>
+                            <span>Limpiar</span>
+                            <span id="badge_filtros_count" class="size-4.5 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center font-black leading-none">0</span>
+                        </button>
+                    </div>
+
+                    {{-- Chips / Indicadores de filtros activos en tiempo real --}}
+                    <div id="chips_filtros_activos" style="display: none;" class="flex-wrap items-center gap-2 pt-2 border-t border-gray-200/50">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-wider flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px] text-[#1e549e]">tune</span> Filtros activos:
+                        </span>
+                        <div id="chips_container" class="flex flex-wrap items-center gap-1.5"></div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- CONTENEDOR DE LA TABLA --}}
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden" id="tableContainer">
+                <div id="loadingOverlay" class="absolute inset-0 bg-white/80 backdrop-blur-xs z-20 hidden items-center justify-center">
+                    <div class="flex flex-col items-center gap-2">
+                        <span class="material-symbols-outlined animate-spin text-[#1e549e] text-4xl">autorenew</span>
+                        <span class="text-xs font-bold text-gray-600">Actualizando marcas...</span>
+                    </div>
                 </div>
                 
                 <div id="tableContent">
@@ -71,50 +186,64 @@
     </main>
 </div>
 
-{{-- MODAL CREAR / EDITAR MARCA --}}
+{{-- ========================================== --}}
+{{-- MODAL CREAR / EDITAR MARCA                 --}}
+{{-- ========================================== --}}
 <div id="marcaModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="marcaModalBackdrop" onclick="closeModal()"></div>
+    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs transition-opacity opacity-0" id="marcaModalBackdrop" onclick="closeModal()"></div>
     
     <div class="fixed inset-0 z-10 flex justify-center items-center p-4">
-        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-md opacity-0 scale-95 flex flex-col" id="marcaModalPanel">
+        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-md opacity-0 scale-95 flex flex-col border border-gray-100" id="marcaModalPanel">
             
-            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 class="text-lg font-black text-agro-dark leading-none" id="modalTitle">Nueva Marca</h3>
-                <button type="button" onclick="closeModal()" class="text-gray-700 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
-                    <span class="material-symbols-outlined">close</span>
+            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/80">
+                <div class="flex items-center gap-2.5">
+                    <div class="size-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[18px]">sell</span>
+                    </div>
+                    <h3 class="text-base font-black text-gray-900 leading-none" id="modalTitle">Nueva Marca</h3>
+                </div>
+                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 bg-white p-1 rounded-lg border border-gray-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
                 </button>
             </div>
 
             <form id="marcaForm" onsubmit="saveMarca(event)">
                 <input type="hidden" id="marca_id">
-                <div id="methodContainer"></div>
                 
-                <div class="p-6 space-y-5">
+                <div class="p-6 space-y-4">
                     
                     <div>
-                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Nombre Comercial <span class="text-red-500">*</span></label>
-                        <input type="text" id="nombre" name="nombre" required class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none uppercase placeholder:normal-case" placeholder="Ej: Bayer">
+                        <label class="block text-[11px] font-black text-gray-500 uppercase tracking-wider mb-1.5 ml-0.5">
+                            Nombre Comercial <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="nombre" name="nombre" required class="w-full h-11 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-gray-900 outline-none uppercase placeholder:normal-case text-sm" placeholder="Ej: Bayer, Syngenta, FertiAgro">
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">País de Origen (Opcional)</label>
-                        <input type="text" id="pais_origen" name="pais_origen" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none" placeholder="Ej: Alemania">
+                        <label class="block text-[11px] font-black text-gray-500 uppercase tracking-wider mb-1.5 ml-0.5">
+                            País de Origen (Opcional)
+                        </label>
+                        <input type="text" id="pais_origen" name="pais_origen" class="w-full h-11 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-gray-900 outline-none text-sm" placeholder="Ej: Venezuela, Alemania, EE. UU.">
                     </div>
 
-                    <div class="pt-2">
-                        <label class="relative flex items-center p-3 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:border-green-200 transition-all">
+                    <div class="pt-1">
+                        <label class="relative flex items-center p-3.5 bg-gray-50/80 rounded-xl border border-gray-200 cursor-pointer hover:border-blue-300 transition-all">
                             <input type="checkbox" id="activo" name="activo" class="sr-only peer" checked>
-                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[14px] after:left-[14px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                            <span class="ml-3 text-sm font-bold text-gray-700">Marca Activa (Visible)</span>
+                            <div class="w-10 h-5.5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[16px] after:left-[16px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            <div class="ml-3.5">
+                                <span class="block text-xs font-black text-gray-800">Marca Activa</span>
+                                <span class="block text-[11px] text-gray-500">Visible en filtros y ficha de productos de la tienda</span>
+                            </div>
                         </label>
                     </div>
 
                 </div>
 
-                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-                    <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-sm">Cancelar</button>
-                    <button type="submit" id="btnSave" class="px-6 py-2.5 rounded-xl font-bold text-white bg-green-600 hover:bg-green-700 shadow-sm text-sm flex items-center gap-2 transition-all">
-                        <span class="material-symbols-outlined text-[18px]">save</span> Guardar
+                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/80 flex justify-end gap-3">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-xs">Cancelar</button>
+                    <button type="submit" id="btnSave" class="px-5 py-2 rounded-xl font-black text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-xs flex items-center gap-1.5 transition-all">
+                        <span class="material-symbols-outlined text-[16px]">save</span>
+                        <span id="btnSaveText">Guardar Marca</span>
                     </button>
                 </div>
             </form>
@@ -122,74 +251,331 @@
     </div>
 </div>
 
-<div id="toast-container" class="fixed bottom-6 right-6 z-[999] flex flex-col gap-2"></div>
-
+{{-- SweetAlert2 --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @push('scripts')
 <script>
-    let currentSearch = '';
-    let currentStatus = 'all';
+    // ESTADO GLOBAL DE FILTROS AJAX
+    let currentSearch = @json(request('buscar', ''));
+    let currentStatus = @json(request('estado', 'all'));
+    let currentPage = {{ request('page', 1) }};
     let searchTimeout;
 
-    // Buscador y Filtros AJAX
-    document.getElementById('searchInput').addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        currentSearch = this.value;
-        searchTimeout = setTimeout(() => fetchData(1), 400);
+    const ESTADO_LABELS = {
+        '1': 'Solo Activas',
+        '0': 'Solo Inactivas'
+    };
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Inicializar filtros UI al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+        actualizarFiltrosUI();
     });
 
-    document.getElementById('statusSelect').addEventListener('change', function() {
-        currentStatus = this.value;
-        fetchData(1);
-    });
+    // ACTUALIZAR ESTILOS DE SELECTORES Y CHIPS ACTIVOS
+    function actualizarFiltrosUI() {
+        let activeCount = 0;
 
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.ajax-pagination a')) {
-            e.preventDefault();
-            fetchData(new URL(e.target.closest('a').href).searchParams.get('page'));
+        // Buscador
+        const btnClear = document.getElementById('btn_clear_search');
+        if (btnClear) {
+            btnClear.style.display = (currentSearch && currentSearch.trim() !== '') ? 'flex' : 'none';
         }
-    });
 
-    function fetchData(page = 1) {
-        const loading = document.getElementById('loadingOverlay');
-        loading.classList.remove('hidden');
-        loading.classList.add('flex');
+        // Selector de Estado
+        const statusWrapper = document.getElementById('statusWrapper');
+        const statusIcon = document.getElementById('statusIcon');
+        if (currentStatus && currentStatus !== 'all') {
+            activeCount++;
+            if (statusWrapper) {
+                statusWrapper.classList.add('border-[#1e549e]', 'bg-blue-50/40', 'text-[#1e549e]', 'ring-1', 'ring-[#1e549e]/30');
+                statusWrapper.classList.remove('border-gray-200', 'bg-white');
+            }
+            if (statusIcon) {
+                statusIcon.classList.add('text-[#1e549e]');
+                statusIcon.classList.remove('text-gray-400');
+            }
+        } else {
+            if (statusWrapper) {
+                statusWrapper.classList.remove('border-[#1e549e]', 'bg-blue-50/40', 'text-[#1e549e]', 'ring-1', 'ring-[#1e549e]/30');
+                statusWrapper.classList.add('border-gray-200', 'bg-white');
+            }
+            if (statusIcon) {
+                statusIcon.classList.remove('text-[#1e549e]');
+                statusIcon.classList.add('text-gray-400');
+            }
+        }
 
-        fetch(`{{ route('admin.marcas.index') }}?buscar=${currentSearch}&estado=${currentStatus}&page=${page}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(res => res.text())
-        .then(html => document.getElementById('tableContent').innerHTML = html)
-        .finally(() => {
-            loading.classList.add('hidden');
-            loading.classList.remove('flex');
+        // Búsqueda activa cuenta como filtro
+        if (currentSearch && currentSearch.trim() !== '') {
+            activeCount++;
+        }
+
+        // Renderizar Chips
+        const chipsWrapper = document.getElementById('chips_filtros_activos');
+        const chipsContainer = document.getElementById('chips_container');
+        const btnResetFiltros = document.getElementById('btn_reset_filtros');
+        const badgeFiltrosCount = document.getElementById('badge_filtros_count');
+
+        let chipsHtml = '';
+
+        if (currentSearch && currentSearch.trim() !== '') {
+            chipsHtml += `
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-gray-700 border border-gray-200 shadow-2xs">
+                    <span class="material-symbols-outlined text-[14px] text-[#1e549e]">search</span>
+                    <span>Búsqueda: <strong class="text-gray-900 font-bold">"${escapeHtml(currentSearch)}"</strong></span>
+                    <button type="button" onclick="limpiarBuscador()" class="size-4 rounded-full flex items-center justify-center hover:bg-gray-200 text-gray-400 hover:text-gray-800 transition-colors" title="Quitar filtro de búsqueda">
+                        <span class="material-symbols-outlined text-[12px]">close</span>
+                    </button>
+                </span>
+            `;
+        }
+
+        if (currentStatus && currentStatus !== 'all') {
+            const estadoLabel = ESTADO_LABELS[currentStatus] || 'Estado';
+            chipsHtml += `
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-gray-700 border border-gray-200 shadow-2xs">
+                    <span class="material-symbols-outlined text-[14px] text-[#1e549e]">tune</span>
+                    <span>Estado: <strong class="text-[#1e549e] font-bold">${escapeHtml(estadoLabel)}</strong></span>
+                    <button type="button" onclick="quitarFiltroEstado()" class="size-4 rounded-full flex items-center justify-center hover:bg-gray-200 text-gray-400 hover:text-gray-800 transition-colors" title="Quitar filtro de estado">
+                        <span class="material-symbols-outlined text-[12px]">close</span>
+                    </button>
+                </span>
+            `;
+        }
+
+        if (chipsContainer) chipsContainer.innerHTML = chipsHtml;
+
+        if (chipsWrapper) {
+            chipsWrapper.style.display = activeCount > 0 ? 'flex' : 'none';
+        }
+
+        if (btnResetFiltros && badgeFiltrosCount) {
+            btnResetFiltros.style.display = activeCount > 0 ? 'inline-flex' : 'none';
+            badgeFiltrosCount.textContent = activeCount;
+        }
+    }
+
+    // ACCIONES DE LIMPIEZA
+    function limpiarBuscador() {
+        const input = document.getElementById('searchInput');
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+        currentSearch = '';
+        actualizarFiltrosUI();
+        fetchData(1);
+    }
+
+    function quitarFiltroEstado() {
+        const statusSel = document.getElementById('statusSelect');
+        if (statusSel) statusSel.value = 'all';
+        currentStatus = 'all';
+        actualizarFiltrosUI();
+        fetchData(1);
+    }
+
+    function resetearTodosFiltros() {
+        const input = document.getElementById('searchInput');
+        if (input) input.value = '';
+        currentSearch = '';
+
+        const statusSel = document.getElementById('statusSelect');
+        if (statusSel) statusSel.value = 'all';
+        currentStatus = 'all';
+
+        actualizarFiltrosUI();
+        fetchData(1);
+    }
+
+    function filtrarPorEstado(estado) {
+        const statusSel = document.getElementById('statusSelect');
+        if (statusSel) statusSel.value = estado;
+        currentStatus = estado;
+        actualizarFiltrosUI();
+        fetchData(1);
+    }
+
+    // SINCRONIZACIÓN DE PARÁMETROS EN LA URL
+    function sincronizarURL(page = 1) {
+        try {
+            const url = new URL(window.location.href);
+            if (currentSearch && currentSearch.trim() !== '') {
+                url.searchParams.set('buscar', currentSearch.trim());
+            } else {
+                url.searchParams.delete('buscar');
+            }
+
+            if (currentStatus && currentStatus !== 'all') {
+                url.searchParams.set('estado', currentStatus);
+            } else {
+                url.searchParams.delete('estado');
+            }
+
+            if (page > 1) {
+                url.searchParams.set('page', page);
+            } else {
+                url.searchParams.delete('page');
+            }
+
+            window.history.replaceState({}, '', url.toString());
+        } catch (e) {
+            // No-op
+        }
+    }
+
+    // EVENT LISTENERS DEL BUSCADOR EN VIVO
+    const searchInputEl = document.getElementById('searchInput');
+    const searchSpinnerEl = document.getElementById('search_spinner');
+    const btnClearSearchEl = document.getElementById('btn_clear_search');
+
+    if (searchInputEl) {
+        searchInputEl.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            currentSearch = this.value;
+
+            if (searchSpinnerEl) searchSpinnerEl.style.display = 'inline-block';
+            if (btnClearSearchEl) btnClearSearchEl.style.display = 'none';
+
+            searchTimeout = setTimeout(() => {
+                fetchData(1, false);
+            }, 300);
+        });
+
+        // Soporte tecla Escape y Enter
+        searchInputEl.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (this.value !== '') {
+                    limpiarBuscador();
+                } else {
+                    this.blur();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                clearTimeout(searchTimeout);
+                currentSearch = this.value;
+                actualizarFiltrosUI();
+                fetchData(1);
+            }
         });
     }
 
-    // ==========================================
-    // LÓGICA DEL MODAL
-    // ==========================================
-    function openModal(marca = null) {
-        const form = document.getElementById('marcaForm');
-        form.reset();
-        document.getElementById('marca_id').value = '';
-        document.getElementById('methodContainer').innerHTML = '';
-        document.getElementById('modalTitle').innerText = 'Nueva Marca';
-        document.getElementById('activo').checked = true;
+    // SELECTOR DE ESTADO
+    const statusSelectEl = document.getElementById('statusSelect');
+    if (statusSelectEl) {
+        statusSelectEl.addEventListener('change', function() {
+            currentStatus = this.value;
+            actualizarFiltrosUI();
+            fetchData(1);
+        });
+    }
 
-        if (marca) {
-            document.getElementById('modalTitle').innerText = 'Editar Marca';
-            document.getElementById('marca_id').value = marca.id;
-            document.getElementById('methodContainer').innerHTML = '<input type="hidden" name="_method" value="PUT">';
-            document.getElementById('nombre').value = marca.nombre;
-            document.getElementById('pais_origen').value = marca.pais_origen || '';
-            document.getElementById('activo').checked = marca.activo == 1;
+    // PAGINACIÓN AJAX
+    document.addEventListener('click', function(e) {
+        const pagLink = e.target.closest('.ajax-pagination a');
+        if (pagLink) {
+            e.preventDefault();
+            const pageUrl = pagLink.href;
+            const targetPage = new URL(pageUrl).searchParams.get('page') || 1;
+            fetchData(targetPage, true);
+        }
+    });
+
+    // FUNCIÓN PRINCIPAL FETCH DATA CON ACTUALIZACIÓN DE KPIs
+    function fetchData(page = 1, showLoading = true) {
+        currentPage = page;
+        const loading = document.getElementById('loadingOverlay');
+        if (showLoading && loading) {
+            loading.classList.remove('hidden');
+            loading.classList.add('flex');
         }
 
+        const params = new URLSearchParams({
+            buscar: currentSearch,
+            estado: currentStatus,
+            page: page
+        });
+
+        fetch(`{{ route('admin.marcas.index') }}?${params.toString()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(async res => {
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return await res.json();
+            }
+            return { html: await res.text() };
+        })
+        .then(data => {
+            if (data.html) {
+                document.getElementById('tableContent').innerHTML = data.html;
+            }
+            if (data.stats) {
+                actualizarKPIs(data.stats);
+            }
+            sincronizarURL(page);
+        })
+        .catch(err => {
+            console.error('Error al actualizar marcas:', err);
+        })
+        .finally(() => {
+            if (loading) {
+                loading.classList.add('hidden');
+                loading.classList.remove('flex');
+            }
+            if (searchSpinnerEl) searchSpinnerEl.style.display = 'none';
+            actualizarFiltrosUI();
+        });
+    }
+
+    function actualizarKPIs(stats) {
+        if (!stats) return;
+        const totalEl = document.getElementById('kpi_total_marcas');
+        if (totalEl && stats.total !== undefined) totalEl.textContent = stats.total;
+
+        const activasEl = document.getElementById('kpi_activas_marcas');
+        if (activasEl && stats.activas !== undefined) activasEl.textContent = stats.activas;
+
+        const conProdEl = document.getElementById('kpi_con_productos_marcas');
+        if (conProdEl && stats.con_productos !== undefined) conProdEl.textContent = stats.con_productos;
+
+        const inactivasEl = document.getElementById('kpi_inactivas_marcas');
+        if (inactivasEl && stats.inactivas !== undefined) inactivasEl.textContent = stats.inactivas;
+    }
+
+    // ==========================================
+    // MODAL CREAR / EDITAR
+    // ==========================================
+    function openModal(marca = null) {
         const modal = document.getElementById('marcaModal');
         const backdrop = document.getElementById('marcaModalBackdrop');
         const panel = document.getElementById('marcaModalPanel');
+        const form = document.getElementById('marcaForm');
+        
+        form.reset();
+        
+        if (marca) {
+            document.getElementById('modalTitle').innerText = 'Editar Marca';
+            document.getElementById('btnSaveText').innerText = 'Actualizar Cambios';
+            document.getElementById('marca_id').value = marca.id;
+            document.getElementById('nombre').value = marca.nombre;
+            document.getElementById('pais_origen').value = marca.pais_origen || '';
+            document.getElementById('activo').checked = Boolean(marca.activo);
+        } else {
+            document.getElementById('modalTitle').innerText = 'Nueva Marca';
+            document.getElementById('btnSaveText').innerText = 'Guardar Marca';
+            document.getElementById('marca_id').value = '';
+            document.getElementById('activo').checked = true;
+        }
+
         modal.classList.remove('hidden');
         setTimeout(() => {
             backdrop.classList.remove('opacity-0');
@@ -206,133 +592,167 @@
         backdrop.classList.add('opacity-0');
         panel.classList.remove('opacity-100', 'scale-100');
         panel.classList.add('opacity-0', 'scale-95');
-        setTimeout(() => modal.classList.add('hidden'), 300);
+        setTimeout(() => modal.classList.add('hidden'), 250);
     }
 
-    // Toast Genérico
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
-        const icon = type === 'success' ? 'check_circle' : 'error';
-
-        toast.className = `flex items-center gap-3 px-5 py-4 rounded-xl shadow-2xl text-white transform translate-y-10 opacity-0 transition-all duration-300 ${bgColor}`;
-        toast.innerHTML = `<span class="material-symbols-outlined">${icon}</span><p class="font-bold text-sm">${message}</p>`;
-
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
-        setTimeout(() => {
-            toast.classList.add('translate-y-10', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-
-    // Guardar (Crear/Editar)
     function saveMarca(e) {
         e.preventDefault();
         const id = document.getElementById('marca_id').value;
         const btn = document.getElementById('btnSave');
-        const originalText = btn.innerHTML;
+        const originalHtml = btn.innerHTML;
         
-        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">autorenew</span> Guardando...';
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[16px]">autorenew</span> Guardando...';
         btn.disabled = true;
 
-        const formData = new FormData(e.target);
         const url = id ? `/admin/marcas/${id}` : `{{ route('admin.marcas.store') }}`;
+        const formData = new FormData(document.getElementById('marcaForm'));
+        
+        if (id) {
+            formData.append('_method', 'PUT');
+        }
 
         fetch(url, {
-            method: 'POST', // En Laravel Form Data + _method=PUT se manda por POST
-            body: formData,
-            headers: { 
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: formData
+        })
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Error al guardar la marca');
+            return data;
+        })
+        .then(data => {
+            closeModal();
+            Swal.fire({
+                icon: 'success',
+                title: '¡Operación Exitosa!',
+                text: data.message,
+                timer: 2000,
+                showConfirmButton: false,
+                customClass: { popup: 'rounded-2xl' }
+            });
+            fetchData(1);
+        })
+        .catch(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de Validación',
+                text: err.message,
+                customClass: { popup: 'rounded-2xl' }
+            });
+        })
+        .finally(() => {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        });
+    }
+
+    // ==========================================
+    // TOGGLE STATUS DIRECTO (AJAX)
+    // ==========================================
+    function toggleStatusMarca(id, checkbox) {
+        fetch(`/admin/marcas/${id}/toggle`, {
+            method: 'POST',
+            headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         })
         .then(async res => {
             const data = await res.json();
-            if (!res.ok) throw new Error(data.message || 'El nombre de la marca ya existe o hay un error.');
+            if (!res.ok) throw new Error(data.message || 'Error al cambiar estado');
             return data;
         })
         .then(data => {
-            closeModal();
-            showToast(data.message, 'success');
+            checkbox.checked = data.activo;
             fetchData(1);
         })
         .catch(err => {
-            showToast(err.message, 'error');
-        })
-        .finally(() => {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+            checkbox.checked = !checkbox.checked;
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.message,
+                customClass: { popup: 'rounded-2xl' }
+            });
         });
     }
 
-    // Eliminar
-    function deleteMarca(id) {
+    // ==========================================
+    // ELIMINAR MARCA CON VALIDACIÓN
+    // ==========================================
+    function deleteMarca(id, nombre, productosCount) {
+        if (productosCount > 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No se puede eliminar',
+                html: `La marca <b>${nombre}</b> tiene <b>${productosCount} producto(s)</b> asignado(s) en el inventario.<br><br><span class="text-xs text-gray-500">Debes reasignar los productos a otra marca o simplemente desactivarla con el interruptor.</span>`,
+                confirmButtonColor: '#1e549e',
+                confirmButtonText: 'Entendido',
+                customClass: { popup: 'rounded-2xl' }
+            });
+            return;
+        }
+
         Swal.fire({
-            title: '¿Eliminar marca?',
-            text: "Esta acción no se puede deshacer.",
+            title: '¿Eliminar Marca?',
+            text: `La marca "${nombre}" será removida del sistema.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#ef4444', // Color rojo Tailwind (red-500)
-            cancelButtonColor: '#9ca3af', // Color gris Tailwind (gray-400)
-            confirmButtonText: 'Sí, eliminar',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#9ca3af',
+            confirmButtonText: 'Sí, Eliminar',
             cancelButtonText: 'Cancelar',
-            customClass: {
-                popup: 'rounded-3xl' // Mismo redondeo que usas en tu modal de creación
-            }
+            customClass: { popup: 'rounded-2xl' }
         }).then((result) => {
             if (result.isConfirmed) {
-                // Tu lógica fetch intacta
                 fetch(`/admin/marcas/${id}`, {
                     method: 'DELETE',
-                    headers: { 
+                    headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.success) {
-                        showToast(data.message, 'success');
-                        fetchData(1);
-                    } else {
-                        showToast(data.message, 'error');
-                    }
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'Error al eliminar');
+                    return data;
                 })
-                .catch(() => showToast('Error en el servidor', 'error'));
+                .then(data => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Eliminada',
+                        text: data.message,
+                        timer: 1800,
+                        showConfirmButton: false,
+                        customClass: { popup: 'rounded-2xl' }
+                    });
+                    fetchData(1);
+                })
+                .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: err.message,
+                        customClass: { popup: 'rounded-2xl' }
+                    });
+                });
             }
         });
     }
 
-    // Toggle Rápido de Estado en la Tabla
-    function toggleMarcaStatus(id, checkbox) {
-        // Deshabilitar momentáneamente para evitar doble clic
-        checkbox.disabled = true;
-
-        fetch(`/admin/marcas/${id}/toggle`, {
-            method: 'POST',
-            headers: { 
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
+    // Cerrar modal con Escape solo si está abierto
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('marcaModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                closeModal();
             }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                showToast(data.message, 'success');
-                // Opcional: Podrías hacer fetchData(1) aquí, pero visualmente el botón ya cambió así que no es estrictamente necesario.
-            }
-        })
-        .catch(() => {
-            showToast('Error al cambiar estado.', 'error');
-            checkbox.checked = !checkbox.checked; // Revertir visualmente si falló
-        })
-        .finally(() => {
-            checkbox.disabled = false;
-        });
-    }
+        }
+    });
 </script>
 @endpush
 @endsection

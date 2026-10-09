@@ -13,10 +13,11 @@ class RoleController extends Controller
     {
         // Traemos todos los roles con la cuenta de usuarios y sus permisos
         $roles = Role::withCount('usuarios')->with('permisos')->get();
-        // Traemos todos los permisos para dibujarlos en el modal
-        $permisos = Permiso::all();
+        // Traemos todos los permisos indexados por nombre y la estructura de módulos
+        $permisos = Permiso::all()->keyBy('nombre');
+        $modulos = config('permisos_modulos', []);
 
-        return view('admin.roles.index', compact('roles', 'permisos'));
+        return view('admin.roles.index', compact('roles', 'permisos', 'modulos'));
     }
 
     public function store(Request $request)

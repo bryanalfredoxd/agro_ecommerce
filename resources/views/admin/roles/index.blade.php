@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Roles y Permisos - Corpo Agrícola')
+@section('title', 'Roles y Permisos - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">
@@ -121,47 +121,123 @@
 
                 {{-- Formulario --}}
                 <form id="roleForm" method="POST" action="{{ route('admin.roles.store') }}" class="flex flex-col flex-1 overflow-hidden min-h-0">
-                    @csrf
-                    <div id="methodContainer"></div> {{-- Aquí inyectaremos @method('PUT') si es edición --}}
+                                      <div id="methodContainer"></div> {{-- Aquí inyectaremos @method('PUT') si es edición --}}
                     
-                    <div class="px-6 py-6 overflow-y-auto custom-scrollbar flex-1">
+                    <div class="px-6 py-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
                         
-                        {{-- Input Nombre --}}
-                        <div class="mb-6">
-                            <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Nombre del Rol</label>
-                            <input type="text" name="nombre" id="roleName" required class="w-full h-12 rounded-xl bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 transition-all px-4 font-bold text-agro-dark outline-none" placeholder="Ej: Gerente de Ventas">
+                        {{-- Input Nombre y Estadísticas Rápidas --}}
+                        <div class="bg-gray-50/70 p-4 rounded-2xl border border-gray-100 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                            <div class="flex-1 w-full">
+                                <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5 ml-1">Nombre del Rol</label>
+                                <input type="text" name="nombre" id="roleName" required class="w-full h-11 rounded-xl bg-white border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all px-4 font-bold text-agro-dark outline-none text-sm" placeholder="Ej: Vendedor de Mostrador">
+                            </div>
+                            <div class="flex flex-col items-end shrink-0 sm:self-end">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Permisos Asignados</span>
+                                <span id="rolePermissionsCounter" class="text-sm font-black text-indigo-600 font-mono bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 mt-1">
+                                    0 / 31 seleccionados
+                                </span>
+                            </div>
                         </div>
 
-                        {{-- Cuadrícula de Permisos --}}
-                        <div>
-                            <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 ml-1 flex items-center justify-between">
-                                Asignación de Permisos
-                                <button type="button" onclick="marcarTodos()" class="text-indigo-600 hover:underline cursor-pointer">Marcar todos</button>
-                            </label>
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="permissionsGrid">
-                                @foreach($permisos as $permiso)
-                                <label class="relative flex items-start p-4 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-indigo-50/50 hover:border-indigo-200 transition-all group">
-                                    <div class="flex items-center h-5">
-                                        <input type="checkbox" name="permisos[]" value="{{ $permiso->id }}" class="permiso-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer transition-colors">
-                                    </div>
-                                    <div class="ml-3 text-sm">
-                                        <span class="font-bold text-gray-800 block capitalize">{{ str_replace('_', ' ', $permiso->nombre) }}</span>
-                                        <span class="text-gray-500 text-[11px] leading-tight block mt-0.5">{{ $permiso->descripcion }}</span>
-                                    </div>
-                                </label>
-                                @endforeach
+                        {{-- Barra de Herramientas de Permisos (Buscador + Acciones Rápidas) --}}
+                        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between pt-2 border-t border-gray-100">
+                            {{-- Buscador en Vivo --}}
+                            <div class="relative flex-1">
+                                <span class="material-symbols-outlined absolute left-3.5 top-2.5 text-gray-400 text-[18px]">search</span>
+                                <input type="text" id="rolePermissionSearch" oninput="filtrarPermisosRol(this.value)" placeholder="Buscar permiso por nombre, módulo o función..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none">
                             </div>
+
+                            {{-- Botones Globales --}}
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button type="button" onclick="marcarTodosRol(true)" class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 border border-indigo-200/60">
+                                    <span class="material-symbols-outlined text-[16px]">select_all</span> Marcar Todos
+                                </button>
+                                <button type="button" onclick="marcarTodosRol(false)" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 border border-gray-200">
+                                    <span class="material-symbols-outlined text-[16px]">deselect</span> Desmarcar
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Módulos de Permisos Estructurados --}}
+                        <div class="space-y-4" id="modulesAccordionContainer">
+                            @foreach($modulos as $modIdx => $modulo)
+                            <div class="module-card bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-2xs transition-all hover:border-gray-300" data-module-id="{{ $modulo['id'] }}">
+                                {{-- Cabecera del Módulo --}}
+                                <div class="px-5 py-3.5 bg-gray-50/80 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3 select-none">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-[18px]">{{ $modulo['icono'] }}</span>
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <h4 class="text-xs font-black text-gray-900 tracking-tight">{{ $modulo['nombre'] }}</h4>
+                                                <span class="module-counter text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-gray-200 text-gray-600 font-mono">
+                                                    0/{{ count($modulo['permisos']) }}
+                                                </span>
+                                            </div>
+                                            <p class="text-[11px] text-gray-500 font-normal leading-tight">{{ $modulo['descripcion'] }}</p>
+                                        </div>
+                                    </div>
+
+                                    {{-- Botones de Acción por Módulo --}}
+                                    <div class="flex items-center gap-1.5 ml-auto">
+                                        <button type="button" onclick="marcarModulo('{{ $modulo['id'] }}', true)" class="px-2 py-1 bg-white hover:bg-indigo-50 text-[10px] font-bold text-gray-600 hover:text-indigo-600 rounded-lg border border-gray-200 transition-colors">
+                                            Todos
+                                        </button>
+                                        <button type="button" onclick="marcarModulo('{{ $modulo['id'] }}', false)" class="px-2 py-1 bg-white hover:bg-gray-100 text-[10px] font-bold text-gray-600 rounded-lg border border-gray-200 transition-colors">
+                                            Ninguno
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{-- Grilla de Permisos del Módulo --}}
+                                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3 bg-white">
+                                    @foreach($modulo['permisos'] as $key => $pInfo)
+                                        @php
+                                            $permisoObj = $permisos[$key] ?? null;
+                                        @endphp
+                                        @if($permisoObj)
+                                        <label class="permiso-item relative flex items-start p-3 rounded-xl border border-gray-150 bg-gray-50/40 hover:bg-indigo-50/30 hover:border-indigo-200 transition-all cursor-pointer group" data-perm-name="{{ strtolower($pInfo['nombre'] . ' ' . $key . ' ' . $pInfo['descripcion']) }}">
+                                            <div class="flex items-center h-5 mt-0.5">
+                                                <input type="checkbox" name="permisos[]" value="{{ $permisoObj->id }}" onchange="actualizarContadoresRol()" class="permiso-checkbox size-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300 transition-colors cursor-pointer" data-module="{{ $modulo['id'] }}">
+                                            </div>
+                                            <div class="ml-3 flex-1 min-w-0">
+                                                <div class="flex items-center justify-between gap-1.5 mb-1">
+                                                    <span class="text-xs font-bold text-gray-900 truncate group-hover:text-indigo-900 transition-colors">
+                                                        {{ $pInfo['nombre'] }}
+                                                    </span>
+                                                    <span class="text-[9px] font-black uppercase px-1.5 py-0.2 rounded border {{ $pInfo['badge_color'] }} shrink-0">
+                                                        {{ $pInfo['badge'] }}
+                                                    </span>
+                                                </div>
+                                                <p class="text-[11px] text-gray-500 leading-snug">
+                                                    {{ $pInfo['descripcion'] }}
+                                                </p>
+                                                <span class="text-[9px] font-mono text-gray-400 mt-1 block">
+                                                    Clave: {{ $key }}
+                                                </span>
+                                            </div>
+                                        </label>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
 
                     </div>
 
                     {{-- Footer / Botones --}}
-                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3 flex-shrink-0">
-                        <button type="button" onclick="closeRoleModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 transition-colors text-sm">Cancelar</button>
-                        <button type="submit" id="btnSubmitModal" class="px-6 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm text-sm flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">save</span> Guardar Configuración
-                        </button>
+                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-between gap-3 flex-shrink-0">
+                        <span class="text-xs text-gray-500 font-medium hidden sm:inline">
+                            Asegúrate de revisar los permisos de acciones sensibles antes de guardar.
+                        </span>
+                        <div class="flex items-center gap-2 ml-auto">
+                            <button type="button" onclick="closeRoleModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 transition-colors text-sm">Cancelar</button>
+                            <button type="submit" id="btnSubmitModal" class="px-6 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm text-sm flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">save</span> Guardar Configuración
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -183,6 +259,7 @@
         const methodContainer = document.getElementById('methodContainer');
         const btnSubmit = document.getElementById('btnSubmitModal');
         const checkboxes = document.querySelectorAll('.permiso-checkbox');
+        const searchInput = document.getElementById('rolePermissionSearch');
         
         // Resetear formulario
         form.reset();
@@ -190,6 +267,10 @@
         checkboxes.forEach(cb => cb.checked = false);
         nameInput.readOnly = false;
         btnSubmit.style.display = 'flex';
+        if (searchInput) {
+            searchInput.value = '';
+            filtrarPermisosRol('');
+        }
 
         if (role) {
             // Modo Edición
@@ -226,6 +307,8 @@
             checkboxes.forEach(cb => cb.disabled = false);
         }
 
+        actualizarContadoresRol();
+
         // Animación de entrada
         modal.classList.remove('hidden');
         setTimeout(() => {
@@ -249,12 +332,77 @@
         }, 300);
     }
 
-    function marcarTodos() {
+    // Actualiza los contadores globales y por módulo
+    function actualizarContadoresRol() {
         const checkboxes = document.querySelectorAll('.permiso-checkbox');
-        // Revisar si están todos marcados, para desmarcarlos, o viceversa
-        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-        checkboxes.forEach(cb => {
-            if(!cb.disabled) cb.checked = !allChecked;
+        const total = checkboxes.length;
+        const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+        const globalCounter = document.getElementById('rolePermissionsCounter');
+        if (globalCounter) {
+            globalCounter.innerText = `${checked} / ${total} seleccionados`;
+        }
+
+        // Contadores por módulo
+        document.querySelectorAll('.module-card').forEach(card => {
+            const moduleId = card.getAttribute('data-module-id');
+            const modCheckboxes = card.querySelectorAll('.permiso-checkbox');
+            const modTotal = modCheckboxes.length;
+            const modChecked = Array.from(modCheckboxes).filter(cb => cb.checked).length;
+            const badge = card.querySelector('.module-counter');
+            if (badge) {
+                badge.innerText = `${modChecked}/${modTotal}`;
+                if (modChecked === modTotal && modTotal > 0) {
+                    badge.classList.remove('bg-white', 'text-gray-600');
+                    badge.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+                } else {
+                    badge.classList.add('bg-white', 'text-gray-600');
+                    badge.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+                }
+            }
+        });
+    }
+
+    // Marcar / Desmarcar todos globalmente
+    function marcarTodosRol(estado) {
+        document.querySelectorAll('.permiso-checkbox').forEach(cb => {
+            if(!cb.disabled) cb.checked = estado;
+        });
+        actualizarContadoresRol();
+    }
+
+    // Marcar / Desmarcar por módulo
+    function marcarModulo(moduleId, estado) {
+        const card = document.querySelector(`.module-card[data-module-id="${moduleId}"]`);
+        if (card) {
+            card.querySelectorAll('.permiso-checkbox').forEach(cb => {
+                if(!cb.disabled) cb.checked = estado;
+            });
+            actualizarContadoresRol();
+        }
+    }
+
+    // Filtro en vivo de permisos por texto
+    function filtrarPermisosRol(busqueda) {
+        const term = busqueda.toLowerCase().trim();
+        document.querySelectorAll('.module-card').forEach(card => {
+            let tieneCoincidencias = false;
+            card.querySelectorAll('.permiso-item').forEach(item => {
+                const texto = item.getAttribute('data-perm-name') || '';
+                if (!term || texto.includes(term)) {
+                    item.classList.remove('hidden');
+                    tieneCoincidencias = true;
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+
+            // Si ningún permiso del módulo coincide, ocultar el módulo entero
+            if (tieneCoincidencias) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
         });
     }
 

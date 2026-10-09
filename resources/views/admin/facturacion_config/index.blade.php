@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Configuración de Facturación - Corpo Agrícola')
+@section('title', 'Configuración de Facturación - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">
@@ -25,10 +25,12 @@
                         <p class="text-sm text-gray-500 mt-1">Administra los prefijos y números de inicio de tus documentos fiscales.</p>
                     </div>
                 </div>
+                @if(Auth::user()->tienePermiso('configurar_facturacion'))
                 <button onclick="openModal()" class="inline-flex items-center justify-center gap-2 bg-teal-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-teal-700 hover:shadow-lg hover:shadow-teal-500/30 transition-all transform hover:-translate-y-0.5">
                     <span class="material-symbols-outlined text-[20px]">add_circle</span>
                     Nueva Serie
                 </button>
+                @endif
             </div>
 
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 relative" id="tableContainer">

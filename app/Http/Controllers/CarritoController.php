@@ -36,7 +36,10 @@ class CarritoController extends Controller
         $montoIva = $subtotal * ($ivaPorcentaje / 100);
         $total = $subtotal + $montoIva;
 
-        return view('carrito.index', compact('items', 'subtotal', 'montoIva', 'total', 'ivaPorcentaje'));
+        $tasa = \App\Models\TasaCambio::obtenerTasaUSD();
+        $tasaDolar = $tasa ? (float) $tasa->valor_tasa : 1.00;
+
+        return view('carrito.index', compact('items', 'subtotal', 'montoIva', 'total', 'ivaPorcentaje', 'tasaDolar'));
     }
 
     public function add(Request $request)

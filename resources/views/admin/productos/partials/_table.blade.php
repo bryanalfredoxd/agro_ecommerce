@@ -1,124 +1,175 @@
 <div class="overflow-x-auto custom-scrollbar">
     <table class="w-full text-left border-collapse">
         <thead>
-            <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest w-20">Imagen</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Detalle del Producto</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Precio (USD)</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Stock Disponible</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Atributos</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Acciones</th>
+            <tr class="border-b border-gray-100 bg-gray-50/75">
+                <th class="px-5 py-4 text-[11px] font-black text-gray-500 uppercase tracking-wider w-20">Foto</th>
+                <th class="px-5 py-4 text-[11px] font-black text-gray-500 uppercase tracking-wider">Artículo & Especificaciones</th>
+                <th class="px-5 py-4 text-[11px] font-black text-gray-500 uppercase tracking-wider">Precios (USD / Bs)</th>
+                <th class="px-5 py-4 text-[11px] font-black text-gray-500 uppercase tracking-wider">Inventario & Stock</th>
+                <th class="px-5 py-4 text-[11px] font-black text-gray-500 uppercase tracking-wider text-center">Tipo</th>
+                <th class="px-5 py-4 text-[11px] font-black text-gray-500 uppercase tracking-wider text-right">Acciones</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-50">
+        <tbody class="divide-y divide-gray-100/80 bg-white">
             @forelse($productos as $producto)
-            <tr class="hover:bg-gray-50/50 transition-colors group">
+            @php
+                $esSuspendido = $producto->trashed();
+                $stockTotal = (float) $producto->stock_total;
+                $stockMinimo = (float) $producto->stock_minimo_alerta;
+                $stockCritico = $stockTotal <= $stockMinimo;
+                $stockVacio = $stockTotal <= 0;
+                $tasa = $tasaVes ?? 0;
+                $precioBs = $tasa > 0 ? ($producto->precio_oferta_usd ?: $producto->precio_venta_usd) * $tasa : 0;
+            @endphp
+            <tr class="hover:bg-blue-50/30 transition-colors group {{ $esSuspendido ? 'bg-rose-50/20' : '' }}">
                 
-                {{-- Columna: Imagen --}}
-                <td class="px-6 py-4">
-                    <div class="w-14 h-14 rounded-xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center shadow-sm relative">
+                {{-- Columna 1: Imagen y Botón Destacado --}}
+                <td class="px-5 py-4 align-top">
+                    <div class="size-14 rounded-2xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center shadow-2xs relative group/img shrink-0">
                         @if($producto->imagen_url)
-                            {{-- Solo quitamos el 'storage/' --}}
-                            <img src="{{ asset($producto->imagen_url) }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover">
+                            <img src="{{ asset($producto->imagen_url) }}" alt="{{ $producto->nombre }}" class="size-full object-cover">
                         @else
-                            <span class="material-symbols-outlined text-gray-300 text-2xl">inventory</span>
+                            <span class="material-symbols-outlined text-gray-300 text-3xl">inventory_2</span>
                         @endif
                         
-                        {{-- Icono flotante si es destacado --}}
-                        <button onclick="toggleDestacado({{ $producto->id }}, this)" class="absolute top-0.5 right-0.5 w-6 h-6 rounded-lg flex items-center justify-center transition-all bg-white/80 backdrop-blur-sm border border-white {{ $producto->destacado ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400' }}" title="Destacar producto">
-                            <span class="material-symbols-outlined text-[16px] {{ $producto->destacado ? 'fill-current' : '' }}">star</span>
-                        </button>
+                        {{-- Botón interactivo para destacar (Solo con permisos) --}}
+                        @if(!$esSuspendido && Auth::user()->tienePermiso('gestionar_productos'))
+                            <button type="button" onclick="toggleDestacadoProducto({{ $producto->id }}, this)" class="absolute top-1 right-1 size-6 rounded-lg flex items-center justify-center transition-all bg-white/90 backdrop-blur-xs border border-white shadow-2xs {{ $producto->destacado ? 'text-amber-500' : 'text-gray-300 hover:text-amber-400' }}" title="{{ $producto->destacado ? 'Quitar de destacados' : 'Destacar en la portada' }}">
+                                <span class="material-symbols-outlined text-[15px] {{ $producto->destacado ? 'fill-current' : '' }}">star</span>
+                            </button>
+                        @elseif($producto->destacado)
+                            <div class="absolute top-1 right-1 size-6 rounded-lg flex items-center justify-center bg-white/90 border border-white shadow-2xs text-amber-500">
+                                <span class="material-symbols-outlined text-[15px] fill-current">star</span>
+                            </div>
+                        @endif
                     </div>
                 </td>
                 
-                {{-- Columna: Información principal --}}
-                <td class="px-6 py-4">
-                    <p class="font-bold text-agro-dark capitalize text-sm mb-1 leading-tight line-clamp-2" title="{{ $producto->nombre }}">
-                        {{ $producto->nombre }}
-                    </p>
-                    <div class="flex items-center gap-2">
-                        <span class="font-mono text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">SKU: {{ $producto->sku ?? 'N/A' }}</span>
-                        <span class="text-[10px] text-gray-700 uppercase tracking-wider font-bold">
-                            {{ $producto->categoria->nombre ?? 'Sin Categoría' }}
+                {{-- Columna 2: Información principal --}}
+                <td class="px-5 py-4 align-top">
+                    <div class="flex flex-col">
+                        <span class="font-black text-gray-900 text-sm leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors {{ $esSuspendido ? 'line-through text-gray-400' : '' }}" title="{{ $producto->nombre }}">
+                            {{ $producto->nombre }}
                         </span>
+                        
+                        <div class="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                            @if($producto->sku)
+                                <span class="font-mono text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.2 rounded border border-gray-200/60 font-bold">
+                                    SKU: {{ $producto->sku }}
+                                </span>
+                            @endif
+
+                            @if($producto->categoria)
+                                <span class="inline-flex items-center gap-0.5 text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.2 rounded border border-blue-200/60">
+                                    <span class="material-symbols-outlined text-[11px]">folder</span>
+                                    {{ $producto->categoria->nombre }}
+                                </span>
+                            @endif
+
+                            @if($producto->marca)
+                                <span class="inline-flex items-center gap-0.5 text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.2 rounded border border-slate-200 uppercase">
+                                    <span class="material-symbols-outlined text-[11px]">sell</span>
+                                    {{ $producto->marca->nombre }}
+                                </span>
+                            @endif
+                        </div>
                     </div>
                 </td>
                 
-                {{-- Columna: Precio --}}
-                <td class="px-6 py-4">
-                    <p class="font-black text-agro-dark text-base">${{ number_format($producto->precio_venta_usd, 2) }}</p>
-                    @if($producto->precio_oferta_usd)
-                        <p class="text-[10px] font-bold text-red-500 line-through">${{ number_format($producto->precio_oferta_usd, 2) }}</p>
-                    @else
-                        <p class="text-[10px] font-medium text-gray-700">P. Base</p>
-                    @endif
-                </td>
-                
-                {{-- Columna: Stock con Lógica de Alertas --}}
-                <td class="px-6 py-4">
-                    @php
-                        $stockCritico = $producto->stock_total <= $producto->stock_minimo_alerta;
-                        $stockVacio = $producto->stock_total <= 0;
-                    @endphp
-
-                    <div class="flex flex-col items-start gap-1">
-                        <span class="font-black text-sm {{ $stockVacio ? 'text-red-500' : ($stockCritico ? 'text-orange-500' : 'text-green-600') }}">
-                            {{ rtrim(rtrim(number_format($producto->stock_total, 3), '0'), '.') }} 
-                            <span class="text-[10px] font-bold uppercase">{{ $producto->unidad_medida }}</span>
-                        </span>
-
-                        @if($stockVacio)
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 text-red-600 text-[9px] font-black rounded-md border border-red-100 uppercase tracking-widest">
-                                <span class="material-symbols-outlined text-[12px]">error</span> Agotado
-                            </span>
-                        @elseif($stockCritico)
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-orange-600 text-[9px] font-black rounded-md border border-orange-100 uppercase tracking-widest">
-                                <span class="material-symbols-outlined text-[12px]">warning</span> Crítico
-                            </span>
+                {{-- Columna 3: Precio --}}
+                <td class="px-5 py-4 align-top">
+                    <div class="flex flex-col">
+                        @if($producto->precio_oferta_usd)
+                            <div class="flex items-baseline gap-1.5">
+                                <span class="font-black text-rose-600 text-base">${{ number_format($producto->precio_oferta_usd, 2) }}</span>
+                                <span class="text-[11px] font-bold text-gray-400 line-through">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                            </div>
                         @else
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-600 text-[9px] font-black rounded-md border border-green-100 uppercase tracking-widest">
-                                <span class="material-symbols-outlined text-[12px]">check_circle</span> Suficiente
+                            <span class="font-black text-agro-dark text-base">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                        @endif
+
+                        @if($precioBs > 0)
+                            <span class="text-[11px] font-bold text-gray-500 mt-0.5">
+                                Bs. {{ number_format($precioBs, 2) }}
                             </span>
                         @endif
                     </div>
                 </td>
                 
-                {{-- Columna: Atributos y Etiquetas --}}
-                <td class="px-6 py-4 text-center">
-                    <div class="flex flex-wrap justify-center gap-1">
+                {{-- Columna 4: Stock con Barra de Nivel --}}
+                <td class="px-5 py-4 align-top">
+                    <div class="flex flex-col gap-1 min-w-[130px]">
+                        <div class="flex items-baseline justify-between">
+                            <span class="font-black text-sm {{ $stockVacio ? 'text-rose-600' : ($stockCritico ? 'text-amber-600' : 'text-emerald-700') }}">
+                                {{ rtrim(rtrim(number_format($producto->stock_total, 3), '0'), '.') }} 
+                                <span class="text-[10px] font-bold uppercase text-gray-500">{{ $producto->unidad_medida }}</span>
+                            </span>
+
+                            @if($stockVacio)
+                                <span class="inline-flex items-center gap-0.5 text-[9px] font-black text-rose-700 bg-rose-100 px-1.5 py-0.2 rounded-md uppercase">
+                                    Agotado
+                                </span>
+                            @elseif($stockCritico)
+                                <span class="inline-flex items-center gap-0.5 text-[9px] font-black text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded-md uppercase animate-pulse">
+                                    Crítico
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-0.5 text-[9px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded-md uppercase">
+                                    Óptimo
+                                </span>
+                            @endif
+                        </div>
+
+                        {{-- Barra de Progreso Stock --}}
+                        @php
+                            $maxRef = max($stockMinimo * 3, 10);
+                            $porcentajeStock = min(100, max(0, ($stockTotal / $maxRef) * 100));
+                        @endphp
+                        <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-300 {{ $stockVacio ? 'bg-rose-500' : ($stockCritico ? 'bg-amber-500' : 'bg-emerald-500') }}" style="width: {{ $stockVacio ? '0%' : $porcentajeStock . '%' }}"></div>
+                        </div>
+                        <span class="text-[10px] text-gray-400 font-medium">Mín. alerta: {{ (int)$producto->stock_minimo_alerta }}</span>
+                    </div>
+                </td>
+                
+                {{-- Columna 5: Atributos / Tipo --}}
+                <td class="px-5 py-4 align-top text-center">
+                    <div class="flex items-center justify-center gap-1">
                         @if($producto->es_controlado)
-                            <span class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center cursor-help" title="Producto de venta controlada (Requiere Receta)">
-                                <span class="material-symbols-outlined text-[16px]">stethoscope</span>
+                            <span class="inline-flex items-center justify-center size-7 rounded-lg bg-purple-50 text-purple-700 border border-purple-200" title="Venta Controlada (Requiere Receta Agronómica)">
+                                <span class="material-symbols-outlined text-[16px]">prescriptions</span>
                             </span>
                         @endif
                         @if($producto->es_combo)
-                            <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center cursor-help" title="Producto Compuesto (Combo)">
+                            <span class="inline-flex items-center justify-center size-7 rounded-lg bg-blue-50 text-blue-700 border border-blue-200" title="Producto Compuesto (Combo / Paquete)">
                                 <span class="material-symbols-outlined text-[16px]">layers</span>
                             </span>
                         @endif
                         @if(!$producto->es_controlado && !$producto->es_combo)
-                            <span class="text-xs text-gray-300">-</span>
+                            <span class="text-xs text-gray-300 font-bold">-</span>
                         @endif
                     </div>
                 </td>
                 
-                {{-- Columna: Acciones --}}
-                <td class="px-6 py-4 text-right">
-                    <div class="flex items-center justify-end gap-2">
-                        @if($producto->trashed())
-                        {{-- Si está suspendido, solo mostramos el botón de restaurar --}}
-                        <button onclick="restoreProducto({{ $producto->id }})" title="Reactivar Producto" class="w-8 h-8 rounded-lg bg-green-50 border border-green-200 text-green-600 hover:bg-green-600 hover:text-white flex items-center justify-center transition-all shadow-sm">
-                            <span class="material-symbols-outlined text-[18px]">settings_backup_restore</span>
-                        </button>
+                {{-- Columna 6: Acciones --}}
+                <td class="px-5 py-4 align-top text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                        @if(Auth::user()->tienePermiso('gestionar_productos'))
+                            @if($esSuspendido)
+                                <button type="button" onclick="restoreProducto({{ $producto->id }}, '{{ addslashes($producto->nombre) }}')" class="size-8 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" title="Reactivar Producto">
+                                    <span class="material-symbols-outlined text-[17px]">settings_backup_restore</span>
+                                </button>
+                            @else
+                                <a href="{{ route('admin.productos.edit', $producto->id) }}" class="size-8 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" title="Editar Producto">
+                                    <span class="material-symbols-outlined text-[17px]">edit</span>
+                                </a>
+                                
+                                <button type="button" onclick="deleteProducto({{ $producto->id }}, '{{ addslashes($producto->nombre) }}')" class="size-8 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-amber-600 hover:border-amber-200 hover:bg-amber-50 flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" title="Suspender / Pausar Producto">
+                                    <span class="material-symbols-outlined text-[17px]">pause_circle</span>
+                                </button>
+                            @endif
                         @else
-                            {{-- Si está activo, mostramos los botones normales de Editar y Suspender --}}
-                            <a href="{{ route('admin.productos.edit', $producto->id) }}" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 flex items-center justify-center transition-all shadow-sm">
-                                <span class="material-symbols-outlined text-[18px]">edit</span>
-                            </a>
-                            
-                            <button onclick="deleteProducto({{ $producto->id }})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-amber-500 hover:border-amber-200 hover:bg-amber-50 flex items-center justify-center transition-all shadow-sm">
-                                <span class="material-symbols-outlined text-[18px]">pause_circle</span>
-                            </button>
+                            <span class="text-[11px] text-gray-400 italic font-semibold">Solo lectura</span>
                         @endif
                     </div>
                 </td>
@@ -126,12 +177,18 @@
             @empty
             <tr>
                 <td colspan="6" class="px-6 py-16 text-center text-gray-500">
-                    <div class="flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                            <span class="material-symbols-outlined text-3xl text-gray-700">inventory_2</span>
+                    <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                        <div class="size-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-3 text-gray-400">
+                            <span class="material-symbols-outlined text-3xl">inventory_2</span>
                         </div>
-                        <p class="font-bold text-gray-600">No se encontraron productos</p>
-                        <p class="text-xs mt-1">Prueba ajustando los filtros o la búsqueda.</p>
+                        <h4 class="font-black text-gray-800 text-base">No se encontraron productos</h4>
+                        <p class="text-xs text-gray-500 mt-1">Prueba ajustando los filtros de categoría, marca o búsqueda.</p>
+                        @if(request('buscar') || request('categoria_id') || request('marca_id') || request('filtro_rapido'))
+                        <button type="button" onclick="resetearTodosFiltros()" class="mt-4 px-4 py-2 rounded-xl text-xs font-bold text-[#1e549e] bg-blue-50 hover:bg-blue-100 border border-blue-200/60 transition-all flex items-center gap-1.5 shadow-2xs hover:scale-105 active:scale-95">
+                            <span class="material-symbols-outlined text-[16px]">filter_alt_off</span>
+                            Limpiar filtros aplicados
+                        </button>
+                        @endif
                     </div>
                 </td>
             </tr>
@@ -140,6 +197,12 @@
     </table>
 </div>
 
-<div class="px-6 py-4 border-t border-gray-100 flex justify-center ajax-pagination">
-    {{ $productos->links('pagination::tailwind') }}
+{{-- Paginación Ajax --}}
+<div class="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 ajax-pagination bg-gray-50/50">
+    <div class="text-xs text-gray-500 font-medium">
+        Mostrando {{ $productos->firstItem() ?? 0 }} a {{ $productos->lastItem() ?? 0 }} de {{ $productos->total() }} artículos registrados
+    </div>
+    <div>
+        {{ $productos->links('pagination::tailwind') }}
+    </div>
 </div>

@@ -46,28 +46,53 @@ class CatalogoController extends Controller
             $query->orderBy('precio_venta_usd', 'asc');
         } elseif ($request->orden == 'precio_desc') {
             $query->orderBy('precio_venta_usd', 'desc');
+        } elseif ($request->orden == 'nombre_asc') {
+            $query->orderBy('nombre', 'asc');
         } else {
             $query->orderBy('id', 'desc');
         }
 
         // 5. Ejecución
-        $productos = $query->with(['categoria', 'imagenes' => function($q) {
+        $productos = $query->with(['categoria', 'marca', 'imagenes' => function($q) {
                                 $q->where('es_principal', 1);
                            }])
                            ->paginate(12)
                            ->withQueryString();
 
-        // 6. Listas para la vista
-        $categorias = Categoria::has('productos')->get();
-        $marcas = Marca::where('activo', 1)->get();
+        // 6. Listas para la vista con conteo de productos activos
+        $categorias = Categoria::whereHas('productos', function($q) {
+                $q->where('stock_total', '>', 0)->whereNull('eliminado_at');
+            })
+            ->withCount(['productos' => function($q) {
+                $q->where('stock_total', '>', 0)->whereNull('eliminado_at');
+            }])
+            ->orderBy('nombre', 'asc')
+            ->get();
 
-        // Si es petición AJAX, devolver solo la vista parcial (INYECTAMOS TASA AQUÍ)
+        $marcas = Marca::where('activo', 1)
+            ->whereHas('productos', function($q) {
+                $q->where('stock_total', '>', 0)->whereNull('eliminado_at');
+            })
+            ->withCount(['productos' => function($q) {
+                $q->where('stock_total', '>', 0)->whereNull('eliminado_at');
+            }])
+            ->orderBy('nombre', 'asc')
+            ->get();
+
+        $totalProductosDisponibles = Producto::where('stock_total', '>', 0)->whereNull('eliminado_at')->count();
+
+        // Obtener favoritos del usuario autenticado
+        $favoritosIds = Auth::check()
+            ? \Illuminate\Support\Facades\DB::table('favoritos')->where('usuario_id', Auth::id())->pluck('producto_id')->toArray()
+            : [];
+
+        // Si es petición AJAX, devolver solo la vista parcial
         if ($request->ajax()) {
-            return view('catalogo.partials.products', compact('productos', 'tasaDolar'))->render();
+            return view('catalogo.partials.products', compact('productos', 'tasaDolar', 'favoritosIds', 'categorias', 'marcas', 'totalProductosDisponibles'))->render();
         }
 
-        // Para petición normal, devolver vista completa (INYECTAMOS TASA AQUÍ TAMBIÉN)
-        return view('catalogo.index', compact('productos', 'categorias', 'marcas', 'tasaDolar'));
+        // Para petición normal, devolver vista completa
+        return view('catalogo.index', compact('productos', 'categorias', 'marcas', 'tasaDolar', 'favoritosIds', 'totalProductosDisponibles'));
     }
 
     public function solicitarProducto(Request $request)
@@ -89,5 +114,64 @@ class CatalogoController extends Controller
 
         // Retornar a la vista con un mensaje de éxito
         return redirect()->back()->with('success', '¡Gracias por tu sugerencia! Trabajaremos para agregar el producto pronto.');
+    }
+
+    /**
+     * Búsqueda en vivo (Live Search) para el buscador del encabezado.
+     */
+    public function buscarEnVivo(Request $request)
+    {
+        $q = trim($request->get('q', ''));
+
+        if (mb_strlen($q) < 2) {
+            return response()->json([
+                'productos' => [],
+                'total' => 0,
+                'query' => $q
+            ]);
+        }
+
+        $tasaDolar = TasaCambio::obtenerValorUSD() ?? 1;
+
+        $productos = Producto::where('stock_total', '>', 0)
+            ->whereNull('eliminado_at')
+            ->where(function ($query) use ($q) {
+                $query->where('nombre', 'like', '%' . $q . '%')
+                      ->orWhere('descripcion', 'like', '%' . $q . '%')
+                      ->orWhere('sku', 'like', '%' . $q . '%')
+                      ->orWhereHas('categoria', function ($cat) use ($q) {
+                          $cat->where('nombre', 'like', '%' . $q . '%');
+                      })
+                      ->orWhereHas('marca', function ($m) use ($q) {
+                          $m->where('nombre', 'like', '%' . $q . '%');
+                      });
+            })
+            ->with(['categoria', 'marca', 'imagenes' => function ($img) {
+                $img->where('es_principal', 1);
+            }])
+            ->take(6)
+            ->get()
+            ->map(function ($producto) use ($tasaDolar) {
+                $img = $producto->imagenes->first()?->imagen_url ?? $producto->imagen_url;
+
+                return [
+                    'id' => $producto->id,
+                    'nombre' => $producto->nombre,
+                    'categoria' => $producto->categoria?->nombre ?? 'General',
+                    'marca' => $producto->marca?->nombre ?? '',
+                    'precio_usd' => number_format($producto->precio_venta_usd, 2),
+                    'precio_bs' => number_format($producto->precio_venta_usd * $tasaDolar, 2, ',', '.'),
+                    'stock_total' => (float) $producto->stock_total,
+                    'unidad_medida' => $producto->unidad_medida,
+                    'imagen' => $img ? asset($img) : null,
+                    'url' => route('catalogo') . '?buscar=' . urlencode($producto->nombre)
+                ];
+            });
+
+        return response()->json([
+            'productos' => $productos,
+            'total' => $productos->count(),
+            'query' => $q
+        ]);
     }
 }

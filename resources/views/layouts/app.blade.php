@@ -5,11 +5,14 @@
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    
     @if(session('success_register'))
         <meta name="success-message" content="{{ session('success_register') }}">
     @endif
     
-    <title>@yield('title', 'Agropecuaria Venezuela - Soluciones Integrales para el Campo')</title>
+    <title>@yield('title', 'Agrosuministros Rodríguez - Soluciones Integrales para el Campo')</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -21,22 +24,24 @@
     <style>
         body { font-family: "Work Sans", sans-serif; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill-1,
+        .material-symbols-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         
         /* Animaciones */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.4s ease-out; }
         
         /* Contenedor Responsivo Fluido */
         .layout-container { max-width: 1440px; width: 100%; margin: 0 auto; }
         @media (max-width: 640px) { .layout-container { padding: 0 1rem; } }
         @media (min-width: 641px) and (max-width: 1024px) { .layout-container { padding: 0 2rem; } }
-        @media (min-width: 1025px) and (max-width: 1280px) { .layout-container { padding: 0 5rem; } }
-        @media (min-width: 1281px) { .layout-container { padding: 0 10rem; } }
+        @media (min-width: 1025px) and (max-width: 1280px) { .layout-container { padding: 0 4rem; } }
+        @media (min-width: 1281px) { .layout-container { padding: 0 8rem; } }
     </style>
     
     @stack('styles')
 </head>
-<body class="bg-background-light text-agro-dark font-sans antialiased selection:bg-primary selection:text-agro-dark">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-[#3492cf] selection:text-white">
 
     <x-splash-screen />
     

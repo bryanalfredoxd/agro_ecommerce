@@ -11,12 +11,21 @@ class IsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Verifica si el usuario está logueado y si su rol_id es 1 (Admin)
-        if (Auth::check() && Auth::user()->rol_id == 1) {
-            return $next($request);
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            if (!$user->activo) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->route('login')->with('error', 'Tu cuenta se encuentra inactiva. Contacta al administrador.');
+            }
+
+            if ($user->esAdmin() || $user->esPersonal()) {
+                return $next($request);
+            }
         }
 
-        // Si no es admin, lo devolvemos al home con un error
-        return redirect('/')->with('error', 'No tienes permisos de administrador para acceder a esta área.');
+        return redirect('/')->with('error', 'No tienes permisos para acceder al panel administrativo.');
     }
 }

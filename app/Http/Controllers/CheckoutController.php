@@ -11,6 +11,9 @@ use App\Models\Pedido;
 use App\Models\Pago;
 use App\Models\TasaCambio;
 use App\Models\CuentaBancaria;
+use App\Models\HorarioSemanal;
+use App\Models\ZonaDelivery;
+use App\Models\ConfiguracionTienda;
 
 class CheckoutController extends Controller
 {
@@ -19,6 +22,13 @@ class CheckoutController extends Controller
 
     public function index()
     {
+        // 1. Barrera de Horario Comercial: Bloquear checkout fuera de horas de apertura
+        if (!HorarioSemanal::estaAbiertoAhora()) {
+            $estadoHorario = HorarioSemanal::obtenerEstadoHorarioHoy();
+            $mensaje = "Nuestra tienda se encuentra cerrada en este momento ({$estadoHorario['mostrar']}). Las compras en línea solo están permitidas dentro del horario comercial.";
+            return redirect()->route('carrito.index')->with('tienda_cerrada', $mensaje);
+        }
+
         $usuario = Auth::user();
         
         // Cargamos carrito con la relación 'producto'
@@ -31,54 +41,98 @@ class CheckoutController extends Controller
         // Cálculos
         $subtotal = 0;
         foreach ($carrito as $item) {
-            $subtotal += $item->producto->precio_venta_usd * $item->cantidad;
+            $precio = $item->producto->precio_oferta_usd ?: $item->producto->precio_venta_usd;
+            $subtotal += $precio * $item->cantidad;
         }
         
-        $config = DB::table('configuracion_tienda')->first();
-        $ivaPorcentaje = $config ? $config->iva_porcentaje : 16.00;
+        $config = ConfiguracionTienda::first();
+        $ivaPorcentaje = $config ? (float) $config->iva_porcentaje : 16.00;
+        $deliveryActivo = $config ? (bool) ($config->delivery_activo ?? true) : true;
+        
         $montoIva = $subtotal * ($ivaPorcentaje / 100);
         $totalUsd = $subtotal + $montoIva;
 
         $tasa = TasaCambio::obtenerTasaUSD();
-        $tasaValor = $tasa ? $tasa->valor_tasa : 60.00;
+        $tasaValor = $tasa ? (float) $tasa->valor_tasa : 60.00;
         $totalVes = $totalUsd * $tasaValor;
 
-        $direcciones = $usuario->direcciones;
+        // Cargar y evaluar cobertura geográfica para cada dirección del usuario
+        $direcciones = $usuario->direcciones()->with('zonaDelivery')->get();
+        foreach ($direcciones as $dir) {
+            $zonaCalculada = null;
+            $distanciaKm = null;
+            $costoFlete = 0;
+            $estaEnRadio = false;
+
+            if ($dir->geo_latitud !== null && $dir->geo_longitud !== null) {
+                $zonaCalculada = ZonaDelivery::encontrarZonaParaCoordenadas($dir->geo_latitud, $dir->geo_longitud);
+                if ($zonaCalculada) {
+                    $estaEnRadio = true;
+                    $costoFlete = (float) $zonaCalculada->precio_delivery_usd;
+                    $distanciaKm = round(ZonaDelivery::calcularDistanciaKm(
+                        $dir->geo_latitud,
+                        $dir->geo_longitud,
+                        $zonaCalculada->latitud,
+                        $zonaCalculada->longitud
+                    ), 1);
+                }
+            } elseif ($dir->zonaDelivery && $dir->zonaDelivery->activa) {
+                // Fallback si la dirección guardó una zona activa previa sin GPS
+                $zonaCalculada = $dir->zonaDelivery;
+                $estaEnRadio = true;
+                $costoFlete = (float) $zonaCalculada->precio_delivery_usd;
+            }
+
+            $dir->cobertura_valida = $estaEnRadio;
+            $dir->zona_calculada = $zonaCalculada;
+            $dir->costo_delivery_calculado = $costoFlete;
+            $dir->distancia_km_calculada = $distanciaKm;
+        }
         
-        // Cuentas activas
+        // Cuentas bancarias activas
         $metodosPago = CuentaBancaria::where('activo', 1)->get();
 
-        $zonas = DB::table('zonas_delivery')->where('activa', 1)->get();
+        $zonas = ZonaDelivery::where('activa', 1)->get();
         
-        return view('checkout.index', compact('carrito', 'subtotal', 'montoIva', 'totalUsd', 'totalVes', 'tasaValor', 'direcciones', 'metodosPago', 'zonas'));
+        return view('checkout.index', compact(
+            'carrito', 'subtotal', 'montoIva', 'totalUsd', 'totalVes', 
+            'tasaValor', 'direcciones', 'metodosPago', 'zonas', 'deliveryActivo'
+        ));
     }
 
     public function store(Request $request)
     {
+        // 1. Barrera de Horario Comercial en el servidor
+        if (!HorarioSemanal::estaAbiertoAhora()) {
+            $estadoHorario = HorarioSemanal::obtenerEstadoHorarioHoy();
+            return back()->with('error', "No es posible procesar la orden: la tienda está cerrada actualmente ({$estadoHorario['mostrar']}).");
+        }
+
         $request->validate([
             'metodo_entrega' => 'required|in:delivery,pickup',
             'direccion_id' => 'required_if:metodo_entrega,delivery|nullable|exists:direcciones_usuarios,id',
             'metodo_pago_id' => 'required|exists:cuentas_bancarias,id', 
             'referencia' => 'nullable|string|max:100',
-            
-            // --- CAMBIO DE SEGURIDAD AQUÍ ---
-            // Aumentamos a 5MB (5120 KB) para aceptar fotos de celulares modernos sin problemas.
-            // Si suben algo mayor a 5MB, Laravel lo bloquea automáticamente.
             'comprobante' => 'nullable|image|max:5120' 
         ], [
             'comprobante.max' => 'La imagen del comprobante no debe pesar más de 5MB.',
             'comprobante.image' => 'El archivo debe ser una imagen (JPG, PNG, JPEG).'
         ]);
 
-        // 1. Buscamos la cuenta bancaria real
+        // 2. Buscamos la cuenta bancaria real
         $cuentaBancaria = CuentaBancaria::findOrFail($request->metodo_pago_id);
         $tipoMetodoEnum = $cuentaBancaria->tipo_metodo;
 
         $usuario = Auth::user();
+
+        // 3. Validar si el Delivery está activo por el admin
+        if ($request->metodo_entrega === 'delivery' && !ConfiguracionTienda::deliveryHabilitado()) {
+            return back()->with('error', 'El servicio de delivery se encuentra actualmente pausado por la administración. Por favor selecciona "Retiro en Sede".');
+        }
         
         return DB::transaction(function () use ($request, $usuario, $tipoMetodoEnum) {
             
-            // 2. Validar Stock (Bloqueo para evitar concurrencia)
+            // 4. Validar Stock
             $carrito = Carrito::where('usuario_id', $usuario->id)->lockForUpdate()->get();
             if ($carrito->isEmpty()) throw new \Exception('El carrito está vacío.');
 
@@ -87,43 +141,58 @@ class CheckoutController extends Controller
                 if ($item->producto->stock_total < $item->cantidad) {
                     throw new \Exception("Stock insuficiente para: " . $item->producto->nombre);
                 }
-                $subtotal += $item->producto->precio_venta_usd * $item->cantidad;
+                $precio = $item->producto->precio_oferta_usd ?: $item->producto->precio_venta_usd;
+                $subtotal += $precio * $item->cantidad;
             }
 
-            // 3. Calcular Totales Finales
-            $config = DB::table('configuracion_tienda')->first();
-            $ivaPct = $config ? $config->iva_porcentaje : 16.00;
+            // 5. Determinar Costo de Envío y Validar Radio de Cobertura
+            $config = ConfiguracionTienda::first();
+            $ivaPct = $config ? (float) $config->iva_porcentaje : 16.00;
             
             $costoDelivery = 0;
             $zonaId = null;
-            $direccionTexto = 'Retiro en Tienda';
+            $direccionTexto = 'Retiro en Sede';
             $lat = null;
             $lng = null;
 
             if ($request->metodo_entrega === 'delivery') {
-                $dir = DB::table('direcciones_usuarios')->where('id', $request->direccion_id)->first();
-                if ($dir) {
-                    $direccionTexto = $dir->direccion_texto . " (Ref: " . $dir->referencia_punto . ")";
-                    $lat = $dir->geo_latitud;
-                    $lng = $dir->geo_longitud;
-                    
-                    $zona = DB::table('zonas_delivery')->first(); 
-                    if($zona) {
-                        $zonaId = $zona->id;
-                        $costoDelivery = $zona->precio_delivery_usd;
-                    }
+                $dir = DB::table('direcciones_usuarios')
+                    ->where('id', $request->direccion_id)
+                    ->where('usuario_id', $usuario->id)
+                    ->first();
+
+                if (!$dir) {
+                    throw new \Exception('La dirección seleccionada no es válida para este usuario.');
                 }
+
+                // Evaluar si las coordenadas están dentro del radio de alguna zona activa
+                $zona = null;
+                if ($dir->geo_latitud !== null && $dir->geo_longitud !== null) {
+                    $zona = ZonaDelivery::encontrarZonaParaCoordenadas($dir->geo_latitud, $dir->geo_longitud);
+                } elseif (!empty($dir->zona_delivery_id)) {
+                    $zona = ZonaDelivery::where('id', $dir->zona_delivery_id)->where('activa', 1)->first();
+                }
+
+                if (!$zona) {
+                    throw new \Exception('Tu dirección se encuentra fuera de nuestro radio de cobertura de delivery. No podemos despachar a esa ubicación. Por favor selecciona "Retiro en Sede".');
+                }
+
+                $direccionTexto = $dir->direccion_texto . ($dir->referencia_punto ? " (Ref: " . $dir->referencia_punto . ")" : "");
+                $lat = $dir->geo_latitud;
+                $lng = $dir->geo_longitud;
+                $zonaId = $zona->id;
+                $costoDelivery = (float) $zona->precio_delivery_usd;
             }
 
             $totalUsd = $subtotal + ($subtotal * ($ivaPct / 100)) + $costoDelivery;
             
             $tasa = TasaCambio::obtenerTasaUSD();
-            $tasaValor = $tasa ? $tasa->valor_tasa : 60.00;
+            $tasaValor = $tasa ? (float) $tasa->valor_tasa : 60.00;
             $tasaId = $tasa ? $tasa->id : null;
             
             $totalVes = $totalUsd * $tasaValor;
 
-            // 4. Crear Pedido
+            // 6. Crear Pedido
             $pedido = Pedido::create([
                 'canal_venta' => 'web',
                 'usuario_id' => $usuario->id,
@@ -147,7 +216,7 @@ class CheckoutController extends Controller
                     'pedido_id' => $pedido->id,
                     'producto_id' => $item->producto_id,
                     'cantidad_solicitada' => $item->cantidad,
-                    'precio_historico_usd' => $item->producto->precio_venta_usd,
+                    'precio_historico_usd' => ($item->producto->precio_oferta_usd ?: $item->producto->precio_venta_usd),
                 ]);
             }
 

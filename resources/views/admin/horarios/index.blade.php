@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Horarios de Atención - Corpo Agrícola')
+@section('title', 'Horarios de Atención - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">
@@ -106,9 +106,15 @@
                         {{-- Footer del Formulario (Posición Natural abajo de los días, sin solapar) --}}
                         <div class="p-6 sm:px-8 sm:py-6 border-t border-gray-100 bg-gray-50/80 flex flex-col sm:flex-row justify-end gap-3 rounded-b-3xl">
                             <button type="button" onclick="window.location.reload()" class="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 transition-colors text-center">Descartar Cambios</button>
+                            @if(Auth::user()->tienePermiso('gestionar_horarios'))
                             <button type="submit" id="btnSave" class="w-full sm:w-auto px-8 py-3 rounded-xl font-black text-white bg-agro-dark hover:bg-black shadow-md hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined">save</span> Guardar Calendario
                             </button>
+                            @else
+                            <button type="button" disabled class="w-full sm:w-auto px-8 py-3 rounded-xl font-bold text-gray-400 bg-gray-200 cursor-not-allowed flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">lock</span> Solo Lectura
+                            </button>
+                            @endif
                         </div>
                     </form>
 

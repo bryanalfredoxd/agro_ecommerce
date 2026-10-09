@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Facturación - Corpo Agrícola')
+@section('title', 'Facturación - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">
@@ -52,33 +52,40 @@
     </main>
 </div>
 
-{{-- MODAL VISOR DE FACTURA --}}
+{{-- MODAL VISOR DE FACTURA (FORMATO TICKET) --}}
 <div id="facturaModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="facturaBackdrop" onclick="closeFacturaModal()"></div>
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity opacity-0" id="facturaBackdrop" onclick="closeFacturaModal()"></div>
     
-    <div class="fixed inset-0 z-10 flex justify-center items-center p-4">
-        <div class="relative transform overflow-hidden sm:rounded-3xl rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-3xl max-h-[90vh] flex flex-col opacity-0 scale-95" id="facturaPanel">
+    <div class="fixed inset-0 z-10 flex justify-center items-center p-3 sm:p-4">
+        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-md max-h-[92vh] flex flex-col opacity-0 scale-95" id="facturaPanel">
             
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 sticky top-0 z-20">
-                <div class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-teal-600 text-2xl">receipt_long</span>
-                    <h3 class="text-lg font-black text-agro-dark leading-none">Detalle de Factura</h3>
+            <div class="px-5 py-3.5 border-b border-slate-100 flex justify-between items-center bg-slate-50/90 sticky top-0 z-20">
+                <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[#1e549e] text-2xl">receipt_long</span>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-800 leading-tight">Ticket de Venta</h3>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Vista Previa 80mm</p>
+                    </div>
                 </div>
-                <div class="flex gap-2">
-                    {{-- NUEVO BOTÓN GENERAR PDF --}}
-                    <button id="btnImprimir" onclick="descargarPDF()" class="text-gray-500 hover:text-teal-600 bg-white border border-gray-200 hover:border-teal-200 p-1.5 rounded-lg transition-colors flex items-center gap-1 px-3 font-bold text-sm" title="Descargar PDF">
-                        <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span> PDF
+                <div class="flex items-center gap-1.5">
+                    <button id="btnTicket" onclick="imprimirTicket()" class="text-white bg-[#1e549e] hover:bg-[#164079] px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 font-bold text-xs shadow-xs hover:scale-105 active:scale-95" title="Imprimir Ticket Térmico 80mm">
+                        <span class="material-symbols-outlined text-[16px]">receipt</span>
+                        <span>Ticket</span>
                     </button>
-                    <button type="button" onclick="closeFacturaModal()" class="text-gray-700 hover:text-red-500 bg-white border border-gray-200 hover:border-red-200 p-1.5 rounded-lg transition-colors">
-                        <span class="material-symbols-outlined">close</span>
+                    <button id="btnA4" onclick="imprimirA4()" class="text-slate-700 hover:text-[#1e549e] bg-white border border-slate-200 hover:border-[#1e549e] px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 font-bold text-xs shadow-2xs hover:scale-105 active:scale-95" title="Imprimir Factura en Formato A4">
+                        <span class="material-symbols-outlined text-[16px]">print</span>
+                        <span>Formato A4</span>
+                    </button>
+                    <button type="button" onclick="closeFacturaModal()" class="text-slate-400 hover:text-rose-500 p-1.5 rounded-xl hover:bg-slate-100 transition-colors" title="Cerrar">
+                        <span class="material-symbols-outlined text-[20px]">close</span>
                     </button>
                 </div>
             </div>
 
-            <div id="facturaContent" class="overflow-y-auto custom-scrollbar flex-1 relative bg-gray-100 p-4 sm:p-8">
-                <div id="facturaLoader" class="absolute inset-0 bg-gray-100 z-10 flex flex-col items-center justify-center">
-                    <span class="material-symbols-outlined animate-spin text-teal-600 text-4xl mb-4">autorenew</span>
-                    <p class="font-bold text-gray-500">Cargando documento...</p>
+            <div id="facturaContent" class="overflow-y-auto custom-scrollbar flex-1 relative bg-slate-100/80 p-4 sm:p-5">
+                <div id="facturaLoader" class="absolute inset-0 bg-slate-100/95 z-10 flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined animate-spin text-[#1e549e] text-3xl mb-2">sync</span>
+                    <p class="font-bold text-xs text-slate-500">Cargando ticket...</p>
                 </div>
                 <div id="facturaInyectada" class="print-area"></div>
             </div>
@@ -89,13 +96,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @push('scripts')
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-{{-- LIBRERÍA PARA GENERAR PDF FIELES AL DISEÑO --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-@push('scripts')
-
 <script>
     let currentFiltroEstado = 'todas';
     let currentSearch = '';
@@ -139,8 +139,23 @@
         .finally(() => { loading.classList.add('hidden'); loading.classList.remove('flex'); });
     }
 
+    let currentFacturaId = null;
+
+    function imprimirTicket() {
+        if (currentFacturaId) {
+            window.open(`/admin/facturas/${currentFacturaId}/ticket`, '_blank');
+        }
+    }
+
+    function imprimirA4() {
+        if (currentFacturaId) {
+            window.open(`/admin/facturas/${currentFacturaId}/imprimir`, '_blank');
+        }
+    }
+
     // Modal Visor de Factura
     function verFactura(id) {
+        currentFacturaId = id;
         const modal = document.getElementById('facturaModal');
         const backdrop = document.getElementById('facturaBackdrop');
         const panel = document.getElementById('facturaPanel');
@@ -210,40 +225,6 @@
         });
     }
 
-    // ==========================================
-    // GENERADOR DE PDF (HTML a PDF)
-    // ==========================================
-    function descargarPDF() {
-        const btn = document.getElementById('btnImprimir');
-        const originalHtml = btn.innerHTML;
-        
-        // Estado de carga en el botón
-        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">autorenew</span> Procesando...';
-        btn.disabled = true;
-
-        // El elemento HTML que queremos convertir a PDF
-        const elemento = document.getElementById('documentoFactura');
-        
-        // Configuraciones de calidad y formato
-        const opciones = {
-            margin:       [10, 10, 10, 10], // Márgenes en mm
-            filename:     'Copia_Contable_Corpo_Agricola.pdf', // Nombre del archivo descargado
-            image:        { type: 'jpeg', quality: 1 }, // Máxima calidad
-            html2canvas:  { 
-                scale: 3, // Escala x3 para que el texto se vea súper nítido al hacer zoom
-                useCORS: true, 
-                logging: false 
-            },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        // Generar y descargar
-        html2pdf().set(opciones).from(elemento).save().then(() => {
-            // Restaurar el botón cuando termine
-            btn.innerHTML = originalHtml;
-            btn.disabled = false;
-        });
-    }
 
     
 </script>

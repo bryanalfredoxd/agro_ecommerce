@@ -22,12 +22,18 @@ class ConfiguracionTienda extends Model
         'iva_porcentaje',
         'modo_operativo',
         'mensaje_cierre_emergencia',
+        'latitud',
+        'longitud',
+        'delivery_activo',
         'ultimo_editor_id'
     ];
 
     // 4. Casteos para asegurar tipos de datos correctos
     protected $casts = [
         'iva_porcentaje' => 'decimal:2',
+        'delivery_activo' => 'boolean',
+        'latitud' => 'float',
+        'longitud' => 'float',
     ];
 
     // ==========================================
@@ -39,6 +45,29 @@ class ConfiguracionTienda extends Model
      */
     public function ultimoEditor()
     {
-        return $this->belongsTo(User::class, 'ultimo_editor_id'); // Asegúrate de que tu modelo de usuario se llame User (o cambialo a Usuario si así lo llamaste)
+        return $this->belongsTo(User::class, 'ultimo_editor_id');
+    }
+
+    public static function obtener(): ?self
+    {
+        return static::first();
+    }
+
+    public static function iva(): float
+    {
+        $config = static::first();
+        return $config ? (float) $config->iva_porcentaje : 16.00;
+    }
+
+    public static function nombre(): string
+    {
+        $config = static::first();
+        return $config && !empty($config->nombre_empresa) ? $config->nombre_empresa : 'Agrosuministros Rodríguez';
+    }
+
+    public static function deliveryHabilitado(): bool
+    {
+        $config = static::first();
+        return $config ? (bool) ($config->delivery_activo ?? true) : true;
     }
 }

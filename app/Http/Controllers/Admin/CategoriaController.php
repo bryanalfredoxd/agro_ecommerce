@@ -17,7 +17,7 @@ class CategoriaController extends Controller
     
     public function index(Request $request)
     {
-        $query = Categoria::with('padre');
+        $query = Categoria::with('padre')->withCount(['productos', 'subcategorias']);
 
         // 1. Buscador
         if ($request->filled('buscar')) {
@@ -42,16 +42,28 @@ class CategoriaController extends Controller
             }
         }
 
-        $categorias = $query->orderBy('categoria_padre_id', 'asc')->orderBy('nombre', 'asc')->paginate(10);
+        // Estadísticas para KPIs
+        $stats = [
+            'total' => Categoria::count(),
+            'principales' => Categoria::whereNull('categoria_padre_id')->count(),
+            'subcategorias' => Categoria::whereNotNull('categoria_padre_id')->count(),
+            'deshabilitadas' => Categoria::onlyTrashed()->count(),
+        ];
+
+        $categorias = $query->orderBy('categoria_padre_id', 'asc')->orderBy('nombre', 'asc')->paginate(12)->withQueryString();
 
         if ($request->ajax()) {
-            return view('admin.categorias.partials._table', compact('categorias'))->render();
+            return response()->json([
+                'success' => true,
+                'html' => view('admin.categorias.partials._table', compact('categorias', 'stats'))->render(),
+                'stats' => $stats
+            ]);
         }
 
-        // Para el select del Modal (Obtenemos activas para no asignar padres borrados)
-        $categoriasPadre = Categoria::orderBy('nombre')->get();
+        // Para el select del Modal (Obtenemos activas principales para no asignar padres borrados)
+        $categoriasPadre = Categoria::whereNull('categoria_padre_id')->orderBy('nombre')->get();
 
-        return view('admin.categorias.index', compact('categorias', 'categoriasPadre'));
+        return view('admin.categorias.index', compact('categorias', 'categoriasPadre', 'stats'));
     }
 
     public function store(Request $request)

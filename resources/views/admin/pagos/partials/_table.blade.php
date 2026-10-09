@@ -86,7 +86,7 @@
                         
                         {{-- Botón Ver Comprobante --}}
                         @if($pago->captura_pago_url)
-                            <button onclick="verComprobante('{{ asset('storage/' . $pago->captura_pago_url) }}', '{{ $pago->referencia_bancaria }}')" class="w-8 h-8 rounded-lg bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200 flex items-center justify-center transition-all shadow-sm" title="Ver Comprobante">
+                            <button onclick="verComprobante('{{ $pago->url_comprobante }}', '{{ $pago->referencia_bancaria }}')" class="w-8 h-8 rounded-lg bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200 flex items-center justify-center transition-all shadow-sm" title="Ver Comprobante">
                                 <span class="material-symbols-outlined text-[18px]">receipt_long</span>
                             </button>
                         @endif

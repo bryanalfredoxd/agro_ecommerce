@@ -1,43 +1,58 @@
-/* public/css/agro-colors.css */
+/* public/css/agro-colors.css & resources/css/agro-colors.css */
+/* PALETA OFICIAL AGROSUMINISTROS RODRÍGUEZ */
 :root {
-    /* Paleta principal AGRO */
-    --color-primary: #13ec13;           /* Verde brillante - Énfasis */
-    --color-agro-dark: #1B4332;         /* Verde bosque oscuro - Principal */
-    --color-agro-gold: #D4A373;         /* Dorado cosecha - Secundario */
-    --color-agro-accent: #BC6C25;       /* Terracota - Acento */
-    --color-background-light: #F8F9FA;  /* Fondo claro */
-    --color-background-dark: #102210;   /* Fondo oscuro */
+    /* Paleta Oficial */
+    --color-primary: #1e549e;           /* Azul Oscuro - Institucional */
+    --color-primary-dark: #153e77;      /* Azul Profundo - Hover */
+    --color-secondary: #3492cf;         /* Azul Intermedio - Acción */
+    --color-accent: #aad6f3;            /* Azul Claro - Resalte */
+    --color-accent-soft: #e5f2fb;       /* Azul Claro Suave - Fondos */
+    --color-white: #ffffff;             /* Blanco */
+
+    /* Compatibilidad con clases históricas agro */
+    --color-agro-dark: #1e549e;         /* Reemplaza verde oscuro por azul corporativo */
+    --color-agro-gold: #3492cf;         /* Reemplaza dorado por azul intermedio */
+    --color-agro-accent: #3492cf;       /* Reemplaza terracota por azul intermedio */
+    --color-background-light: #f8fafc;  /* Fondo claro moderno */
+    --color-background-dark: #0f1e36;   /* Fondo oscuro noche */
     
     /* Textos */
-    --color-text-primary: #1B4332;
-    --color-text-secondary: #4A5568;
-    --color-text-light: #F8F9FA;
+    --color-text-primary: #0f172a;      /* Slate 900 */
+    --color-text-secondary: #475569;    /* Slate 600 */
+    --color-text-light: #ffffff;
     
     /* Estados */
     --color-success: #10B981;
     --color-warning: #F59E0B;
     --color-error: #EF4444;
-    --color-info: #3B82F6;
+    --color-info: #3492cf;
     
-    /* Variantes de fondo */
+    /* Variantes de superficie */
     --color-surface-light: #FFFFFF;
-    --color-surface-dark: #102210;
-    --color-surface-muted: #F0F4F0;
+    --color-surface-dark: #0f1e36;
+    --color-surface-muted: #f1f5f9;
     
     /* Bordes */
-    --color-border-light: #E2E8F0;
-    --color-border-dark: #2D3748;
+    --color-border-light: #e2e8f0;
+    --color-border-dark: #1e293b;
     
     /* Sombras */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(30, 84, 158, 0.08);
+    --shadow-lg: 0 10px 15px -3px rgba(30, 84, 158, 0.12);
 }
 
 /* Clases utilitarias de colores */
 .bg-primary { background-color: var(--color-primary); }
 .text-primary { color: var(--color-primary); }
 .border-primary { border-color: var(--color-primary); }
+
+.bg-secondary { background-color: var(--color-secondary); }
+.text-secondary { color: var(--color-secondary); }
+.border-secondary { border-color: var(--color-secondary); }
+
+.bg-accent { background-color: var(--color-accent); }
+.text-accent { color: var(--color-accent); }
 
 .bg-agro-dark { background-color: var(--color-agro-dark); }
 .text-agro-dark { color: var(--color-agro-dark); }
@@ -53,58 +68,10 @@
 .bg-background-dark { background-color: var(--color-background-dark); }
 
 /* Estados hover */
-.hover\:bg-primary:hover { background-color: var(--color-primary); }
-.hover\:text-primary:hover { color: var(--color-primary); }
+.hover\:bg-primary:hover { background-color: var(--color-primary-dark); }
+.hover\:text-primary:hover { color: var(--color-secondary); }
+.hover\:bg-secondary:hover { background-color: #267bb0; }
 
-/* Efectos de transición */
+/* Transiciones */
 .transition-colors { transition: color 0.2s ease, background-color 0.2s ease; }
 .transition-all { transition: all 0.2s ease; }
-
-/* Utilidades responsivas */
-@media (max-width: 640px) {
-    .mobile\:text-center { text-align: center; }
-    .mobile\:block { display: block; }
-    .mobile\:hidden { display: none; }
-}
-
-@media (min-width: 641px) and (max-width: 1024px) {
-    .tablet\:text-center { text-align: center; }
-    .tablet\:block { display: block; }
-    .tablet\:hidden { display: none; }
-}
-
-/* Estilos para scroll horizontal en móvil */
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
-}
-
-/* Mejoras para elementos tappables en móvil */
-@media (max-width: 640px) {
-    button, 
-    a {
-        min-height: 44px;
-        min-width: 44px;
-    }
-    
-    .mobile-tap-target {
-        padding: 12px;
-    }
-}
-
-/* Transiciones suaves */
-.transition-all {
-    transition: all 0.2s ease-in-out;
-}
-
-/* Mejoras para inputs en móvil */
-@media (max-width: 640px) {
-    input, 
-    select, 
-    textarea {
-        font-size: 16px; /* Previene zoom en iOS */
-    }
-}

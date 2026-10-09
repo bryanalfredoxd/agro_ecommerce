@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Histórico de Precios - Corpo Agrícola')
+@section('title', 'Histórico de Precios - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">

@@ -17,19 +17,40 @@ class ProductoController extends Controller
     {
         $query = Producto::with(['categoria', 'marca']);
 
+        // 1. Buscador inteligente multi-criterio (Nombre, SKU, Código de Barras, ID, Categoría o Marca)
         if ($request->filled('buscar')) {
-            $busqueda = $request->buscar;
-            $query->where(function($q) use ($busqueda) {
-                $q->where('nombre', 'LIKE', "%{$busqueda}%")
+            $busqueda = trim($request->buscar);
+            $cleanNumeric = ltrim(preg_replace('/[^0-9]/', '', $busqueda), '0');
+
+            $query->where(function($q) use ($busqueda, $cleanNumeric) {
+                if (!empty($cleanNumeric) && is_numeric($cleanNumeric)) {
+                    $q->orWhere('id', (int) $cleanNumeric);
+                }
+
+                $q->orWhere('nombre', 'LIKE', "%{$busqueda}%")
                   ->orWhere('sku', 'LIKE', "%{$busqueda}%")
-                  ->orWhere('codigo_barras', 'LIKE', "%{$busqueda}%");
+                  ->orWhere('codigo_barras', 'LIKE', "%{$busqueda}%")
+                  ->orWhere('descripcion', 'LIKE', "%{$busqueda}%")
+                  ->orWhereHas('categoria', function($c) use ($busqueda) {
+                      $c->where('nombre', 'LIKE', "%{$busqueda}%");
+                  })
+                  ->orWhereHas('marca', function($m) use ($busqueda) {
+                      $m->where('nombre', 'LIKE', "%{$busqueda}%");
+                  });
             });
         }
 
+        // 2. Filtro por Categoría
         if ($request->filled('categoria_id')) {
             $query->where('categoria_id', $request->categoria_id);
         }
 
+        // 3. Filtro por Marca
+        if ($request->filled('marca_id')) {
+            $query->where('marca_id', $request->marca_id);
+        }
+
+        // 4. Filtro Rápido (Tabs Inteligentes)
         if ($request->filled('filtro_rapido')) {
             switch ($request->filtro_rapido) {
                 case 'suspendidos':
@@ -50,16 +71,34 @@ class ProductoController extends Controller
             }
         }
 
-        $productos = $query->orderBy('nombre', 'asc')->paginate(10);
+        // Estadísticas para KPIs y Smart Tabs
+        $stats = [
+            'total' => Producto::count(),
+            'critico' => Producto::whereColumn('stock_total', '<=', 'stock_minimo_alerta')->count(),
+            'destacados' => Producto::where('destacado', 1)->count(),
+            'combos' => Producto::where('es_combo', 1)->count(),
+            'recetados' => Producto::where('es_controlado', 1)->count(),
+            'suspendidos' => Producto::onlyTrashed()->count(),
+            'valor_inventario_usd' => (float) (Producto::selectRaw('SUM(stock_total * precio_venta_usd) as total')->value('total') ?? 0),
+        ];
+
+        // Tasa de cambio oficial para referencia en Bs
+        $tasaVes = (float) \App\Models\TasaCambio::obtenerValorUSD();
+
+        $productos = $query->orderBy('nombre', 'asc')->paginate(12)->withQueryString();
 
         if ($request->ajax()) {
-            return view('admin.productos.partials._table', compact('productos'))->render();
+            return response()->json([
+                'success' => true,
+                'html' => view('admin.productos.partials._table', compact('productos', 'stats', 'tasaVes'))->render(),
+                'stats' => $stats
+            ]);
         }
 
         $categorias = Categoria::orderBy('nombre')->get();
         $marcas = Marca::orderBy('nombre')->get();
 
-        return view('admin.productos.index', compact('productos', 'categorias', 'marcas'));
+        return view('admin.productos.index', compact('productos', 'categorias', 'marcas', 'stats', 'tasaVes'));
     }
 
     public function toggleDestacado($id)

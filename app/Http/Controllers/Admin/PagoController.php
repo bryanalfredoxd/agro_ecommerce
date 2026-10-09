@@ -13,43 +13,11 @@ class PagoController extends Controller
 {
     public function index(Request $request)
     {
-        // Traemos el pago con su pedido (y el cliente del pedido) y el verificador
-        $query = Pago::with(['pedido.usuario', 'verificador']);
-
-        // 1. Buscador (Por referencia o ID de pedido)
-        if ($request->filled('buscar')) {
-            $busqueda = $request->buscar;
-            $query->where(function($q) use ($busqueda) {
-                $q->where('referencia_bancaria', 'LIKE', "%{$busqueda}%")
-                  ->orWhere('pedido_id', 'LIKE', "%{$busqueda}%");
-            });
+        $params = $request->all();
+        if (!isset($params['filtro_estado']) || $params['filtro_estado'] === 'revision') {
+            $params['filtro_estado'] = 'por_verificar';
         }
-
-        if ($request->filtro_estado === 'todos') {
-            // No aplicamos filtro where, pero ordenamos para que los pendientes salgan arriba
-            $query->orderByRaw("FIELD(estado, 'revision', 'aprobado', 'rechazado')");
-        } 
-        // Si mandan un estado específico, lo filtramos
-        elseif ($request->filled('filtro_estado')) {
-            $query->where('estado', $request->filtro_estado);
-        } 
-        // Si NO mandan nada (primera vez que entra a la página), forzamos 'revision'
-        else {
-            $query->where('estado', 'revision');
-        }
-
-        // Filtro por Método de Pago
-        if ($request->filled('filtro_metodo') && $request->filtro_metodo !== 'todos') {
-            $query->where('metodo', $request->filtro_metodo);
-        }
-
-        $pagos = $query->orderBy('fecha_pago', 'desc')->paginate(10);
-
-        if ($request->ajax()) {
-            return view('admin.pagos.partials._table', compact('pagos'))->render();
-        }
-
-        return view('admin.pagos.index', compact('pagos'));
+        return redirect()->route('admin.pedidos.index', $params);
     }
 
     // Método para APROBAR el pago
@@ -80,7 +48,19 @@ class PagoController extends Controller
             }
 
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Pago aprobado. El inventario ha sido descontado y Logística notificada.']);
+
+            // Enviar notificación por correo al cliente
+            try {
+                $cliente = $pedido->usuario;
+                if ($cliente && filter_var($cliente->email, FILTER_VALIDATE_EMAIL)) {
+                    \Illuminate\Support\Facades\Mail::to($cliente->email)
+                        ->send(new \App\Mail\PedidoAprobadoMail($pedido));
+                }
+            } catch (\Throwable $mailEx) {
+                \Illuminate\Support\Facades\Log::warning("No se pudo enviar correo de confirmación para pedido #{$pedido->id}: " . $mailEx->getMessage());
+            }
+
+            return response()->json(['success' => true, 'message' => 'Pago aprobado. El inventario ha sido descontado y el cliente notificado por correo.']);
 
         } catch (\Exception $e) {
             DB::rollBack();

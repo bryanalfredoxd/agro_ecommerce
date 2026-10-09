@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'cedula_api' => [
+        'app_id' => env('CEDULA_API_APP_ID', '2118'),
+        'token' => env('CEDULA_API_TOKEN', 'ad3e6e46e42e96adba76c92c23755b54'),
+    ],
+
 ];

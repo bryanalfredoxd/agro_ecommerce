@@ -36,12 +36,14 @@
                     <p class="text-sm font-medium text-gray-700">{{ \Carbon\Carbon::parse($user->creado_at)->format('d M Y') }}</p>
                 </td>
                 <td class="px-6 py-4 text-center">
-                    @if($user->id != 1) 
+                    @if($user->id != 1 && Auth::user()->tienePermiso('gestionar_roles_permisos')) 
                         <button onclick="openPermisosModal({{ $user->id }}, '{{ $user->nombre }} {{ $user->apellido }}')" 
                                 class="inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 text-gray-600 rounded-xl transition-all shadow-sm text-xs font-bold">
                             <span class="material-symbols-outlined text-[16px]">manage_accounts</span>
                             Configurar
                         </button>
+                    @else
+                        <span class="text-xs text-gray-400 font-medium">-</span>
                     @endif
                 </td>
             </tr>

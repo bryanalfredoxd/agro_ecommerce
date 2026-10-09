@@ -93,18 +93,45 @@ class DolarJob
         $respuesta = curl_exec($curl);
         curl_close($curl);
 
-        if (empty($respuesta)) return null;
+        if (!empty($respuesta)) {
+            // Intentar con Regex flexible (soporta atributos como class="strong-tb")
+            $pattern = '/<div\s+id="dolar"[^>]*>.*?<strong[^>]*>\s*([\d,.]+)\s*<\/strong>/is';
+            if (preg_match($pattern, $respuesta, $matches)) {
+                $val = (float) str_replace(',', '.', trim($matches[1]));
+                if ($val > 0) return $val;
+            }
 
-        // Intentar con Regex
-        $pattern = '/<div\s+id="dolar"[^>]*>.*?<strong>\s*([\d,]+)\s*<\/strong>/s';
-        if (preg_match($pattern, $respuesta, $matches)) {
-            return (float) str_replace(',', '.', trim($matches[1]));
+            // Fallback simple por si cambia el contenedor
+            $pattern2 = '/USD.*?<strong[^>]*>\s*([\d,.]+)\s*<\/strong>/is';
+            if (preg_match($pattern2, $respuesta, $matches)) {
+                $val = (float) str_replace(',', '.', trim($matches[1]));
+                if ($val > 0) return $val;
+            }
         }
 
-        // Fallback simple por si falla el regex complejo
-        $pattern2 = '/USD.*?<strong>\s*([\d,]+)\s*<\/strong>/s';
-        if (preg_match($pattern2, $respuesta, $matches)) {
-            return (float) str_replace(',', '.', trim($matches[1]));
+        // Fallback de alta disponibilidad (DolarApi oficial BCV)
+        try {
+            $apiUrl = "https://ve.dolarapi.com/v1/dolares/oficial";
+            $curlApi = curl_init();
+            curl_setopt_array($curlApi, [
+                CURLOPT_URL => $apiUrl,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 10,
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_USERAGENT => 'Mozilla/5.0',
+            ]);
+            $respApi = curl_exec($curlApi);
+            curl_close($curlApi);
+
+            if (!empty($respApi)) {
+                $json = json_decode($respApi, true);
+                if (isset($json['promedio']) && is_numeric($json['promedio']) && $json['promedio'] > 0) {
+                    return (float) $json['promedio'];
+                }
+            }
+        } catch (\Throwable $e) {
+            // Continuar
         }
 
         return null;

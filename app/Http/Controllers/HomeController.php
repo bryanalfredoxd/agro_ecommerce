@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Producto;
 use App\Models\Categoria;
-use App\Models\TasaCambio; // <-- IMPORTANTE: Agregar esta línea
+use App\Models\TasaCambio;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -47,7 +49,12 @@ class HomeController extends Controller
             $productosDestacados = $productosDestacados->merge($relleno);
         }
 
-        // AGREGAMOS $tasaDolar a la función compact()
-        return view('welcome', compact('categoriasPrincipales', 'productosDestacados', 'tasaDolar'));
+        // Obtener IDs de favoritos del usuario si está autenticado
+        $favoritosIds = Auth::check()
+            ? DB::table('favoritos')->where('usuario_id', Auth::id())->pluck('producto_id')->toArray()
+            : [];
+
+        // Retornar vista con tasa de cambio y favoritos
+        return view('welcome', compact('categoriasPrincipales', 'productosDestacados', 'tasaDolar', 'favoritosIds'));
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\Permiso;
 use App\Models\PermisoExtraUsuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UsuarioController extends Controller
 {
@@ -49,64 +50,127 @@ class UsuarioController extends Controller
         }
 
         // Si es carga normal, enviamos todo a la vista principal
-        $roles = Role::all();
-        $permisos = Permiso::all();
+        $roles = Role::with('permisos')->get();
+        $permisos = Permiso::all()->keyBy('nombre');
+        $modulos = config('permisos_modulos', []);
 
-        return view('admin.usuarios.index', compact('usuarios', 'roles', 'permisos'));
+        return view('admin.usuarios.index', compact('usuarios', 'roles', 'permisos', 'modulos'));
     }
 
-    // Obtener los permisos extra de un usuario (Para el Modal)
+    // Obtener los permisos del rol y excepciones extra de un usuario (Para el Modal)
     public function getPermisosExtra($id)
     {
-        $usuario = User::findOrFail($id);
-        $permisosExtra = PermisoExtraUsuario::where('usuario_id', $id)->get();
-        
+        $usuario = User::with('rol')->findOrFail($id);
+
+        // Traer todos los roles con sus IDs de permisos asignados para sincronización en tiempo real
+        $rolesData = Role::with('permisos:id')->get()->map(function($r) {
+            return [
+                'id' => $r->id,
+                'nombre' => $r->nombre,
+                'permiso_ids' => $r->permisos->pluck('id')->map(fn($v) => (int)$v)->values()->toArray(),
+            ];
+        });
+
+        // Obtener las excepciones guardadas para este usuario
+        $excepciones = PermisoExtraUsuario::where('usuario_id', $id)
+            ->get(['permiso_id', 'accion'])
+            ->mapWithKeys(function($item) {
+                return [(int)$item->permiso_id => $item->accion];
+            })
+            ->toArray(); // [ permiso_id => 'permitir' | 'denegar' ]
+
+        // Permisos naturales del rol actual
+        $permisosDelRol = [];
+        if ($usuario->rol_id) {
+            $permisosDelRol = DB::table('rol_permisos')
+                ->where('rol_id', $usuario->rol_id)
+                ->pluck('permiso_id')
+                ->map(fn($v) => (int)$v)
+                ->values()
+                ->toArray();
+        }
+
         return response()->json([
+            'usuario_id' => $usuario->id,
+            'nombre' => $usuario->nombre . ' ' . $usuario->apellido,
+            'email' => $usuario->email,
             'rol_id' => $usuario->rol_id,
-            'permisosExtra' => $permisosExtra
+            'roles' => $rolesData,
+            'permisos_del_rol' => $permisosDelRol,
+            'excepciones' => $excepciones
         ]);
     }
 
-    // Guardar los permisos extra de un usuario
-    // Guardar los permisos extra de un usuario
+    // Guardar los permisos extra / excepciones de un usuario
     public function updatePermisosExtra(Request $request, $id)
     {
         $usuario = User::findOrFail($id);
 
         // Bloqueo de seguridad: No modificar al Super Admin
         if ($usuario->id == 1) {
-            return response()->json(['success' => false, 'message' => 'No puedes modificar la configuración del Super Admin.']);
+            return response()->json(['success' => false, 'message' => 'No puedes modificar la configuración del Super Admin.'], 403);
         }
 
         // 1. Actualizar el Rol del Usuario
-        if ($request->has('rol_id')) {
+        if ($request->filled('rol_id')) {
             $usuario->rol_id = $request->rol_id;
             $usuario->save();
         }
 
-        // 2. Borramos todas las excepciones anteriores de este usuario
-        PermisoExtraUsuario::where('usuario_id', $id)->delete();
-
-        // 3. Aplicar la nueva lógica: Si está marcado es "permitir", si no, es "denegar"
-        $todosLosPermisos = Permiso::pluck('id')->toArray();
-        $permisosMarcados = $request->input('permisos', []); // Array de IDs marcados (si viene vacío, asume un array vacío)
-
-        $inserts = [];
-        foreach ($todosLosPermisos as $permiso_id) {
-            $accion = in_array($permiso_id, $permisosMarcados) ? 'permitir' : 'denegar';
-            
-            $inserts[] = [
-                'usuario_id' => $id,
-                'permiso_id' => $permiso_id,
-                'accion'     => $accion
-            ];
+        // 2. Si el usuario solicita restablecer al rol (restablecer = true), borramos excepciones y salimos
+        if ($request->boolean('restablecer')) {
+            PermisoExtraUsuario::where('usuario_id', $id)->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Permisos restablecidos con éxito a la configuración estándar del rol.'
+            ]);
         }
 
-        // Guardamos todo de golpe en la base de datos
+        // 3. Borramos las excepciones anteriores
+        PermisoExtraUsuario::where('usuario_id', $id)->delete();
+
+        // 4. Obtener los permisos del rol asignado
+        $permisosDelRol = [];
+        if ($usuario->rol_id) {
+            $permisosDelRol = DB::table('rol_permisos')
+                ->where('rol_id', $usuario->rol_id)
+                ->pluck('permiso_id')
+                ->map(fn($v) => (int)$v)
+                ->toArray();
+        }
+
+        $todosLosPermisos = Permiso::pluck('id')->map(fn($v) => (int)$v)->toArray();
+        $permisosMarcados = array_map('intval', (array)$request->input('permisos', []));
+
+        $inserts = [];
+        foreach ($todosLosPermisos as $permisoId) {
+            $estaMarcado = in_array($permisoId, $permisosMarcados);
+            $estaEnRol = in_array($permisoId, $permisosDelRol);
+
+            if ($estaMarcado && !$estaEnRol) {
+                // Concedido extra (Excepción)
+                $inserts[] = [
+                    'usuario_id' => $id,
+                    'permiso_id' => $permisoId,
+                    'accion'     => 'permitir'
+                ];
+            } elseif (!$estaMarcado && $estaEnRol) {
+                // Denegado extra (Excepción)
+                $inserts[] = [
+                    'usuario_id' => $id,
+                    'permiso_id' => $permisoId,
+                    'accion'     => 'denegar'
+                ];
+            }
+        }
+
         if (count($inserts) > 0) {
             PermisoExtraUsuario::insert($inserts);
         }
 
-        return response()->json(['success' => true, 'message' => 'Configuración actualizada correctamente.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Permisos del usuario actualizados correctamente.'
+        ]);
     }
 }

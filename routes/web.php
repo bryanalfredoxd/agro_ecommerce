@@ -2,65 +2,65 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\TasaCambioController;
-use App\Http\Controllers\HorarioController;
+
+// Controladores Frontend / Auth
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CatalogoController;
-use App\Http\Controllers\HomeController; 
-use App\Http\Controllers\SplashController;
+use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DireccionController;
-use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\FavoritoController;
+use App\Http\Controllers\TasaCambioController;
+use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\SplashController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
+
+// Controladores Admin
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\Admin\MarcaController;
 use App\Http\Controllers\Admin\ProductoController;
-use App\Http\Controllers\Admin\HorarioadminController;
+use App\Http\Controllers\Admin\HistoricoPrecioController;
 use App\Http\Controllers\Admin\PedidoController;
 use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\PosController;
+use App\Http\Controllers\Admin\FacturaController;
+use App\Http\Controllers\Admin\FacturacionConfigController;
+use App\Http\Controllers\Admin\CajaDiariaController;
+use App\Http\Controllers\Admin\HorarioadminController;
 use App\Http\Controllers\Admin\ConfiguracionTiendaController;
 use App\Http\Controllers\Admin\CuentaBancariaController;
-use App\Http\Controllers\Admin\FacturaController;
-use App\Http\Controllers\Admin\CajaDiariaController;
-use App\Http\Controllers\Admin\FacturacionConfigController;
-use App\Http\Controllers\Admin\HistoricoPrecioController;
-
-// Nota: Eliminé CategoriaController de aquí porque no lo estamos usando en la Home
+use App\Http\Controllers\Admin\ZonaDeliveryController;
+use App\Http\Controllers\Admin\TasaCambioController as AdminTasaCambioController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Web Routes - Agrosuministros Rodríguez
 |--------------------------------------------------------------------------
 */
 
-
 // --- 1. RUTA PRINCIPAL (HOME) ---
-// CORRECCIÓN: Usamos HomeController para que cargue los productos y categorías
 Route::get('/', HomeController::class)->name('home');
 
-
-// --- 2. CATÁLOGO ---
+// --- 2. CATÁLOGO DE PRODUCTOS ---
 Route::get('/catalogo', [CatalogoController::class, 'index'])->name('catalogo');
+Route::get('/catalogo/buscar-en-vivo', [CatalogoController::class, 'buscarEnVivo'])->name('catalogo.buscar-en-vivo');
 Route::post('/catalogo/solicitar', [CatalogoController::class, 'solicitarProducto'])->name('catalogo.solicitar');
 
-
-// --- 3. RUTAS DE GUEST (INVITADOS) ---
+// --- 3. RUTAS DE INVITADOS (GUEST) ---
 Route::middleware('guest')->group(function () {
-    // Registro
     Route::get('/registro', [RegisterController::class, 'create'])->name('register');
     Route::post('/registro', [RegisterController::class, 'store']);
 
-    // Login
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
 });
 
-
-// --- 4. RUTAS DE AUTH (USUARIOS LOGUEADOS) ---
+// --- 4. RUTAS AUTENTICADAS ---
 Route::middleware('auth')->group(function () {
     // Cerrar Sesión
     Route::post('/logout', function () {
@@ -70,174 +70,181 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('logout');
 
-    // Panel de Usuario (Dashboard temporal)
+    // Redirección inteligente del Dashboard según el rol
     Route::get('/dashboard', function () {
-        return view('welcome'); 
+        if (Auth::user()?->esAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('perfil');
     })->name('dashboard');
-});
 
-
-Route::middleware(['auth'])->group(function () {
-    // Vista del perfil
+    // Perfil del Usuario
     Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil');
-    
-    // Actualizar datos personales
     Route::put('/perfil/actualizar', [PerfilController::class, 'updateDatos'])->name('perfil.update');
-    
-    // Actualizar contraseña (si no usas Fortify/Breeze nativo)
     Route::put('/perfil/password', [PerfilController::class, 'updatePassword'])->name('password.update');
+    Route::get('/perfil/pedidos', [PerfilController::class, 'pedidos'])->name('perfil.pedidos');
+    Route::get('/perfil/pedidos/{id}', [PerfilController::class, 'detallePedido'])->name('perfil.pedido.detalle');
+    Route::get('/perfil/pedidos/{id}/ticket', [FacturaController::class, 'ticketPorPedido'])->name('perfil.pedido.ticket');
+    Route::get('/factura/{id}/ticket', [FacturaController::class, 'ticket'])->name('factura.ticket');
+    Route::get('/factura/{id}/imprimir', [FacturaController::class, 'imprimir'])->name('factura.imprimir');
 
+    // Direcciones del Usuario
     Route::post('/perfil/direccion', [DireccionController::class, 'store'])->name('direccion.store');
-
-    // NUEVA RUTA: Cambiar dirección principal
     Route::patch('/perfil/direccion/{id}/principal', [DireccionController::class, 'setPrincipal'])->name('direccion.principal');
-    
-    // OPCIONAL: Ruta para eliminar (te la dejo lista por si acaso)
     Route::delete('/perfil/direccion/{id}', [DireccionController::class, 'destroy'])->name('direccion.destroy');
 
-    Route::get('/perfil/pedidos', [App\Http\Controllers\PerfilController::class, 'pedidos'])->name('perfil.pedidos');
-    Route::get('/perfil/pedidos/{id}', [App\Http\Controllers\PerfilController::class, 'detallePedido'])->name('perfil.pedido.detalle');
+    // Carrito de Compras
+    Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito.index');
+    Route::post('/carrito/add', [CarritoController::class, 'add'])->name('carrito.add');
+    Route::post('/carrito/update', [CarritoController::class, 'update'])->name('carrito.update');
+    Route::post('/carrito/remove', [CarritoController::class, 'remove'])->name('carrito.remove');
 
-    // Rutas del Carrito
-    Route::get('/carrito', [App\Http\Controllers\CarritoController::class, 'index'])->name('carrito.index');
-    Route::post('/carrito/add', [App\Http\Controllers\CarritoController::class, 'add'])->name('carrito.add');
-    Route::post('/carrito/update', [App\Http\Controllers\CarritoController::class, 'update'])->name('carrito.update');
-    Route::post('/carrito/remove', [App\Http\Controllers\CarritoController::class, 'remove'])->name('carrito.remove');
+    // Checkout y Finalización de Compra
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
-    Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
+    // Favoritos del Usuario
+    Route::get('/perfil/favoritos', [FavoritoController::class, 'index'])->name('perfil.favoritos');
 });
 
-
-
-// --- 5. RUTAS UTILITARIAS (AJAX / API INTERNA) ---
-
-// Tasa de cambio
-Route::get('/tasa-cambio/actual', [TasaCambioController::class, 'obtenerTasaActual'])
-    ->name('tasa-cambio.actual');
-
-// Horarios
-Route::get('/horario/hoy', [HorarioController::class, 'obtenerHorarioHoy'])
-    ->name('horario.hoy');
-Route::get('/horario/abierto-ahora', [HorarioController::class, 'estaAbiertoAhora'])
-    ->name('horario.abierto-ahora');
-
-// Rutas para splash screen
-Route::post('/splash/mark-shown', [SplashController::class, 'markAsShown'])
-    ->name('splash.mark-shown');
-    
-Route::get('/splash/should-show', [SplashController::class, 'shouldShow'])
-    ->name('splash.should-show');
-
-
-
+// --- 5. RUTAS UTILITARIAS Y AJAX PÚBLICAS ---
+Route::post('/favoritos/toggle', [FavoritoController::class, 'toggle'])->name('favoritos.toggle');
+Route::get('/tasa-cambio/actual', [TasaCambioController::class, 'obtenerTasaActual'])->name('tasa-cambio.actual');
+Route::get('/horario/hoy', [HorarioController::class, 'obtenerHorarioHoy'])->name('horario.hoy');
+Route::get('/horario/abierto-ahora', [HorarioController::class, 'estaAbiertoAhora'])->name('horario.abierto-ahora');
+Route::post('/splash/mark-shown', [SplashController::class, 'markAsShown'])->name('splash.mark-shown');
+Route::get('/splash/should-show', [SplashController::class, 'shouldShow'])->name('splash.should-show');
 
 // ==========================================
-// RUTAS DE ADMINISTRACIÓN (Solo para rol_id = 1)
+// RUTAS DE ADMINISTRACIÓN (Prefijo /admin)
 // ==========================================
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     
-// Notificaciones en tiempo real del Topbar
-    Route::get('/notificaciones/fetch', [App\Http\Controllers\Admin\DashboardController::class, 'fetchNotificaciones'])->name('notificaciones.fetch');
+    // Notificaciones en tiempo real
+    Route::get('/notificaciones/fetch', [DashboardController::class, 'fetchNotificaciones'])->name('notificaciones.fetch');
 
-    
-    // Pantalla - Dashboard
+    // Pantalla Principal - Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// Seccion - Usuarios y Roles
+    // Módulo: Usuarios y Roles
+    Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit'])->middleware('permiso:gestionar_roles_permisos');
+    Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index')->middleware('permiso:ver_usuarios');
+    Route::get('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'getPermisosExtra'])->name('usuarios.permisos_extra.get')->middleware('permiso:gestionar_roles_permisos');
+    Route::post('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'updatePermisosExtra'])->name('usuarios.permisos_extra.post')->middleware('permiso:gestionar_roles_permisos');
 
-    // Pantalla - Roles y Permisos
-    Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit']);
+    // Módulo: Finanzas, Facturación y Caja
+    Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index')->middleware('permiso:ver_facturas');
+    Route::get('/facturas/{id}', [FacturaController::class, 'show'])->name('facturas.show')->middleware('permiso:ver_facturas');
+    Route::get('/facturas/{id}/ticket', [FacturaController::class, 'ticket'])->name('facturas.ticket')->middleware('permiso:ver_facturas');
+    Route::get('/facturas/{id}/imprimir', [FacturaController::class, 'imprimir'])->name('facturas.imprimir')->middleware('permiso:ver_facturas');
+    Route::post('/facturas/{id}/anular', [FacturaController::class, 'anular'])->name('facturas.anular')->middleware('permiso:configurar_facturacion');
 
-    // Pantalla - Lista de Usuarios
-    Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
-    Route::get('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'getPermisosExtra']);
-    Route::post('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'updatePermisosExtra']);
+    Route::middleware('permiso:gestionar_caja_diaria')->group(function () {
+        Route::get('/caja-diaria', [CajaDiariaController::class, 'index'])->name('caja_diaria.index');
+        Route::get('/caja-diaria/{id}/movimientos', [CajaDiariaController::class, 'movimientos'])->name('caja_diaria.movimientos');
+        Route::get('/caja-diaria/{id}/detalle', [CajaDiariaController::class, 'detalleTurno'])->name('caja_diaria.detalle');
+        Route::get('/caja-diaria/{id}/pdf', [CajaDiariaController::class, 'generarPdfCierre'])->name('caja_diaria.pdf');
+        Route::get('/caja-diaria/{id}', [CajaDiariaController::class, 'show'])->name('caja_diaria.show');
+        Route::post('/caja-diaria/cajas', [CajaDiariaController::class, 'storeCaja'])->name('caja_diaria.cajas.store');
+        Route::put('/caja-diaria/cajas/{id}', [CajaDiariaController::class, 'updateCaja'])->name('caja_diaria.cajas.update');
+        Route::post('/caja-diaria/cajas/{id}/toggle', [CajaDiariaController::class, 'toggleCaja'])->name('caja_diaria.cajas.toggle');
+        Route::delete('/caja-diaria/cajas/{id}', [CajaDiariaController::class, 'destroyCaja'])->name('caja_diaria.cajas.destroy');
+    });
 
-// Seccion - Finanzas y Caja
+    Route::middleware('permiso:configurar_facturacion')->group(function () {
+        Route::get('/configuracion-facturacion', [FacturacionConfigController::class, 'index'])->name('facturacion_config.index');
+        Route::post('/configuracion-facturacion', [FacturacionConfigController::class, 'store'])->name('facturacion_config.store');
+        Route::put('/configuracion-facturacion/{id}', [FacturacionConfigController::class, 'update'])->name('facturacion_config.update');
+        Route::post('/configuracion-facturacion/{id}/toggle', [FacturacionConfigController::class, 'toggleStatus'])->name('facturacion_config.toggle');
+    });
 
-    //Pantalla - Finanzas y Facturación
-    Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index');
-    Route::get('/facturas/{id}', [FacturaController::class, 'show'])->name('facturas.show');
-    Route::post('/facturas/{id}/anular', [FacturaController::class, 'anular'])->name('facturas.anular');
+    Route::middleware('permiso:gestionar_tasas_cambio')->group(function () {
+        Route::get('/tasas-cambio', [AdminTasaCambioController::class, 'index'])->name('tasas-cambio.index');
+        Route::post('/tasas-cambio', [AdminTasaCambioController::class, 'store'])->name('tasas-cambio.store');
+        Route::post('/tasas-cambio/sincronizar-bcv', [AdminTasaCambioController::class, 'sincronizarBCV'])->name('tasas-cambio.sincronizar');
+    });
 
-    // Pantalla - Caja Diaria
-    Route::get('/caja-diaria', [CajaDiariaController::class, 'index'])->name('caja_diaria.index');
-    Route::get('/caja-diaria/{id}/movimientos', [CajaDiariaController::class, 'movimientos'])->name('caja_diaria.movimientos');
+    // Módulo: Catálogo e Inventario
+    Route::middleware('permiso:gestionar_categorias_marcas')->group(function () {
+        Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
+        Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store');
+        Route::post('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
+        Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
+        Route::post('/categorias/{id}/restore', [CategoriaController::class, 'restore'])->name('categorias.restore');
 
-    // Configuración de Facturación (Series y Correlativos)
-    Route::get('/configuracion-facturacion', [FacturacionConfigController::class, 'index'])->name('facturacion_config.index');
-    Route::post('/configuracion-facturacion', [FacturacionConfigController::class, 'store'])->name('facturacion_config.store');
-    Route::put('/configuracion-facturacion/{id}', [FacturacionConfigController::class, 'update'])->name('facturacion_config.update');
-    Route::post('/configuracion-facturacion/{id}/toggle', [FacturacionConfigController::class, 'toggleStatus'])->name('facturacion_config.toggle');
+        Route::get('/marcas', [MarcaController::class, 'index'])->name('marcas.index');
+        Route::post('/marcas', [MarcaController::class, 'store'])->name('marcas.store');
+        Route::put('/marcas/{id}', [MarcaController::class, 'update'])->name('marcas.update');
+        Route::delete('/marcas/{id}', [MarcaController::class, 'destroy'])->name('marcas.destroy');
+        Route::post('/marcas/{id}/toggle', [MarcaController::class, 'toggleStatus'])->name('marcas.toggle');
+    });
 
-    // Pantalla - Tasas de Cambio
-    Route::get('/tasas-cambio', [App\Http\Controllers\Admin\TasaCambioController::class, 'index'])->name('tasas-cambio.index');
-    Route::post('/tasas-cambio', [App\Http\Controllers\Admin\TasaCambioController::class, 'store'])->name('tasas-cambio.store');
-    
-// Seccion - Catalogo e Inventario
+    Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index')->middleware('permiso:ver_productos');
+    Route::middleware('permiso:gestionar_productos')->group(function () {
+        Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create'); 
+        Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store'); 
+        Route::get('/productos/{id}/editar', [ProductoController::class, 'edit'])->name('productos.edit'); 
+        Route::put('/productos/{id}', [ProductoController::class, 'update'])->name('productos.update'); 
+        Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
+        Route::post('/productos/{id}/destacado', [ProductoController::class, 'toggleDestacado'])->name('productos.destacado');
+        Route::post('/productos/{id}/restore', [ProductoController::class, 'restore'])->name('productos.restore');
+    });
 
-    //Pantalla - Categorias
-    Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
-    Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store');
-    Route::post('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
-    Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
-    Route::post('/categorias/{id}/restore', [CategoriaController::class, 'restore'])->name('categorias.restore');
+    Route::get('/historico-precios', [HistoricoPrecioController::class, 'index'])->name('historico_precios.index')->middleware('permiso:ver_historico_precios');
 
-    //Pantalla - Marcas
-    Route::get('/marcas', [MarcaController::class, 'index'])->name('marcas.index');
-    Route::post('/marcas', [MarcaController::class, 'store'])->name('marcas.store');
-    Route::put('/marcas/{id}', [MarcaController::class, 'update'])->name('marcas.update');
-    Route::delete('/marcas/{id}', [MarcaController::class, 'destroy'])->name('marcas.destroy');
-    Route::post('/marcas/{id}/toggle', [MarcaController::class, 'toggleStatus']);
+    // Módulo: Ventas y Pedidos
+    Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index')->middleware('permiso:ver_pedidos,gestionar_pagos');
+    Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show')->middleware('permiso:ver_pedidos,gestionar_pagos');
+    Route::post('/pedidos/{id}/estado', [PedidoController::class, 'updateStatus'])->name('pedidos.updateStatus')->middleware('permiso:actualizar_estado_pedido');
+    Route::post('/pedidos/{id}/aprobar-pago', [PedidoController::class, 'aprobarPago'])->name('pedidos.aprobarPago')->middleware('permiso:gestionar_pagos');
+    Route::post('/pedidos/{id}/rechazar-pago', [PedidoController::class, 'rechazarPago'])->name('pedidos.rechazarPago')->middleware('permiso:gestionar_pagos');
 
-    //Pantalla - Productos
-    Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
-    Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create'); 
-    Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store'); 
-    Route::get('/productos/{id}/editar', [ProductoController::class, 'edit'])->name('productos.edit'); 
-    Route::put('/productos/{id}', [ProductoController::class, 'update'])->name('productos.update'); 
-    Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
-    Route::post('/productos/{id}/destacado', [ProductoController::class, 'toggleDestacado']);
-    Route::post('/productos/{id}/restore', [ProductoController::class, 'restore'])->name('admin.productos.restore');
+    Route::middleware('permiso:gestionar_pagos')->group(function () {
+        Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
+        Route::post('/pagos/{id}/aprobar', [PagoController::class, 'aprobar'])->name('pagos.aprobar');
+        Route::post('/pagos/{id}/rechazar', [PagoController::class, 'rechazar'])->name('pagos.rechazar');
+    });
 
-    // Histórico de Precios
-    Route::get('/historico-precios', [HistoricoPrecioController::class, 'index'])->name('historico_precios.index');
+    // Módulo: Terminal POS (Punto de Venta)
+    Route::middleware('permiso:crear_venta_manual')->group(function () {
+        Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+        Route::post('/pos/abrir-caja', [PosController::class, 'abrirCaja'])->name('pos.abrirCaja');
+        Route::post('/pos/buscar-producto', [PosController::class, 'buscarProducto'])->name('pos.buscarProducto'); 
+        Route::get('/pos/buscar-cliente', [PosController::class, 'buscarCliente'])->name('pos.buscarCliente');
+        Route::get('/pos/consultar-cedula', [PosController::class, 'consultarCedula'])->name('pos.consultarCedula');
+        Route::post('/pos/procesar-venta', [PosController::class, 'procesarVenta'])->name('pos.procesarVenta');
+        Route::get('/pos/resumen-cierre', [PosController::class, 'resumenCierre'])->name('pos.resumenCierre');
+        Route::post('/pos/cerrar-caja', [PosController::class, 'cerrarCaja'])->name('pos.cerrarCaja');
+        Route::get('/pos/imprimir-cierre/{id}', [PosController::class, 'imprimirCierre'])->name('pos.imprimirCierre');
+    });
 
-//Seccion - Ventas y Pedidos
+    // Módulo: Sistema y Configuración
+    Route::middleware('permiso:gestionar_horarios')->group(function () {
+        Route::get('/horarios', [HorarioadminController::class, 'index'])->name('horarios.index');
+        Route::post('/horarios/actualizar', [HorarioadminController::class, 'updateAll'])->name('horarios.updateAll');
+    });
 
-    //Pantalla - Pedidos
-    Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
-    Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show');
-    Route::post('/pedidos/{id}/estado', [PedidoController::class, 'updateStatus'])->name('pedidos.updateStatus');
+    Route::middleware('permiso:configurar_tienda')->group(function () {
+        Route::get('/configuracion-tienda', [ConfiguracionTiendaController::class, 'index'])->name('configuracion.index');
+        Route::post('/configuracion-tienda', [ConfiguracionTiendaController::class, 'update'])->name('configuracion.update');
+    });
 
-    //Pantalla - Gestión de Pagos
-    Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
-    Route::post('/pagos/{id}/aprobar', [PagoController::class, 'aprobar'])->name('pagos.aprobar');
-    Route::post('/pagos/{id}/rechazar', [PagoController::class, 'rechazar'])->name('pagos.rechazar');
+    Route::middleware('permiso:gestionar_cuentas_banco')->group(function () {
+        Route::get('/cuentas-bancarias', [CuentaBancariaController::class, 'index'])->name('cuentas_bancarias.index');
+        Route::post('/cuentas-bancarias', [CuentaBancariaController::class, 'store'])->name('cuentas_bancarias.store');
+        Route::put('/cuentas-bancarias/{id}', [CuentaBancariaController::class, 'update'])->name('cuentas_bancarias.update');
+        Route::delete('/cuentas-bancarias/{id}', [CuentaBancariaController::class, 'destroy'])->name('cuentas_bancarias.destroy');
+        Route::post('/cuentas-bancarias/{id}/toggle', [CuentaBancariaController::class, 'toggleStatus'])->name('cuentas_bancarias.toggle');
+    });
 
-    //Pantalla - Terminal POS (Punto de Venta)
-    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
-    Route::post('/pos/abrir-caja', [PosController::class, 'abrirCaja'])->name('pos.abrirCaja');
-    Route::post('/pos/buscar-producto', [PosController::class, 'buscarProducto']); 
-    Route::post('/pos/procesar-venta', [PosController::class, 'procesarVenta']);
-    Route::post('/pos/cerrar-caja', [PosController::class, 'cerrarCaja']);
-
-//Seccion - Sistema y Ajustes
-
-    //Pantalla - Horarios
-    Route::get('/horarios', [HorarioadminController::class, 'index'])->name('horarios.index');
-    Route::post('/horarios/actualizar', [HorarioadminController::class, 'updateAll'])->name('horarios.updateAll');
-
-    //Pantalla - Configuración de la Tienda
-    Route::get('/configuracion-tienda', [ConfiguracionTiendaController::class, 'index'])->name('configuracion.index');
-    Route::post('/configuracion-tienda', [ConfiguracionTiendaController::class, 'update'])->name('configuracion.update');
-
-    //Pantalla - Cuentas Bancarias
-    Route::get('/cuentas-bancarias', [CuentaBancariaController::class, 'index'])->name('cuentas_bancarias.index');
-    Route::post('/cuentas-bancarias', [CuentaBancariaController::class, 'store'])->name('cuentas_bancarias.store');
-    Route::put('/cuentas-bancarias/{id}', [CuentaBancariaController::class, 'update'])->name('cuentas_bancarias.update');
-    Route::delete('/cuentas-bancarias/{id}', [CuentaBancariaController::class, 'destroy'])->name('cuentas_bancarias.destroy');
-    Route::post('/cuentas-bancarias/{id}/toggle', [CuentaBancariaController::class, 'toggleStatus'])->name('cuentas_bancarias.toggle');
-
+    // Módulo: Logística y Zonas de Delivery (Leaflet Map)
+    Route::get('/zonas-delivery', [ZonaDeliveryController::class, 'index'])->name('zonas_delivery.index')->middleware('permiso:gestionar_zonas_delivery,ver_logistica');
+    Route::middleware('permiso:gestionar_zonas_delivery')->group(function () {
+        Route::post('/zonas-delivery', [ZonaDeliveryController::class, 'store'])->name('zonas_delivery.store');
+        Route::put('/zonas-delivery/{id}', [ZonaDeliveryController::class, 'update'])->name('zonas_delivery.update');
+        Route::delete('/zonas-delivery/{id}', [ZonaDeliveryController::class, 'destroy'])->name('zonas_delivery.destroy');
+        Route::post('/zonas-delivery/{id}/toggle', [ZonaDeliveryController::class, 'toggle'])->name('zonas_delivery.toggle');
+        Route::post('/zonas-delivery/toggle-master', [ZonaDeliveryController::class, 'toggleMasterDelivery'])->name('zonas_delivery.toggle_master');
+        Route::post('/zonas-delivery/tienda-ubicacion', [ZonaDeliveryController::class, 'actualizarUbicacionTienda'])->name('zonas_delivery.tienda_ubicacion');
+    });
 });

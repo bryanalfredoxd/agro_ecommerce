@@ -23,8 +23,8 @@
                 </td>
                 <td class="px-6 py-4">
                     @if($tasa->fuente === 'API')
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-[10px] font-black rounded-md border border-blue-200 uppercase tracking-wider">
-                            <span class="material-symbols-outlined text-[14px]">smart_toy</span> API Automática
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-50 text-teal-700 text-[10px] font-black rounded-md border border-teal-200 uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-[14px]">sync</span> Oficial BCV
                         </span>
                     @else
                         <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-50 text-orange-700 text-[10px] font-black rounded-md border border-orange-200 uppercase tracking-wider">
@@ -34,10 +34,15 @@
                 </td>
                 <td class="px-6 py-4">
                     @if($tasa->fuente === 'API')
-                        <span class="text-sm font-bold text-gray-700 italic">Sistema (Job Cron)</span>
+                        @if($tasa->editor)
+                            <p class="font-bold text-gray-800 capitalize">{{ $tasa->editor->nombre }} {{ $tasa->editor->apellido ?? '' }}</p>
+                            <p class="text-[10px] text-teal-600 font-bold uppercase">Sincronizado en panel</p>
+                        @else
+                            <span class="text-sm font-bold text-gray-700 italic">Sistema Automático</span>
+                        @endif
                     @else
-                        <p class="font-bold text-gray-800 capitalize">{{ $tasa->editor->nombre ?? 'Admin Desconocido' }}</p>
-                        <p class="text-[10px] text-gray-500">ID: {{ $tasa->usuario_editor_id }}</p>
+                        <p class="font-bold text-gray-800 capitalize">{{ $tasa->editor ? ($tasa->editor->nombre . ' ' . ($tasa->editor->apellido ?? '')) : 'Admin Desconocido' }}</p>
+                        <p class="text-[10px] text-gray-500">ID: {{ $tasa->usuario_editor_id ?? 'N/A' }}</p>
                     @endif
                 </td>
                 <td class="px-6 py-4 text-right">

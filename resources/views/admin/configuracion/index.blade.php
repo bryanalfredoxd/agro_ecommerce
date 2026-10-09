@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Configuración de la Tienda - Corpo Agrícola')
+@section('title', 'Configuración de la Tienda - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">
@@ -22,7 +22,7 @@
                         <span class="material-symbols-outlined text-gray-600 text-[32px]">storefront</span>
                         Configuración Global
                     </h2>
-                    <p class="text-sm text-gray-500 mt-1">Ajusta los parámetros operativos principales de Corpo Agrícola.</p>
+                    <p class="text-sm text-gray-500 mt-1">Ajusta los parámetros operativos principales de Agrosuministros Rodríguez.</p>
                 </div>
             </div>
 
@@ -84,9 +84,15 @@
 
                 {{-- Botón Guardar Flotante --}}
                 <div class="fixed bottom-0 left-0 lg:left-72 right-0 bg-white/80 backdrop-blur-md border-t border-gray-200 p-4 sm:px-8 flex justify-end z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+                    @if(Auth::user()->tienePermiso('configurar_tienda'))
                     <button type="submit" class="px-8 py-3 rounded-xl font-black text-white bg-gray-900 hover:bg-black shadow-lg shadow-gray-900/30 hover:-translate-y-1 transition-all flex items-center gap-2">
                         <span class="material-symbols-outlined">save</span> Guardar Configuración
                     </button>
+                    @else
+                    <button type="button" disabled class="px-8 py-3 rounded-xl font-bold text-gray-400 bg-gray-200 cursor-not-allowed flex items-center gap-2">
+                        <span class="material-symbols-outlined">lock</span> Solo Lectura
+                    </button>
+                    @endif
                 </div>
             </form>
 

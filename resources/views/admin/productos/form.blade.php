@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', isset($producto) ? 'Editar Producto' : 'Crear Producto' . ' - Corpo Agrícola')
+@section('title', (isset($producto) ? 'Editar Producto' : 'Crear Producto') . ' - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">
@@ -281,9 +281,9 @@
                 {{-- Barra Fija Abajo para Guardar --}}
                 <div class="fixed bottom-0 left-0 lg:left-72 right-0 bg-white/80 backdrop-blur-md border-t border-gray-200 p-4 sm:px-8 flex justify-end gap-4 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
                     <a href="{{ route('admin.productos.index') }}" class="px-6 py-3 rounded-xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors">Cancelar</a>
-                    <button type="submit" id="btnSubmitForm" class="px-8 py-3 rounded-xl font-black text-white bg-green-600 hover:bg-green-700 shadow-lg shadow-green-600/30 hover:-translate-y-1 transition-all flex items-center gap-2">
+                    <button type="submit" id="btnSubmitForm" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold shadow-lg shadow-primary/25">
                         <span class="material-symbols-outlined">save</span>
-                        {{ isset($producto) ? 'Guardar Cambios' : 'Crear Producto' }}
+                        <span>{{ isset($producto) ? 'Guardar Cambios' : 'Crear Producto' }}</span>
                     </button>
                 </div>
             </form>

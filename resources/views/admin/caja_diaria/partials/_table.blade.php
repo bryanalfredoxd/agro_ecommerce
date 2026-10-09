@@ -1,87 +1,140 @@
 <div class="overflow-x-auto custom-scrollbar">
     <table class="w-full text-left border-collapse">
         <thead>
-            <tr class="border-b border-gray-100 bg-gray-50/50">
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Apertura / Turno</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Cajero</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Monto Inicial</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest">Ventas Sistema</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-center">Cuadre (Diferencia)</th>
-                <th class="px-6 py-4 text-[10px] font-black text-gray-700 uppercase tracking-widest text-right">Detalles</th>
+            <tr class="border-b border-gray-100 bg-gray-50/75">
+                <th class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Turno / Estado</th>
+                <th class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Caja & Cajero</th>
+                <th class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Horario</th>
+                <th class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">Base Inicial</th>
+                <th class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">Total Ventas</th>
+                <th class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-center">Arqueo (Cuadre)</th>
+                <th class="px-5 py-3.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">Acciones</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-50">
+        <tbody class="divide-y divide-gray-100/80 bg-white">
             @forelse($sesiones as $sesion)
-            <tr class="hover:bg-gray-50/50 transition-colors group">
+            @php
+                $estaAbierta = is_null($sesion->fecha_cierre);
+                $diferencia = (float) $sesion->diferencia_usd;
+                $apertura = \Carbon\Carbon::parse($sesion->fecha_apertura);
+                $cierre = $sesion->fecha_cierre ? \Carbon\Carbon::parse($sesion->fecha_cierre) : null;
+            @endphp
+            <tr class="hover:bg-blue-50/30 transition-colors group">
                 
-                {{-- Columna 1: Fechas y Estado --}}
-                <td class="px-6 py-4">
-                    <div class="flex flex-col gap-1">
-                        @if(is_null($sesion->fecha_cierre))
-                            <span class="inline-flex items-center gap-1 text-[10px] font-black text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100 uppercase w-fit"><span class="material-symbols-outlined text-[14px] animate-pulse">lock_open</span> Turno Activo</span>
+                {{-- Turno ID & Estado --}}
+                <td class="px-5 py-4 align-top">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-bold text-xs text-gray-900 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200">
+                            #{{ $sesion->id }}
+                        </span>
+                        @if($estaAbierta)
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                <span class="size-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                                En curso
+                            </span>
                         @else
-                            <span class="inline-flex items-center gap-1 text-[10px] font-black text-gray-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 uppercase w-fit"><span class="material-symbols-outlined text-[14px]">lock</span> Cerrada</span>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-700">
+                                <span class="material-symbols-outlined text-[12px]">lock</span>
+                                Cerrado
+                            </span>
                         @endif
-                        <span class="text-xs text-gray-800 font-bold mt-1">Abre: {{ \Carbon\Carbon::parse($sesion->fecha_apertura)->format('d M, h:i A') }}</span>
-                        @if($sesion->fecha_cierre)
-                            <span class="text-[10px] text-gray-700 font-bold">Cierra: {{ \Carbon\Carbon::parse($sesion->fecha_cierre)->format('d M, h:i A') }}</span>
-                        @endif
+                    </div>
+                    <span class="text-[11px] text-gray-400 font-medium">
+                        {{ $sesion->pedidos ? $sesion->pedidos->count() : 0 }} ventas registradas
+                    </span>
+                </td>
+
+                {{-- Caja y Cajero --}}
+                <td class="px-5 py-4 align-top">
+                    <div class="flex items-center gap-2.5">
+                        <div class="size-8 rounded-xl bg-blue-50 text-[#1e549e] flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[18px]">point_of_sale</span>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900 text-xs sm:text-sm leading-tight">
+                                {{ $sesion->caja ? $sesion->caja->nombre : 'Caja Principal' }}
+                            </p>
+                            <p class="text-xs text-gray-500 font-medium mt-0.5">
+                                {{ $sesion->cajero ? trim($sesion->cajero->nombre . ' ' . $sesion->cajero->apellido) : 'Cajero Desconocido' }}
+                            </p>
+                        </div>
                     </div>
                 </td>
 
-                {{-- Columna 2: Cajero y Caja --}}
-                <td class="px-6 py-4">
-                    <p class="font-bold text-gray-800 text-sm capitalize">{{ $sesion->cajero->nombre ?? 'N/A' }} {{ $sesion->cajero->apellido ?? '' }}</p>
-                    <p class="text-[10px] font-bold text-teal-600 mt-0.5 uppercase tracking-wider">{{ $sesion->caja->nombre ?? 'Caja Única' }}</p>
-                </td>
-
-                {{-- Columna 3: Monto Inicial --}}
-                <td class="px-6 py-4 font-black text-gray-600">
-                    ${{ number_format($sesion->monto_inicial_usd, 2) }}
-                </td>
-
-                {{-- Columna 4: Ventas del Sistema --}}
-                <td class="px-6 py-4">
-                    <p class="font-black text-agro-dark text-sm">${{ number_format($sesion->total_ventas_sistema_usd, 2) }}</p>
-                    <p class="text-[10px] font-bold text-gray-700">Bs. {{ number_format($sesion->total_ventas_sistema_ves, 2) }}</p>
-                </td>
-
-                {{-- Columna 5: Cuadre y Diferencia --}}
-                <td class="px-6 py-4 text-center">
-                    @if(is_null($sesion->fecha_cierre))
-                        <span class="text-xs text-gray-700 italic">Esperando cierre...</span>
+                {{-- Horarios --}}
+                <td class="px-5 py-4 align-top">
+                    <p class="text-xs font-semibold text-gray-800 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px] text-gray-400">login</span>
+                        {{ $apertura->format('d/m/Y h:i A') }}
+                    </p>
+                    @if($cierre)
+                        <p class="text-[11px] text-gray-500 mt-0.5 flex items-center gap-1 font-medium">
+                            <span class="material-symbols-outlined text-[14px] text-gray-400">logout</span>
+                            {{ $cierre->format('d/m/Y h:i A') }}
+                        </p>
                     @else
-                        @if($sesion->diferencia_usd == 0)
-                            <span class="inline-flex items-center gap-1 text-[11px] font-black text-green-600 bg-green-50 px-3 py-1 rounded-lg border border-green-200">
-                                <span class="material-symbols-outlined text-[16px]">balance</span> CUADRE EXACTO
+                        <span class="text-[10px] font-semibold text-emerald-600 block mt-0.5">Operando en vivo...</span>
+                    @endif
+                </td>
+
+                {{-- Monto Inicial Base --}}
+                <td class="px-5 py-4 align-top text-right">
+                    <p class="font-bold text-gray-800 text-xs sm:text-sm">${{ number_format($sesion->monto_inicial_usd, 2) }}</p>
+                    <p class="text-[10px] text-gray-400 font-medium">Fondo gaveta</p>
+                </td>
+
+                {{-- Total Ventas del Sistema --}}
+                <td class="px-5 py-4 align-top text-right">
+                    <p class="font-bold text-[#1e549e] text-xs sm:text-sm leading-tight">${{ number_format($sesion->total_ventas_sistema_usd, 2) }}</p>
+                    <p class="text-[11px] text-gray-400 font-medium mt-0.5">Bs. {{ number_format($sesion->total_ventas_sistema_ves, 2) }}</p>
+                </td>
+
+                {{-- Arqueo y Diferencia --}}
+                <td class="px-5 py-4 align-top text-center">
+                    @if($estaAbierta)
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
+                            <span class="material-symbols-outlined text-[13px]">hourglass_top</span> Pendiente
+                        </span>
+                    @else
+                        @if(abs($diferencia) < 0.01)
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span class="material-symbols-outlined text-[14px]">check_circle</span> Cuadrada ($0.00)
                             </span>
-                        @elseif($sesion->diferencia_usd > 0)
-                            <span class="inline-flex items-center gap-1 text-[11px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
-                                <span class="material-symbols-outlined text-[16px]">arrow_upward</span> SOBRÓ ${{ number_format($sesion->diferencia_usd, 2) }}
+                        @elseif($diferencia > 0)
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                <span class="material-symbols-outlined text-[14px]">add_circle</span> +${{ number_format($diferencia, 2) }} Sobrante
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1 text-[11px] font-black text-red-600 bg-red-50 px-3 py-1 rounded-lg border border-red-200">
-                                <span class="material-symbols-outlined text-[16px]">arrow_downward</span> FALTÓ ${{ number_format(abs($sesion->diferencia_usd), 2) }}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                                <span class="material-symbols-outlined text-[14px]">warning</span> -${{ number_format(abs($diferencia), 2) }} Faltante
                             </span>
                         @endif
                     @endif
                 </td>
 
-                {{-- Columna 6: Acciones --}}
-                <td class="px-6 py-4 text-right">
-                    <button onclick="verMovimientos({{ $sesion->id }})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-teal-600 hover:border-teal-200 hover:bg-teal-50 flex items-center justify-center transition-all shadow-sm ml-auto" title="Ver Movimientos">
-                        <span class="material-symbols-outlined text-[18px]">receipt_long</span>
-                    </button>
+                {{-- Acciones --}}
+                <td class="px-5 py-4 align-top text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                        {{-- Enlace a la nueva página completa de auditoría --}}
+                        <a href="{{ route('admin.caja_diaria.show', $sesion->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#1e549e] bg-blue-50 hover:bg-blue-100 hover:text-[#153e77] transition-all border border-blue-200/60" title="Ver auditoría completa y detallada del turno">
+                            <span class="material-symbols-outlined text-[15px]">visibility</span>
+                            <span>Auditoría</span>
+                        </a>
+
+                        {{-- Generar PDF de Cierre Z --}}
+                        <a href="{{ route('admin.caja_diaria.pdf', $sesion->id) }}" target="_blank" class="inline-flex items-center gap-1 p-1.5 rounded-lg text-rose-600 hover:text-rose-800 hover:bg-rose-50 transition-all border border-rose-200" title="Generar Informe Oficial de Cierre en PDF">
+                            <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+                        </a>
+                    </div>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="6" class="px-6 py-16 text-center text-gray-500">
+                <td colspan="7" class="px-6 py-16 text-center text-gray-500">
                     <div class="flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                            <span class="material-symbols-outlined text-3xl text-gray-700">store</span>
-                        </div>
-                        <p class="font-bold text-gray-600">No hay historial de cajas</p>
+                        <span class="material-symbols-outlined text-4xl text-gray-300 mb-2">event_busy</span>
+                        <p class="font-bold text-gray-700 text-sm">No se encontraron turnos con los filtros seleccionados.</p>
+                        <p class="text-xs text-gray-400 mt-1">Prueba limpiando los filtros o seleccionando otra fecha.</p>
                     </div>
                 </td>
             </tr>
@@ -90,6 +143,6 @@
     </table>
 </div>
 
-<div class="px-6 py-4 border-t border-gray-100 flex justify-center ajax-pagination">
+<div class="px-5 py-3.5 border-t border-gray-100 flex justify-center ajax-pagination">
     {{ $sesiones->links('pagination::tailwind') }}
 </div>

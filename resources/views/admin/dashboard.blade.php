@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Panel de Control - Corpo Agrícola')
+@section('title', 'Panel de Control - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">

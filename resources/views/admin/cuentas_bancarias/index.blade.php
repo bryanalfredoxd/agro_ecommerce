@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Cuentas Bancarias - Corpo Agrícola')
+@section('title', 'Cuentas Bancarias - Agrosuministros Rodríguez')
 
 @section('content')
 <div class="bg-gray-50 flex min-h-screen font-sans">
@@ -25,10 +25,12 @@
                         <p class="text-sm text-gray-500 mt-1">Configura dónde te pagarán los clientes al comprar por la web.</p>
                     </div>
                 </div>
+                @if(Auth::user()->tienePermiso('gestionar_cuentas_banco'))
                 <button onclick="openModal()" class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5">
                     <span class="material-symbols-outlined text-[20px]">add_circle</span>
                     Añadir Método
                 </button>
+                @endif
             </div>
 
             {{-- Filtros --}}

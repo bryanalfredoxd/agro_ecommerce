@@ -15,10 +15,14 @@
                 
                 {{-- Toggle Switch --}}
                 <td class="px-6 py-4">
+                    @if(Auth::user()->tienePermiso('configurar_facturacion'))
                     <label class="relative inline-flex items-center cursor-pointer" title="{{ $ajuste->activo ? 'Desactivar' : 'Activar' }}">
                         <input type="checkbox" class="sr-only peer" {{ $ajuste->activo ? 'checked' : '' }} onchange="toggleSerie({{ $ajuste->id }})">
                         <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-500"></div>
                     </label>
+                    @else
+                    <span class="inline-flex size-2 rounded-full {{ $ajuste->activo ? 'bg-teal-500' : 'bg-gray-300' }}"></span>
+                    @endif
                 </td>
 
                 {{-- Serie --}}
@@ -45,9 +49,13 @@
 
                 {{-- Acciones --}}
                 <td class="px-6 py-4 text-right">
+                    @if(Auth::user()->tienePermiso('configurar_facturacion'))
                     <button onclick='openModal(@json($ajuste))' class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-teal-600 hover:border-teal-200 hover:bg-teal-50 flex items-center justify-center transition-all shadow-sm ml-auto">
                         <span class="material-symbols-outlined text-[18px]">edit</span>
                     </button>
+                    @else
+                    <span class="text-xs text-gray-400 italic">Solo lectura</span>
+                    @endif
                 </td>
             </tr>
             @empty

@@ -1,274 +1,285 @@
 @extends('layouts.app')
 
-@section('title', 'Mis Pedidos - Corpo Agrícola')
+@section('title', 'Historial de Pedidos - Agrosuministros Rodríguez')
 
 @section('content')
-<div class="bg-gray-50 min-h-screen font-sans pb-20 relative">
+<div class="bg-slate-50 min-h-screen font-sans pb-24 relative">
 
-    {{-- Encabezado decorativo (Idéntico a Perfil) --}}
-    <div class="relative bg-agro-dark h-40 lg:h-48 overflow-hidden transition-all">
-        <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-        <div class="absolute -bottom-10 -right-10 w-40 h-40 lg:w-64 lg:h-64 rounded-full bg-primary/20 blur-3xl animate-pulse-slow"></div>
+    {{-- Encabezado decorativo corporativo --}}
+    <div class="relative bg-gradient-to-r from-[#0b1d38] via-[#1e549e] to-[#3492cf] h-48 lg:h-56 overflow-hidden">
+        <div class="absolute inset-0 opacity-15 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div class="absolute -bottom-12 -right-12 size-64 rounded-full bg-[#3492cf]/25 blur-3xl pointer-events-none"></div>
+
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-8 relative z-10">
+            <div class="flex items-center gap-2 text-xs font-bold text-white/70 uppercase tracking-wider mb-2">
+                <a href="{{ route('home') }}" class="hover:text-white transition-colors">Inicio</a>
+                <span>/</span>
+                <a href="{{ route('perfil') }}" class="hover:text-white transition-colors">Mi Cuenta</a>
+                <span>/</span>
+                <span class="text-[#aad6f3]">Pedidos</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Historial de Compras</h1>
+            <p class="text-xs sm:text-sm text-white/80 font-medium mt-1 max-w-xl">
+                Monitorea el estado de tus órdenes en tiempo real, verifica pagos y descarga tus comprobantes.
+            </p>
+        </div>
     </div>
 
-    {{-- Contenedor Principal con layout-container --}}
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 -mt-10 lg:-mt-16 relative z-10">
+    {{-- Contenedor Principal --}}
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 -mt-14 lg:-mt-16 relative z-20">
         
-        <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
-            {{-- ASIDE: Menú Lateral (Sincronizado con Perfil) --}}
-            <aside class="w-full lg:w-80 xl:w-80 flex-shrink-0">
-                <div class="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 overflow-hidden lg:sticky lg:top-24 transition-all">
-                    
-                    {{-- Perfil Header --}}
-                    <div class="p-6 lg:p-8 text-center bg-white relative">
-                        <div class="absolute top-0 left-0 w-full h-16 bg-gray-50/50 rounded-t-3xl"></div>
-                        
-                        <div class="relative w-24 h-24 lg:w-28 lg:h-28 mx-auto bg-primary/10 text-primary rounded-full flex items-center justify-center text-3xl lg:text-4xl font-black mb-4 border-4 border-white shadow-sm">
-                            {{ substr(auth()->user()->nombre, 0, 1) }}{{ substr(auth()->user()->apellido, 0, 1) }}
-                        </div>
-                        
-                        <h2 class="text-xl lg:text-2xl font-black text-agro-dark mb-1 truncate leading-tight">
-                            {{ auth()->user()->nombre }} {{ auth()->user()->apellido }}
-                        </h2>
-                        <p class="text-sm text-gray-500 font-medium mb-4 truncate">{{ auth()->user()->email }}</p>
-                        
-                        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-100 text-gray-600 text-[11px] font-bold uppercase tracking-wider shadow-sm">
-                            @if(auth()->user()->tipo_cliente === 'juridico')
-                                <span class="material-symbols-outlined text-[16px] text-primary">domain</span> Empresa
-                            @elseif(auth()->user()->tipo_cliente === 'finca_productor')
-                                <span class="material-symbols-outlined text-[16px] text-primary">agriculture</span> Productor
-                            @else
-                                <span class="material-symbols-outlined text-[16px] text-primary">person</span> Particular
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Menú de Navegación --}}
-                    <div class="border-t border-gray-100 bg-white p-3">
-                        <nav class="flex flex-col space-y-1">
-                            {{-- Enlaces hacia Perfil --}}
-                            <a href="{{ route('perfil') }}#datos-personales" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">person</span>
-                                Información Personal
-                            </a>
-                            
-                            <a href="{{ route('perfil') }}#direcciones" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">location_on</span>
-                                Direcciones de Envío
-                            </a>
-
-                            <a href="{{ route('perfil') }}#seguridad" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">lock</span>
-                                Seguridad y Contraseña
-                            </a>
-
-                            <div class="h-px bg-gray-100 my-2 mx-4"></div>
-                            
-                            {{-- Elemento Activo --}}
-                            <a href="{{ route('perfil.pedidos') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/5 text-primary font-bold transition-all group">
-                                <span class="material-symbols-outlined text-[22px]">receipt_long</span>
-                                Historial de Pedidos
-                            </a>
-                        </nav>
-                    </div>
-                </div>
-            </aside>
+            {{-- ASIDE: Menú Lateral Corporativo --}}
+            @include('perfil.partials.sidebar', ['active' => 'pedidos'])
 
             {{-- MAIN: Lista de Pedidos --}}
-            <main class="flex-1 min-w-0 animate-fade-in-up">
+            <main class="flex-1 min-w-0 w-full space-y-6">
                 
-                {{-- Cabecera del Main --}}
-                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 mb-6 flex items-center justify-between">
-                    <h3 class="text-xl lg:text-2xl font-black text-agro-dark flex items-center gap-3">
-                        <span class="material-symbols-outlined text-primary text-[32px]">history_edu</span>
-                        Mis Pedidos
-                    </h3>
+                {{-- Barra Superior de Filtros y Búsqueda --}}
+                <div class="bg-white rounded-3xl shadow-xs border border-slate-200/90 p-5 sm:p-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="size-11 rounded-2xl bg-[#e5f2fb] text-[#1e549e] flex items-center justify-center shrink-0 shadow-2xs">
+                                <span class="material-symbols-outlined text-[22px]">receipt_long</span>
+                            </div>
+                            <div>
+                                <h3 class="text-base sm:text-lg font-black text-slate-900 leading-tight">
+                                    Mis Órdenes de Compra
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-0.5">
+                                    Mostrando {{ $pedidos->total() }} {{ $pedidos->total() === 1 ? 'pedido registrado' : 'pedidos registrados' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        {{-- Barra de Búsqueda Rápida --}}
+                        <div class="relative w-full md:w-72">
+                            <span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2">search</span>
+                            <input type="text" 
+                                   id="buscar-pedidos-input" 
+                                   placeholder="Buscar orden o insumo..." 
+                                   class="w-full h-10 pl-10 pr-4 text-xs font-semibold rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-[#3492cf] focus:ring-2 focus:ring-[#3492cf]/20 transition-all shadow-2xs">
+                        </div>
+                    </div>
+
+                    {{-- Chips de Filtros de Estado --}}
+                    <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pt-4 mt-4 border-t border-slate-100">
+                        <button type="button" onclick="filtrarPedidosPorEstado('todos')" class="tab-filtro px-3.5 py-1.5 rounded-full text-xs font-black transition-all bg-[#1e549e] text-white shadow-2xs shrink-0 cursor-pointer" data-filter="todos">
+                            Todos ({{ $pedidos->total() }})
+                        </button>
+                        <button type="button" onclick="filtrarPedidosPorEstado('pendiente')" class="tab-filtro px-3.5 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 cursor-pointer" data-filter="pendiente">
+                            Pendientes
+                        </button>
+                        <button type="button" onclick="filtrarPedidosPorEstado('pagado')" class="tab-filtro px-3.5 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 cursor-pointer" data-filter="pagado">
+                            Pagados / Verificados
+                        </button>
+                        <button type="button" onclick="filtrarPedidosPorEstado('en_ruta')" class="tab-filtro px-3.5 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 cursor-pointer" data-filter="en_ruta">
+                            En Despacho / Ruta
+                        </button>
+                        <button type="button" onclick="filtrarPedidosPorEstado('entregado')" class="tab-filtro px-3.5 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 cursor-pointer" data-filter="entregado">
+                            Entregados
+                        </button>
+                        <button type="button" onclick="filtrarPedidosPorEstado('cancelado')" class="tab-filtro px-3.5 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 cursor-pointer" data-filter="cancelado">
+                            Cancelados
+                        </button>
+                    </div>
                 </div>
 
+                {{-- ALERTA DE ÉXITO DE SESIÓN --}}
                 @if(session('success'))
-                    <div class="bg-green-50 border border-green-200 text-green-800 px-5 py-4 rounded-2xl mb-6 flex items-center gap-3 font-medium shadow-sm">
-                        <span class="material-symbols-outlined text-green-600">check_circle</span>
-                        {{ session('success') }}
+                    <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200/90 text-emerald-800 shadow-2xs flex items-center gap-3 font-semibold text-xs sm:text-sm">
+                        <span class="material-symbols-outlined text-emerald-600 text-[20px]">check_circle</span>
+                        <span>{{ session('success') }}</span>
                     </div>
                 @endif
 
+                {{-- LISTADO DE PEDIDOS --}}
                 @if($pedidos->count() > 0)
-                    <div class="space-y-6">
+                    <div class="space-y-4" id="contenedor-pedidos">
                         @foreach($pedidos as $pedido)
                             @php
-                                $estadoColor = match($pedido->estado) {
-                                    'pendiente' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                    'pagado', 'aprobado', 'completado_caja' => 'bg-green-50 text-green-700 border-green-200',
-                                    'revision' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                    'rechazado', 'cancelado', 'devuelto' => 'bg-red-50 text-red-700 border-red-200',
-                                    'en_ruta', 'preparacion' => 'bg-purple-50 text-purple-700 border-purple-200',
-                                    'entregado' => 'bg-gray-100 text-gray-800 border-gray-300',
-                                    default => 'bg-gray-50 text-gray-600 border-gray-200'
+                                $estadoPill = match($pedido->estado) {
+                                    'pendiente' => ['bg' => 'bg-amber-50 text-amber-700 border-amber-200/80', 'icono' => 'hourglass_empty', 'texto' => 'Pendiente de Pago'],
+                                    'pagado', 'aprobado', 'completado_caja' => ['bg' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80', 'icono' => 'verified', 'texto' => 'Pago Verificado'],
+                                    'revision' => ['bg' => 'bg-sky-50 text-sky-700 border-sky-200/80', 'icono' => 'search', 'texto' => 'En Verificación'],
+                                    'en_ruta' => ['bg' => 'bg-purple-50 text-purple-700 border-purple-200/80', 'icono' => 'local_shipping', 'texto' => 'En Ruta de Entrega'],
+                                    'preparacion' => ['bg' => 'bg-indigo-50 text-indigo-700 border-indigo-200/80', 'icono' => 'inventory', 'texto' => 'En Preparación'],
+                                    'entregado' => ['bg' => 'bg-slate-100 text-slate-700 border-slate-200', 'icono' => 'package_2', 'texto' => 'Entregado con Éxito'],
+                                    'rechazado', 'cancelado', 'devuelto' => ['bg' => 'bg-rose-50 text-rose-700 border-rose-200/80', 'icono' => 'cancel', 'texto' => 'Cancelado / Rechazado'],
+                                    default => ['bg' => 'bg-slate-50 text-slate-600 border-slate-200', 'icono' => 'info', 'texto' => ucfirst(str_replace('_', ' ', $pedido->estado))]
                                 };
-                                $estadoIcono = match($pedido->estado) {
-                                    'pendiente' => 'hourglass_empty',
-                                    'pagado', 'aprobado', 'completado_caja' => 'verified',
-                                    'revision' => 'search',
-                                    'rechazado', 'cancelado', 'devuelto' => 'cancel',
-                                    'en_ruta' => 'local_shipping',
-                                    'entregado' => 'package_2',
-                                    'preparacion' => 'inventory',
-                                    default => 'info'
+
+                                $metodoPago = $pedido->pago ? $pedido->pago->metodo : null;
+                                $iconoMetodo = match($metodoPago) {
+                                    'pago_movil' => 'phone_iphone',
+                                    'zelle' => 'payments',
+                                    'transferencia' => 'account_balance',
+                                    'efectivo_usd', 'efectivo_bs' => 'attach_money',
+                                    'binance' => 'currency_bitcoin',
+                                    'punto_venta', 'biopago' => 'point_of_sale',
+                                    default => 'payments'
                                 };
+
+                                $esDelivery = $pedido->costo_delivery_usd > 0 || !empty($pedido->direccion_texto);
                             @endphp
 
-                            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all group">
+                            <article class="pedido-card bg-white rounded-3xl shadow-xs border border-slate-200/90 overflow-hidden hover:border-[#3492cf]/60 hover:shadow-sm transition-all group" 
+                                     data-estado="{{ $pedido->estado }}" 
+                                     data-id="{{ $pedido->id }}">
                                 
-                                {{-- Cabecera del Pedido --}}
-                                <div class="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div class="flex items-center gap-4">
-                                        <div class="bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm text-center min-w-[80px]">
-                                            <span class="block text-[10px] text-gray-700 font-bold uppercase tracking-wider">Orden</span>
-                                            <span class="block text-lg font-black text-agro-dark">#{{ $pedido->id }}</span>
+                                {{-- Cabecera de la Orden --}}
+                                <div class="bg-slate-50/70 px-5 sm:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="size-2 rounded-full bg-[#1e549e]"></span>
+                                            <span class="font-mono font-black text-slate-900 text-base sm:text-lg">
+                                                #{{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }}
+                                            </span>
                                         </div>
-                                        <div>
-                                            <p class="text-[11px] text-gray-500 font-bold uppercase flex items-center gap-1.5 mb-0.5">
-                                                <span class="material-symbols-outlined text-[14px]">calendar_month</span> Fecha de compra
-                                            </p>
-                                            <p class="text-sm font-bold text-gray-800">{{ \Carbon\Carbon::parse($pedido->creado_at)->format('d M Y, h:i A') }}</p>
+
+                                        <span class="text-slate-300">|</span>
+
+                                        <div class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+                                            <span class="material-symbols-outlined text-[16px] text-slate-400">calendar_month</span>
+                                            <span>{{ \Carbon\Carbon::parse($pedido->creado_at)->format('d M Y, h:i A') }}</span>
                                         </div>
+
+                                        {{-- Badge Delivery / Pickup --}}
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full {{ $esDelivery ? 'text-[#1e549e] bg-[#e5f2fb]' : 'text-emerald-700 bg-emerald-50' }}">
+                                            <span class="material-symbols-outlined text-[13px]">{{ $esDelivery ? 'local_shipping' : 'storefront' }}</span>
+                                            <span>{{ $esDelivery ? 'Delivery' : 'Retiro en Tienda' }}</span>
+                                        </span>
                                     </div>
-                                    
-                                    <div class="px-3 py-1.5 rounded-lg border {{ $estadoColor }} flex items-center gap-1.5 shadow-sm self-start sm:self-auto">
-                                        <span class="material-symbols-outlined text-[18px]">{{ $estadoIcono }}</span>
-                                        <span class="text-[11px] font-black uppercase tracking-wider">{{ ucfirst(str_replace('_', ' ', $pedido->estado)) }}</span>
+
+                                    {{-- Estado del Pedido --}}
+                                    <div class="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border {{ $estadoPill['bg'] }} shadow-2xs">
+                                        <span class="material-symbols-outlined text-[16px]">{{ $estadoPill['icono'] }}</span>
+                                        <span>{{ $estadoPill['texto'] }}</span>
                                     </div>
                                 </div>
 
-                                {{-- Cuerpo del Pedido --}}
-                                <div class="p-6">
-                                    <div class="flex flex-col lg:flex-row gap-8">
+                                {{-- Contenido de la Orden --}}
+                                <div class="p-5 sm:p-6">
+                                    <div class="flex flex-col lg:flex-row gap-6 lg:items-center justify-between">
                                         
-                                        {{-- Lista de Productos (Resumida) --}}
-                                        <div class="flex-1">
-                                            <h4 class="text-[11px] font-bold text-gray-700 uppercase tracking-wider border-b border-gray-100 pb-2 mb-4">
-                                                Artículos del Pedido
-                                            </h4>
-                                            
-                                            <div class="space-y-3">
-                                                @foreach($pedido->detalles->take(3) as $detalle)
-                                                    <div class="flex items-center gap-4 group/item">
-                                                        <div class="w-14 h-14 bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 relative">
+                                        {{-- Lista Resumida de Productos --}}
+                                        <div class="flex-1 space-y-3 min-w-0">
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                @foreach($pedido->detalles->take(2) as $detalle)
+                                                    <div class="flex items-center gap-3 p-2.5 rounded-2xl bg-slate-50/80 border border-slate-100 group-hover:bg-[#e5f2fb]/20 transition-colors">
+                                                        <div class="size-14 rounded-xl bg-white border border-slate-200 overflow-hidden shrink-0 relative flex items-center justify-center">
                                                             @if($detalle->producto && $detalle->producto->imagen_url)
                                                                 <img src="{{ asset($detalle->producto->imagen_url) }}" 
-                                                                    alt="{{ $detalle->producto->nombre ?? 'Producto' }}"
-                                                                    class="w-full h-full object-cover">
+                                                                     alt="{{ $detalle->producto->nombre ?? 'Insumo' }}"
+                                                                     class="size-full object-cover">
                                                             @else
-                                                                <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
-                                                                    <span class="material-symbols-outlined text-[20px]">image</span>
-                                                                    <span class="text-[8px] font-bold uppercase tracking-widest">Sin Imagen</span>
-                                                                </div>
+                                                                <span class="material-symbols-outlined text-slate-300 text-[22px]">inventory_2</span>
                                                             @endif
-                                                            <div class="absolute -top-1 -right-1 bg-agro-dark text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                                                            <span class="absolute top-0.5 right-0.5 size-4 rounded-full bg-[#1e549e] text-white text-[9px] font-black flex items-center justify-center">
                                                                 {{ (int)$detalle->cantidad_solicitada }}
-                                                            </div>
+                                                            </span>
                                                         </div>
                                                         <div class="min-w-0 flex-1">
-                                                            <p class="text-sm font-bold text-gray-800 truncate group-hover/item:text-primary transition-colors">
-                                                                {{ $detalle->producto ? $detalle->producto->nombre : 'Producto Eliminado' }}
-                                                            </p>
-                                                            <p class="text-xs text-gray-500 font-medium mt-0.5">
-                                                                ${{ number_format($detalle->precio_historico_usd, 2) }} <span class="text-[10px] uppercase">c/u</span>
+                                                            <h5 class="font-bold text-xs sm:text-sm text-slate-800 truncate leading-snug">
+                                                                {{ $detalle->producto ? $detalle->producto->nombre : 'Insumo Agropecuario' }}
+                                                            </h5>
+                                                            <p class="text-[11px] font-semibold text-slate-400 mt-0.5">
+                                                                ${{ number_format($detalle->precio_historico_usd, 2) }} c/u
                                                             </p>
                                                         </div>
                                                     </div>
                                                 @endforeach
                                             </div>
-                                            
-                                            @if($pedido->detalles->count() > 3)
-                                                <div class="mt-4">
-                                                    <span class="inline-block text-xs text-primary font-bold bg-primary/10 px-3 py-1.5 rounded-lg">
-                                                        + {{ $pedido->detalles->count() - 3 }} artículos más
+
+                                            @if($pedido->detalles->count() > 2)
+                                                <div class="pt-1">
+                                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-[#1e549e] bg-[#e5f2fb] px-2.5 py-0.5 rounded-full">
+                                                        <span class="material-symbols-outlined text-[14px]">more_horiz</span>
+                                                        +{{ $pedido->detalles->count() - 2 }} artículo(s) más en esta orden
                                                     </span>
                                                 </div>
                                             @endif
                                         </div>
 
-                                        {{-- Info de Pago y Totales --}}
-                                        <div class="w-full lg:w-72 flex-shrink-0 bg-gray-50 rounded-2xl p-5 border border-gray-100 flex flex-col justify-between shadow-inner">
-                                            <div class="space-y-4">
-                                                
-                                                <div class="flex justify-between items-end">
-                                                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total USD</p>
-                                                    <p class="text-2xl font-black text-agro-dark leading-none">${{ number_format($pedido->total_usd, 2) }}</p>
-                                                </div>
-                                                
-                                                <div class="flex justify-between items-end border-b border-gray-200 pb-4">
-                                                    <p class="text-[10px] font-bold text-gray-700 uppercase tracking-wider">Total VES</p>
-                                                    <p class="text-sm font-bold text-gray-600">Bs {{ number_format($pedido->total_ves_calculado, 2) }}</p>
+                                        {{-- Panel Financiero y Acciones --}}
+                                        <div class="lg:w-80 shrink-0 lg:pl-6 lg:border-l lg:border-slate-100 flex flex-col justify-between gap-4">
+                                            <div>
+                                                <div class="flex items-baseline justify-between mb-1">
+                                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Orden</span>
+                                                    <div class="text-right">
+                                                        <span class="text-xl sm:text-2xl font-black text-[#1e549e] leading-none">
+                                                            ${{ number_format($pedido->total_usd, 2) }}
+                                                        </span>
+                                                        <span class="text-[10px] font-bold text-slate-400 uppercase ml-1">USD</span>
+                                                    </div>
                                                 </div>
 
-                                                <div>
-                                                    <p class="text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-2">Método de Pago</p>
-                                                    @if($pedido->pago)
-                                                        <div class="flex items-center gap-2 text-sm font-bold text-agro-dark bg-white px-3 py-2.5 rounded-xl border border-gray-200 shadow-sm">
-                                                            @php
-                                                                $iconoPago = match($pedido->pago->metodo) {
-                                                                    'pago_movil' => 'phone_iphone',
-                                                                    'zelle' => 'attach_money',
-                                                                    'efectivo_usd', 'efectivo_bs' => 'payments',
-                                                                    'transferencia' => 'account_balance',
-                                                                    default => 'credit_card'
-                                                                };
-                                                            @endphp
-                                                            <span class="material-symbols-outlined text-[20px] text-primary">{{ $iconoPago }}</span>
-                                                            <span class="truncate">{{ ucfirst(str_replace('_', ' ', $pedido->pago->metodo)) }}</span>
-                                                        </div>
-                                                        @if($pedido->pago->referencia_bancaria)
-                                                            <p class="text-[11px] text-gray-500 mt-1.5 pl-1 flex items-center gap-1 font-medium">
-                                                                <span class="material-symbols-outlined text-[14px]">tag</span> 
-                                                                Ref: {{ Str::limit($pedido->pago->referencia_bancaria, 15) }}
-                                                            </p>
-                                                        @endif
-                                                    @else
-                                                        <div class="flex items-center gap-2 text-sm font-bold text-red-700 bg-red-50 px-3 py-2.5 rounded-xl border border-red-100 shadow-sm">
-                                                            <span class="material-symbols-outlined text-[20px]">warning</span>
-                                                            Sin pago registrado
-                                                        </div>
-                                                    @endif
+                                                <div class="flex items-center justify-between text-xs text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+                                                    <span class="text-[10px] font-black uppercase text-slate-400">Equivalente BCV</span>
+                                                    <span class="font-bold text-slate-800">
+                                                        Bs. {{ number_format($pedido->total_ves_calculado, 2, ',', '.') }}
+                                                    </span>
                                                 </div>
+
+                                                @if($pedido->pago)
+                                                    <div class="mt-2.5 flex items-center justify-between text-xs text-slate-600 px-1">
+                                                        <span class="flex items-center gap-1.5 font-semibold text-slate-700 truncate">
+                                                            <span class="material-symbols-outlined text-[16px] text-[#1e549e]">{{ $iconoMetodo }}</span>
+                                                            <span class="truncate">{{ ucfirst(str_replace('_', ' ', $pedido->pago->metodo)) }}</span>
+                                                        </span>
+                                                        @if($pedido->pago->referencia_bancaria)
+                                                            <span class="font-mono text-[11px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                                                Ref: {{ Str::limit($pedido->pago->referencia_bancaria, 10) }}
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                @endif
                                             </div>
-                                            
-                                            {{-- Botón de Acción --}}
-                                            <a href="{{ route('perfil.pedido.detalle', $pedido->id) }}" class="w-full mt-6 py-3 bg-white border border-gray-200 text-agro-dark font-bold rounded-xl text-sm hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center gap-2 shadow-sm group/btn">
-                                                <span class="material-symbols-outlined text-[18px] group-hover/btn:scale-110 transition-transform">visibility</span> 
-                                                Ver Detalle
-                                            </a>
+
+                                            {{-- Botones de Acción --}}
+                                            <div class="flex items-center gap-2 pt-2">
+                                                <a href="{{ route('perfil.pedido.detalle', $pedido->id) }}" 
+                                                   class="flex-1 py-2.5 px-4 bg-[#1e549e] hover:bg-[#3492cf] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 group/btn">
+                                                    <span>Ver Detalle</span>
+                                                    <span class="material-symbols-outlined text-[16px] group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
+                                                </a>
+
+                                                @if(in_array($pedido->estado, ['pagado', 'aprobado', 'completado_caja', 'en_ruta', 'entregado']))
+                                                    <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" 
+                                                       target="_blank" 
+                                                       title="Descargar Ticket o Factura"
+                                                       class="size-10 rounded-xl bg-slate-50 text-slate-600 hover:text-[#1e549e] hover:bg-[#e5f2fb] border border-slate-200 flex items-center justify-center transition-colors shadow-2xs">
+                                                        <span class="material-symbols-outlined text-[18px]">receipt</span>
+                                                    </a>
+                                                @endif
+                                            </div>
                                         </div>
 
                                     </div>
                                 </div>
-                            </div>
+                            </article>
                         @endforeach
-
-                        {{-- Paginación --}}
-                        <div class="mt-10 flex justify-center">
-                            {{ $pedidos->links('pagination::tailwind') }} 
-                        </div>
-
                     </div>
+
+                    {{-- Paginación Elegante --}}
+                    <div class="pt-6 flex justify-center">
+                        {{ $pedidos->links() }}
+                    </div>
+
                 @else
-                    {{-- Estado Vacío (Rediseñado) --}}
-                    <div class="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-sm border border-dashed border-gray-300 text-center">
-                        <div class="relative mb-6">
-                            <div class="absolute inset-0 bg-gray-100 rounded-full blur-xl"></div>
-                            <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center relative z-10 border-4 border-white shadow-sm">
-                                <span class="material-symbols-outlined text-[48px] text-gray-300">shopping_bag</span>
-                            </div>
+                    {{-- Estado Vacío --}}
+                    <div class="bg-white rounded-3xl shadow-xs border-2 border-dashed border-slate-200 p-12 text-center">
+                        <div class="size-20 bg-[#e5f2fb] text-[#1e549e] rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xs">
+                            <span class="material-symbols-outlined text-[40px]">shopping_bag</span>
                         </div>
-                        <h3 class="text-2xl font-black text-agro-dark mb-2">Aún no tienes pedidos</h3>
-                        <p class="text-gray-500 max-w-sm mx-auto mb-8 font-medium text-sm leading-relaxed">
-                            Parece que aún no has realizado ninguna compra. Explora nuestro catálogo y encuentra los mejores insumos para tu campo.
+                        <h3 class="text-xl font-black text-slate-900 mb-1.5">No tienes pedidos registrados</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto mb-6 leading-relaxed">
+                            Aún no has realizado ninguna compra en nuestra plataforma. Explora el catálogo de insumos agrícolas y haz tu primer pedido.
                         </p>
-                        <a href="{{ route('catalogo') }}" class="px-8 py-3.5 bg-primary text-agro-dark rounded-xl font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/30 flex items-center gap-2 transform hover:-translate-y-1">
-                            <span class="material-symbols-outlined">storefront</span>
-                            Explorar Catálogo
+                        <a href="{{ route('catalogo') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1e549e] hover:bg-[#3492cf] text-white font-black text-xs sm:text-sm shadow-xs transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">storefront</span>
+                            <span>Explorar Catálogo</span>
                         </a>
                     </div>
                 @endif
@@ -278,23 +289,55 @@
     </div>
 </div>
 
-@push('styles')
-<style>
-    /* Si no las tienes de forma global, puedes dejarlas aquí */
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+@push('scripts')
+<script>
+    // Filtro interactivo en cliente de pedidos
+    function filtrarPedidosPorEstado(estado) {
+        // Actualizar estilos de tabs
+        document.querySelectorAll('.tab-filtro').forEach(btn => {
+            if (btn.dataset.filter === estado) {
+                btn.classList.remove('bg-slate-100', 'text-slate-600');
+                btn.classList.add('bg-[#1e549e]', 'text-white', 'shadow-2xs');
+            } else {
+                btn.classList.remove('bg-[#1e549e]', 'text-white', 'shadow-2xs');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            }
+        });
+
+        // Filtrar tarjetas
+        const cards = document.querySelectorAll('.pedido-card');
+        cards.forEach(card => {
+            const cardEstado = card.dataset.estado;
+            if (estado === 'todos') {
+                card.style.display = 'block';
+            } else if (estado === 'pagado' && ['pagado', 'aprobado', 'completado_caja'].includes(cardEstado)) {
+                card.style.display = 'block';
+            } else if (estado === 'en_ruta' && ['en_ruta', 'preparacion', 'revision'].includes(cardEstado)) {
+                card.style.display = 'block';
+            } else if (estado === 'cancelado' && ['cancelado', 'rechazado', 'devuelto'].includes(cardEstado)) {
+                card.style.display = 'block';
+            } else if (cardEstado === estado) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
     }
-    .animate-fade-in-up {
-        animation: fadeInUp 0.5s ease-out forwards;
-    }
-    @keyframes pulseSlow {
-        0%, 100% { opacity: 0.3; transform: scale(1); }
-        50% { opacity: 0.15; transform: scale(1.1); }
-    }
-    .animate-pulse-slow {
-        animation: pulseSlow 8s infinite ease-in-out;
-    }
-</style>
+
+    // Buscador interactivo
+    document.getElementById('buscar-pedidos-input')?.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.pedido-card');
+        
+        cards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            if (text.includes(query)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
 @endpush
 @endsection
