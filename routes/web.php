@@ -213,6 +213,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/pos/buscar-cliente', [PosController::class, 'buscarCliente'])->name('pos.buscarCliente');
         Route::get('/pos/consultar-cedula', [PosController::class, 'consultarCedula'])->name('pos.consultarCedula');
         Route::post('/pos/procesar-venta', [PosController::class, 'procesarVenta'])->name('pos.procesarVenta');
+        Route::post('/pos/enviar-ticket-correo', [PosController::class, 'enviarTicketCorreo'])->name('pos.enviarTicketCorreo');
         Route::get('/pos/resumen-cierre', [PosController::class, 'resumenCierre'])->name('pos.resumenCierre');
         Route::post('/pos/cerrar-caja', [PosController::class, 'cerrarCaja'])->name('pos.cerrarCaja');
         Route::get('/pos/imprimir-cierre/{id}', [PosController::class, 'imprimirCierre'])->name('pos.imprimirCierre');

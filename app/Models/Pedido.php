@@ -52,6 +52,11 @@ protected $fillable = [
         return $this->belongsTo(ZonaDelivery::class, 'zona_delivery_id');
     }
 
+    public function tasaCambio()
+    {
+        return $this->belongsTo(TasaCambio::class, 'tasa_cambio_id');
+    }
+
     /**
      * Devuelve el monto total en Bolívares (VES)
      */

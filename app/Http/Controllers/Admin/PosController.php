@@ -14,10 +14,13 @@ use App\Models\Pago;
 use App\Models\MovimientoCaja;
 use App\Models\Factura;
 use App\Models\User;
+use App\Mail\FacturaTicketMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class PosController extends Controller
 {
@@ -165,11 +168,13 @@ class PosController extends Controller
             $q->where('documento_identidad', 'LIKE', "%{$busqueda}%")
               ->orWhere('nombre', 'LIKE', "%{$busqueda}%")
               ->orWhere('apellido', 'LIKE', "%{$busqueda}%")
+              ->orWhere('email', 'LIKE', "%{$busqueda}%")
               ->orWhere('telefono', 'LIKE', "%{$busqueda}%");
         })->limit(5)->get()->map(function($u) {
             return [
                 'documento' => $u->documento_identidad ?: '',
                 'nombre' => trim($u->nombre . ' ' . ($u->apellido ?? '')),
+                'email' => $u->email ?: '',
                 'telefono' => $u->telefono ?: '',
                 'direccion' => '',
                 'es_parcial' => empty($u->password_hash),
@@ -183,13 +188,16 @@ class PosController extends Controller
         })
         ->where('cedula_rif_cliente', '!=', 'V-00000000')
         ->where('nombre_razon_social', '!=', 'Consumidor Final')
+        ->with('pedido.usuario')
         ->latest('id')
         ->limit(5)
         ->get()
         ->map(function($f) {
+            $email = ($f->pedido && $f->pedido->usuario) ? ($f->pedido->usuario->email ?: '') : '';
             return [
                 'documento' => $f->cedula_rif_cliente,
                 'nombre' => $f->nombre_razon_social,
+                'email' => $email,
                 'telefono' => '',
                 'direccion' => $f->direccion_fiscal ?: '',
                 'es_parcial' => true,
@@ -250,6 +258,7 @@ class PosController extends Controller
                 'fuente' => 'usuario_local',
                 'documento' => $usuarioLocal->documento_identidad ?: $documentoFormateado,
                 'nombre' => $nombreCompleto,
+                'email' => $usuarioLocal->email ?: '',
                 'telefono' => $usuarioLocal->telefono ?: '',
                 'direccion' => '',
                 'es_parcial' => empty($usuarioLocal->password_hash),
@@ -347,6 +356,7 @@ class PosController extends Controller
             'pagos' => 'nullable|array',
             'cliente_documento' => 'nullable|string|max:30',
             'cliente_nombre' => 'nullable|string|max:150',
+            'cliente_email' => 'nullable|email|max:150',
             'cliente_telefono' => 'nullable|string|max:50',
             'cliente_direccion' => 'nullable|string|max:255',
             'monto_recibido_usd' => 'nullable|numeric|min:0',
@@ -385,6 +395,7 @@ class PosController extends Controller
             $clienteNom = trim($request->input('cliente_nombre', ''));
             $clienteDir = trim($request->input('cliente_direccion', ''));
             $clienteTel = trim($request->input('cliente_telefono', ''));
+            $clienteEmail = trim($request->input('cliente_email', ''));
 
             if (empty($clienteDoc) || empty($clienteNom)) {
                 $clienteDoc = 'V-00000000';
@@ -396,18 +407,36 @@ class PosController extends Controller
 
             // Gestión de Usuario (Completo o Registro Parcial para vincular compras)
             $usuarioId = null;
+            $emailFinalParaEnvio = null;
+
             if ($clienteDoc !== 'V-00000000' && $clienteNom !== 'Consumidor Final') {
                 $usuarioExistente = User::where('documento_identidad', $clienteDoc)->first();
                 if ($usuarioExistente) {
                     $usuarioId = $usuarioExistente->id;
+                    $actualizaciones = [];
+
                     // Si el usuario es parcial y ahora proporciona teléfono, lo completamos
                     if (empty($usuarioExistente->password_hash) && !empty($clienteTel) && empty($usuarioExistente->telefono)) {
-                        $usuarioExistente->update(['telefono' => $clienteTel]);
+                        $actualizaciones['telefono'] = $clienteTel;
                     }
+
+                    // Si se suministró email y el usuario no lo tenía o es parcial, lo asignamos
+                    if (!empty($clienteEmail) && filter_var($clienteEmail, FILTER_VALIDATE_EMAIL)) {
+                        if (empty($usuarioExistente->email) || empty($usuarioExistente->password_hash)) {
+                            $emailOcupado = User::where('email', $clienteEmail)->where('id', '!=', $usuarioExistente->id)->exists();
+                            if (!$emailOcupado) {
+                                $actualizaciones['email'] = $clienteEmail;
+                            }
+                        }
+                    }
+
+                    if (!empty($actualizaciones)) {
+                        $usuarioExistente->update($actualizaciones);
+                    }
+
+                    $emailFinalParaEnvio = !empty($clienteEmail) ? $clienteEmail : $usuarioExistente->email;
                 } else {
                     // REGISTRO PARCIAL: Se registra DNI y nombre en la base de datos sin contraseña
-                    // para que las compras queden asociadas y cuando el usuario se registre formalmente
-                    // sus pedidos se vinculen de inmediato por medio de su DNI.
                     $partesNom = explode(' ', $clienteNom);
                     $primerNombre = $clienteNom;
                     $apellido = null;
@@ -419,12 +448,20 @@ class PosController extends Controller
                     $tipoDoc = strtoupper(substr($clienteDoc, 0, 1));
                     $tipoCliente = in_array($tipoDoc, ['J', 'G']) ? 'juridico' : 'natural';
 
+                    // Si trae email, verificar unicidad
+                    $emailAGuardar = null;
+                    if (!empty($clienteEmail) && filter_var($clienteEmail, FILTER_VALIDATE_EMAIL)) {
+                        if (!User::where('email', $clienteEmail)->exists()) {
+                            $emailAGuardar = $clienteEmail;
+                        }
+                    }
+
                     $nuevoUsuario = User::create([
                         'rol_id' => 4, // Rol Cliente
                         'nombre' => $primerNombre,
                         'apellido' => $apellido,
-                        'email' => null, // Registro parcial (sin email formal todavía)
-                        'password_hash' => null, // Sin contraseña (no tiene acceso web todavía)
+                        'email' => $emailAGuardar,
+                        'password_hash' => null, // Sin contraseña
                         'telefono' => !empty($clienteTel) ? $clienteTel : null,
                         'documento_identidad' => $clienteDoc,
                         'tipo_cliente' => $tipoCliente,
@@ -432,6 +469,12 @@ class PosController extends Controller
                     ]);
 
                     $usuarioId = $nuevoUsuario->id;
+                    $emailFinalParaEnvio = $emailAGuardar ?: $clienteEmail;
+                }
+            } else {
+                // Caso Consumidor Final pero el cliente suministró un email para recibir su ticket
+                if (!empty($clienteEmail) && filter_var($clienteEmail, FILTER_VALIDATE_EMAIL)) {
+                    $emailFinalParaEnvio = $clienteEmail;
                 }
             }
 
@@ -540,6 +583,27 @@ class PosController extends Controller
 
             DB::commit();
 
+            // 8.5 Enviar Factura Ticket 80mm por correo vía SMTP si el cliente tiene email
+            $correoEnviado = false;
+            $correoDestino = (!empty($emailFinalParaEnvio) && filter_var($emailFinalParaEnvio, FILTER_VALIDATE_EMAIL)) ? $emailFinalParaEnvio : null;
+
+            if ($factura && $correoDestino) {
+                try {
+                    $facturaMail = Factura::with([
+                        'pedido.detalles.producto',
+                        'pedido.pagos',
+                        'pedido.usuario',
+                        'pedido.tasaCambio'
+                    ])->find($factura->id);
+
+                    Mail::to($correoDestino)->send(new FacturaTicketMail($facturaMail, $config));
+                    $correoEnviado = true;
+                } catch (\Throwable $e) {
+                    Log::error("POS: Error enviando ticket SMTP a {$correoDestino} para factura {$factura->numero_factura}: " . $e->getMessage());
+                    $correoEnviado = false;
+                }
+            }
+
             // 9. Recopilar stock actualizado de los productos vendidos para retorno AJAX
             $productosActualizados = [];
             foreach ($request->carrito as $item) {
@@ -566,6 +630,8 @@ class PosController extends Controller
                 'gran_total_ves' => $gran_total_ves,
                 'vuelto_usd' => floatval($request->input('vuelto_usd', 0)),
                 'cliente' => $clienteNom,
+                'correo_enviado' => $correoEnviado,
+                'cliente_email' => $correoDestino,
                 'productos_actualizados' => $productosActualizados
             ]);
 
@@ -721,5 +787,48 @@ class PosController extends Controller
         $config = ConfiguracionTienda::first();
 
         return view('admin.pos.ticket_cierre', compact('sesion', 'totalPedidos', 'desgloseMetodos', 'totalEfectivoUsd', 'config'));
+    }
+
+    /**
+     * Enviar o Reenviar Ticket 80mm por correo vía SMTP manualmente desde el POS
+     */
+    public function enviarTicketCorreo(Request $request)
+    {
+        $request->validate([
+            'factura_id' => 'required|exists:facturas,id',
+            'email' => 'required|email|max:150',
+        ]);
+
+        try {
+            $factura = Factura::with([
+                'pedido.detalles.producto',
+                'pedido.pagos',
+                'pedido.usuario',
+                'pedido.tasaCambio'
+            ])->findOrFail($request->factura_id);
+
+            $config = ConfiguracionTienda::first();
+
+            Mail::to($request->email)->send(new FacturaTicketMail($factura, $config));
+
+            // Si el cliente en BD no tenía email, actualizamos su registro
+            if ($factura->pedido && $factura->pedido->usuario && empty($factura->pedido->usuario->email)) {
+                $usuario = $factura->pedido->usuario;
+                if (!User::where('email', $request->email)->where('id', '!=', $usuario->id)->exists()) {
+                    $usuario->update(['email' => $request->email]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Ticket #{$factura->numero_factura} enviado exitosamente a {$request->email}."
+            ]);
+        } catch (\Throwable $e) {
+            Log::error("POS: Error al enviar ticket manual a {$request->email}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo enviar el correo: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

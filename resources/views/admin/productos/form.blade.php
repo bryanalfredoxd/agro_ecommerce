@@ -146,18 +146,62 @@
 
                             <hr class="my-6 border-gray-100">
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Contenido Neto Real</label>
-                                    <input type="number" step="0.01" name="contenido_neto" id="contenido_neto" value="{{ old('contenido_neto', $producto->contenido_neto ?? '') }}" class="limit-decimals auto-int-contenido w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white outline-none font-bold text-agro-dark">
+                            {{-- Sección Presentación y Contenido Físico Real --}}
+                            <div class="bg-gradient-to-br from-emerald-50/40 via-slate-50/50 to-emerald-50/20 border border-emerald-100/80 rounded-2xl p-5 transition-all">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="size-8 rounded-xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 shadow-2xs">
+                                            <span class="material-symbols-outlined text-[19px]">scale</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-black text-agro-dark uppercase tracking-wider flex items-center gap-2">
+                                                Presentación y Contenido Neto
+                                                <span class="text-[9px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded-full lowercase">opcional</span>
+                                            </h4>
+                                            <p class="text-[11px] text-gray-500">Masa, peso o volumen real del empaque comercial.</p>
+                                        </div>
+                                    </div>
+
+                                    {{-- Insignia de Vista Previa en Vivo --}}
+                                    <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-200/80 shadow-2xs self-start sm:self-auto">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Vista en catálogo:</span>
+                                        <span id="preview_contenido_badge" class="inline-block bg-agro-dark text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-2xs transition-all">
+                                            {{ ($producto->contenido_neto ?? '') ? ((float)$producto->contenido_neto . ' ' . strtoupper($producto->unidad_contenido ?? 'KG')) : strtoupper($producto->unidad_medida ?? 'UNIDAD') }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Unidad del Contenido</label>
-                                    <select name="unidad_contenido" id="unidadContenidoSelect" onchange="automatizarContenido()" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white outline-none font-bold text-gray-700">
-                                        @foreach(['kg', 'g', 'mg', 'l', 'ml', 'cc', 'galon', 'oz', 'm', 'cm', 'dosis', 'unidad'] as $unidadC)
-                                            <option value="{{ $unidadC }}" {{ (old('unidad_contenido', $producto->unidad_contenido ?? '') == $unidadC) ? 'selected' : '' }}>{{ ucfirst($unidadC) }}</option>
-                                        @endforeach
-                                    </select>
+
+                                {{-- Tarjeta Explicativa --}}
+                                <div class="bg-white/90 backdrop-blur-xs rounded-xl p-3 border border-emerald-100/70 mb-4 text-[11px] text-gray-600 flex items-start gap-2.5 shadow-2xs">
+                                    <span class="material-symbols-outlined text-emerald-600 text-[18px] shrink-0 mt-0.5">info</span>
+                                    <div class="leading-relaxed">
+                                        <strong class="text-gray-800">¿Para qué sirve?</strong> Diferencia cómo lo cobras en inventario (<em class="text-gray-800 font-semibold">1 Saco, 1 Paila, 1 Frasco</em>) de cuánto producto real contiene (<em class="text-emerald-700 font-semibold">50 kg, 20 L, 250 ml</em>). Esto se mostrará como distintivo en la tarjeta del producto para que el cliente lo identifique rápido. Para artículos unitarios sin medida (ej: herramientas), déjalo vacío.
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1">
+                                            Contenido Neto Real <span class="text-gray-400 font-normal">(Número)</span>
+                                        </label>
+                                        <input type="number" step="0.01" name="contenido_neto" id="contenido_neto" 
+                                            placeholder="Ej: 50, 20, 250..."
+                                            oninput="actualizarPreviewContenido()"
+                                            value="{{ old('contenido_neto', $producto->contenido_neto ?? '') }}" 
+                                            class="limit-decimals auto-int-contenido w-full h-11 px-4 rounded-xl bg-white border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none font-bold text-agro-dark text-sm transition-all shadow-2xs">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1">
+                                            Unidad del Contenido <span class="text-gray-400 font-normal">(Medida física)</span>
+                                        </label>
+                                        <select name="unidad_contenido" id="unidadContenidoSelect" 
+                                            onchange="automatizarContenido(); actualizarPreviewContenido();" 
+                                            class="w-full h-11 px-4 rounded-xl bg-white border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none font-bold text-gray-700 text-sm transition-all shadow-2xs">
+                                            @foreach(['kg', 'g', 'mg', 'l', 'ml', 'cc', 'galon', 'oz', 'm', 'cm', 'dosis', 'unidad'] as $unidadC)
+                                                <option value="{{ $unidadC }}" {{ (old('unidad_contenido', $producto->unidad_contenido ?? '') == $unidadC) ? 'selected' : '' }}>{{ ucfirst($unidadC) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -236,14 +280,15 @@
                                         <input type="number" step="0.01" name="precio_venta_usd" id="precio_venta" onblur="validarPrecios()" value="{{ old('precio_venta_usd', $producto->precio_venta_usd ?? '') }}" required class="limit-decimals w-full h-12 pl-8 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white text-xl font-black text-agro-dark outline-none">
                                     </div>
                                 </div>
-                                <div>
+                                
+                                {{--<div>
                                     <label class="block text-[10px] font-black text-red-500 uppercase tracking-widest mb-1.5 ml-1">Precio Oferta (Opcional)</label>
                                     <div class="relative">
                                         <span class="absolute left-4 top-3.5 font-bold text-red-500">$</span>
                                         <input type="number" step="0.01" name="precio_oferta_usd" id="precio_oferta" onblur="validarPrecios()" value="{{ old('precio_oferta_usd', $producto->precio_oferta_usd ?? '') }}" class="limit-decimals w-full h-12 pl-8 pr-4 rounded-xl bg-red-50/50 border border-red-100 focus:border-red-400 focus:bg-white text-lg font-bold text-red-600 outline-none">
                                     </div>
                                     <p id="error-oferta" class="text-[10px] text-red-500 font-bold hidden mt-1 ml-1">Error: La oferta debe ser menor al precio de venta.</p>
-                                </div>
+                                </div>--}}
                                 <div>
                                     <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Costo Promedio (Interno)</label>
                                     <div class="relative">
@@ -261,7 +306,7 @@
                             </div>
                         </div>
 
-                        {{-- Panel Banderas / Configuración Extra --}}
+                        {{-- Panel Banderas / Configuración Extra 
                         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-4">
                             <label class="relative flex items-center p-3 bg-purple-50 rounded-xl border border-purple-100 cursor-pointer">
                                 <input type="checkbox" name="es_controlado" class="sr-only peer" {{ old('es_controlado', $producto->es_controlado ?? false) ? 'checked' : '' }}>
@@ -271,7 +316,7 @@
                                     <span class="text-[9px] font-bold text-purple-600 uppercase">Requiere Receta Médica</span>
                                 </div>
                             </label>
-                        </div>
+                        </div>--}}
 
                     </div>
                 </div>
@@ -423,6 +468,7 @@
                 input.classList.remove('allow-3-decimals');
             }
         });
+        actualizarPreviewContenido();
     }
 
     function automatizarContenido() {
@@ -453,9 +499,31 @@
         }
     }
 
+    function actualizarPreviewContenido() {
+        const inputCont = document.getElementById('contenido_neto');
+        const selectUnidad = document.getElementById('unidadContenidoSelect');
+        const selectVenta = document.getElementById('unidadMedidaSelect');
+        const badge = document.getElementById('preview_contenido_badge');
+        if (!badge) return;
+
+        const valStr = inputCont && inputCont.value ? inputCont.value.trim() : '';
+        const val = parseFloat(valStr);
+
+        if (valStr !== '' && !isNaN(val) && val > 0) {
+            const u = selectUnidad && selectUnidad.value ? selectUnidad.value.toUpperCase() : 'KG';
+            badge.textContent = `${val} ${u}`;
+            badge.className = 'inline-block bg-emerald-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-2xs transition-all';
+        } else {
+            const uVenta = selectVenta && selectVenta.value ? selectVenta.value.toUpperCase() : 'UNIDAD';
+            badge.textContent = uVenta;
+            badge.className = 'inline-block bg-slate-700 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-2xs transition-all';
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         automatizarUnidadesVenta();
         automatizarContenido();
+        actualizarPreviewContenido();
     });
 
     // ==========================================

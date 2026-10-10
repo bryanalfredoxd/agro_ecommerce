@@ -40,7 +40,13 @@
                         <span class="material-symbols-outlined text-teal-600 text-[18px] shrink-0">person</span>
                         <div class="truncate">
                             <p class="text-[11px] font-black text-gray-800 truncate" id="label_cliente_nombre">Consumidor Final</p>
-                            <p class="text-[9.5px] font-mono text-gray-700 font-bold" id="label_cliente_doc">V-00000000</p>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <p class="text-[9.5px] font-mono text-gray-700 font-bold" id="label_cliente_doc">V-00000000</p>
+                                <span id="badge_cliente_email" class="hidden text-[8.5px] font-bold text-teal-700 bg-teal-50 border border-teal-200/80 px-1.5 py-0.2 rounded items-center gap-0.5 truncate max-w-[160px]" title="Factura digital por correo habilitada">
+                                    <span class="material-symbols-outlined text-[11px]">mark_email_read</span>
+                                    <span id="label_cliente_email_txt" class="truncate"></span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <button type="button" onclick="togglePanelCliente()" class="px-2 py-1 text-[10px] font-bold text-teal-700 hover:text-teal-800 bg-teal-50 hover:bg-teal-100 rounded-lg transition-colors flex items-center gap-1 shrink-0">
@@ -73,6 +79,19 @@
                         <div>
                             <label class="block text-[8.5px] font-black text-gray-700 uppercase mb-0.5">Nombre / Razón Social</label>
                             <input type="text" id="input_cliente_nombre" onkeydown="if(event.key==='Enter'){event.preventDefault(); guardarDatosCliente();}" placeholder="Nombre completo" class="w-full h-7 px-2 text-xs rounded-lg border border-gray-200 bg-white focus:border-teal-500 outline-none font-bold">
+                        </div>
+                    </div>
+
+                    {{-- Campo de Correo Electrónico para Factura Digital SMTP --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-0.5">
+                            <label class="block text-[8.5px] font-black text-gray-700 uppercase">Correo Electrónico</label>
+                            <span class="text-[8px] font-bold text-teal-600 flex items-center gap-0.5">
+                                <span class="material-symbols-outlined text-[10px]">mark_email_read</span> Ticket Digital SMTP
+                            </span>
+                        </div>
+                        <div class="relative">
+                            <input type="email" id="input_cliente_email" onkeydown="if(event.key==='Enter'){event.preventDefault(); guardarDatosCliente();}" placeholder="cliente@correo.com (opcional)" class="w-full h-7 pl-7 pr-2 text-xs rounded-lg border border-gray-200 bg-white focus:border-teal-500 outline-none">
                         </div>
                     </div>
 
@@ -340,7 +359,6 @@
                     <div id="caja_referencia" class="hidden">
                         <label class="block text-[9.5px] font-black text-blue-600 uppercase tracking-widest mb-1.5 ml-1">Referencia Bancaria / Comprobante</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-2.5 text-blue-500 material-symbols-outlined text-[17px]">receipt</span>
                             <input type="text" id="referencia_pago" class="w-full h-10 pl-9 pr-3 rounded-xl bg-blue-50/50 border border-blue-200 focus:border-blue-500 focus:bg-white text-xs font-bold text-agro-dark outline-none uppercase" placeholder="Ej: 12345678">
                         </div>
                     </div>
@@ -425,7 +443,7 @@
             <h3 class="text-lg font-black text-gray-900 leading-tight">¡Venta Exitosa!</h3>
             <p class="text-xs text-gray-500 mt-0.5">Inventario descontado y factura emitida</p>
 
-            <div class="w-full bg-gray-50 rounded-2xl p-3.5 my-3.5 border border-gray-100 text-left text-xs space-y-1">
+            <div class="w-full bg-gray-50 rounded-2xl p-3.5 my-3 border border-gray-100 text-left text-xs space-y-1.5">
                 <div class="flex justify-between">
                     <span class="text-gray-500 font-bold">Factura Fiscal:</span>
                     <strong class="text-gray-800" id="modal_exito_factura">F-0000000</strong>
@@ -441,6 +459,29 @@
                 <div class="flex justify-between text-emerald-800" id="modal_exito_vuelto_row">
                     <span class="font-bold">Vuelto Entregado:</span>
                     <strong class="font-black" id="modal_exito_vuelto">$0.00</strong>
+                </div>
+                <div class="flex justify-between items-center text-xs pt-1.5 border-t border-gray-200" id="modal_exito_correo_row">
+                    <span class="text-gray-500 font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px] text-teal-600">mark_email_read</span>
+                        Ticket Digital:
+                    </span>
+                    <span class="font-bold text-teal-700 truncate max-w-[180px] text-[10.5px]" id="modal_exito_correo_txt">Sin correo</span>
+                </div>
+            </div>
+
+            {{-- Opción para Enviar / Reenviar copia por correo al instante --}}
+            <div class="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-left mb-3 space-y-1">
+                <div class="flex items-center justify-between">
+                    <span class="text-[9px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[13px] text-teal-600">send</span> Enviar Ticket a un correo
+                    </span>
+                    <span class="text-[8.5px] text-gray-500 font-semibold" id="msg_correo_manual"></span>
+                </div>
+                <div class="flex gap-1.5">
+                    <input type="email" id="input_reenvio_email" onkeydown="if(event.key==='Enter'){event.preventDefault(); enviarTicketCorreoManual();}" placeholder="correo@ejemplo.com" class="flex-1 h-7.5 px-2 text-xs rounded-lg border border-gray-200 bg-white focus:border-teal-500 outline-none">
+                    <button type="button" onclick="enviarTicketCorreoManual()" id="btnEnviarCorreoManual" class="h-7.5 px-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg text-[10.5px] flex items-center gap-1 transition-colors shrink-0">
+                        <span class="material-symbols-outlined text-[13px]">mail</span> Enviar
+                    </button>
                 </div>
             </div>
 
@@ -564,6 +605,7 @@
     let clienteActual = {
         documento: 'V-00000000',
         nombre: 'Consumidor Final',
+        email: '',
         telefono: '',
         direccion: 'Compra en Mostrador POS'
     };
@@ -812,8 +854,14 @@
                     data.clientes.forEach(c => {
                         container.innerHTML += `
                             <div onclick='seleccionarClienteSugerido(${JSON.stringify(c).replace(/'/g, "&apos;")})' class="p-2 hover:bg-slate-100 cursor-pointer border-b border-gray-100 text-xs">
-                                <div class="font-bold text-gray-800">${c.nombre}</div>
-                                <div class="text-[10px] text-gray-500 font-mono">${c.documento}</div>
+                                <div class="font-bold text-gray-800 flex items-center justify-between">
+                                    <span>${c.nombre}</span>
+                                    ${c.email ? '<span class="text-[9px] font-bold text-teal-600 bg-teal-50 border border-teal-200 px-1 py-0.2 rounded flex items-center gap-0.5"><span class="material-symbols-outlined text-[10px]">mail</span> Ticket</span>' : ''}
+                                </div>
+                                <div class="text-[10px] text-gray-500 font-mono flex items-center justify-between mt-0.5">
+                                    <span>${c.documento}</span>
+                                    ${c.email ? `<span class="truncate max-w-[140px] text-[9.5px] text-teal-700">${c.email}</span>` : ''}
+                                </div>
                             </div>
                         `;
                     });
@@ -828,14 +876,11 @@
     function seleccionarClienteSugerido(cliente) {
         document.getElementById('input_cliente_doc').value = cliente.documento;
         document.getElementById('input_cliente_nombre').value = cliente.nombre;
+        document.getElementById('input_cliente_email').value = cliente.email || '';
         document.getElementById('cliente_sugerencias').classList.add('hidden');
         document.getElementById('buscar_cliente_input').value = '';
 
-        const statusMsg = document.getElementById('cne_status_msg');
-        if (statusMsg) {
-            statusMsg.classList.remove('hidden');
-            statusMsg.innerHTML = '<span class="text-teal-700 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[11px]">check_circle</span> Cliente seleccionado</span>';
-        }
+        guardarDatosCliente();
     }
 
     let ultimaCedulaConsultada = '';
@@ -892,12 +937,18 @@
                 if (data.nombre) {
                     inputNom.value = data.nombre;
                 }
+                if (data.email) {
+                    document.getElementById('input_cliente_email').value = data.email;
+                }
 
                 if (statusMsg) {
                     if (data.fuente === 'cne_api') {
                         statusMsg.innerHTML = '<span class="text-emerald-700 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">verified</span> Extraído del CNE</span>';
                     } else if (data.fuente === 'usuario_local') {
-                        statusMsg.innerHTML = '<span class="text-teal-700 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">check_circle</span> Cliente registrado</span>';
+                        let msg = '<span class="text-teal-700 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">check_circle</span> Cliente registrado';
+                        if (data.email) msg += ' (con email)';
+                        msg += '</span>';
+                        statusMsg.innerHTML = msg;
                     } else {
                         statusMsg.innerHTML = '<span class="text-blue-700 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">history</span> Cliente frecuente</span>';
                     }
@@ -938,16 +989,29 @@
     function guardarDatosCliente() {
         const doc = document.getElementById('input_cliente_doc').value.trim();
         const nom = document.getElementById('input_cliente_nombre').value.trim();
+        const email = document.getElementById('input_cliente_email').value.trim();
 
         if (doc && nom) {
             clienteActual.documento = doc;
             clienteActual.nombre = nom;
+            clienteActual.email = email;
             clienteActual.telefono = '';
             clienteActual.direccion = 'Compra en Tienda Física';
 
             document.getElementById('label_cliente_nombre').innerText = nom;
             document.getElementById('label_cliente_doc').innerText = doc;
             document.getElementById('btn_txt_cliente').innerText = 'Editar';
+
+            const badgeEmail = document.getElementById('badge_cliente_email');
+            const labelEmailTxt = document.getElementById('label_cliente_email_txt');
+            if (email) {
+                labelEmailTxt.innerText = email;
+                badgeEmail.classList.remove('hidden');
+                badgeEmail.classList.add('inline-flex');
+            } else {
+                badgeEmail.classList.add('hidden');
+                badgeEmail.classList.remove('inline-flex');
+            }
         } else {
             restablecerConsumidorFinal();
         }
@@ -957,11 +1021,13 @@
     function restablecerConsumidorFinal() {
         clienteActual.documento = 'V-00000000';
         clienteActual.nombre = 'Consumidor Final';
+        clienteActual.email = '';
         clienteActual.telefono = '';
         clienteActual.direccion = 'Compra en Tienda Física';
 
         document.getElementById('input_cliente_doc').value = '';
         document.getElementById('input_cliente_nombre').value = '';
+        document.getElementById('input_cliente_email').value = '';
         document.getElementById('buscar_cliente_input').value = '';
         const statusMsg = document.getElementById('cne_status_msg');
         if (statusMsg) {
@@ -973,6 +1039,13 @@
         document.getElementById('label_cliente_nombre').innerText = 'Consumidor Final';
         document.getElementById('label_cliente_doc').innerText = 'V-00000000';
         document.getElementById('btn_txt_cliente').innerText = 'Cambiar';
+
+        const badgeEmail = document.getElementById('badge_cliente_email');
+        if (badgeEmail) {
+            badgeEmail.classList.add('hidden');
+            badgeEmail.classList.remove('inline-flex');
+        }
+
         document.getElementById('panel_cliente').classList.add('hidden');
     }
 
@@ -1473,12 +1546,21 @@
     // ==========================================
     function procesarTransaccion() {
         const { totalUsd, totalVes } = getTotalesVenta();
+        const emailIngresado = document.getElementById('input_cliente_email') ? document.getElementById('input_cliente_email').value.trim() : '';
+        const docIngresado = document.getElementById('input_cliente_doc') ? document.getElementById('input_cliente_doc').value.trim() : '';
+        const nomIngresado = document.getElementById('input_cliente_nombre') ? document.getElementById('input_cliente_nombre').value.trim() : '';
+
+        const docFinal = (clienteActual.documento && clienteActual.documento !== 'V-00000000') ? clienteActual.documento : (docIngresado || 'V-00000000');
+        const nomFinal = (clienteActual.nombre && clienteActual.nombre !== 'Consumidor Final') ? clienteActual.nombre : (nomIngresado || 'Consumidor Final');
+        const emailFinal = clienteActual.email || emailIngresado || '';
+
         let payload = {
             carrito: carrito,
             tipo_pago: modoPagoActual,
-            cliente_documento: clienteActual.documento,
-            cliente_nombre: clienteActual.nombre,
-            cliente_direccion: clienteActual.direccion,
+            cliente_documento: docFinal,
+            cliente_nombre: nomFinal,
+            cliente_email: emailFinal,
+            cliente_direccion: clienteActual.direccion || 'Compra en Tienda Física',
             cliente_telefono: clienteActual.telefono || ''
         };
 
@@ -1568,6 +1650,23 @@
             vueltoRow.classList.add('hidden');
         }
 
+        // Estado del Envío por Correo (Factura Ticket Digital)
+        const correoTxt = document.getElementById('modal_exito_correo_txt');
+        const inputReenvio = document.getElementById('input_reenvio_email');
+        const msgManual = document.getElementById('msg_correo_manual');
+        if (msgManual) msgManual.innerText = '';
+
+        if (data.correo_enviado) {
+            correoTxt.innerHTML = `<span class="text-emerald-700 font-bold flex items-center gap-1" title="${data.cliente_email}">✓ Enviado a ${data.cliente_email}</span>`;
+            if (inputReenvio) inputReenvio.value = data.cliente_email || '';
+        } else if (data.cliente_email) {
+            correoTxt.innerHTML = `<span class="text-amber-600 font-medium">No se pudo enviar (${data.cliente_email})</span>`;
+            if (inputReenvio) inputReenvio.value = data.cliente_email;
+        } else {
+            correoTxt.innerHTML = `<span class="text-gray-400 font-medium">Sin correo registrado</span>`;
+            if (inputReenvio) inputReenvio.value = '';
+        }
+
         const modal = document.getElementById('ventaExitosaModal');
         const backdrop = document.getElementById('exitosaBackdrop');
         const panel = document.getElementById('exitosaPanel');
@@ -1579,6 +1678,61 @@
             panel.classList.add('opacity-100', 'scale-100');
             document.getElementById('btnImprimirTicketExito').focus();
         }, 10);
+    }
+
+    function enviarTicketCorreoManual() {
+        if (!ultimaVentaExitosa || !ultimaVentaExitosa.factura_id) {
+            Swal.fire('Error', 'No hay una factura activa para enviar.', 'warning');
+            return;
+        }
+        const email = document.getElementById('input_reenvio_email').value.trim();
+        if (!email || !email.includes('@')) {
+            Swal.fire('Correo Inválido', 'Por favor ingresa un correo electrónico válido.', 'warning');
+            return;
+        }
+        const btn = document.getElementById('btnEnviarCorreoManual');
+        const msg = document.getElementById('msg_correo_manual');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[12px]">autorenew</span>';
+        if (msg) msg.innerText = '';
+
+        fetch(`{{ url('/admin/pos/enviar-ticket-correo') }}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify({
+                factura_id: ultimaVentaExitosa.factura_id,
+                email: email
+            })
+        })
+        .then(async res => {
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.message || 'Error al enviar');
+            return json;
+        })
+        .then(json => {
+            if (msg) msg.innerHTML = '<span class="text-emerald-600 font-bold">¡Enviado!</span>';
+            const correoTxt = document.getElementById('modal_exito_correo_txt');
+            if (correoTxt) {
+                correoTxt.innerHTML = `<span class="text-emerald-700 font-bold flex items-center gap-1">✓ Enviado a ${email}</span>`;
+            }
+            Swal.fire({
+                icon: 'success',
+                title: 'Ticket Enviado',
+                text: json.message,
+                timer: 2500,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        })
+        .catch(err => {
+            if (msg) msg.innerHTML = '<span class="text-rose-600 font-bold">Error</span>';
+            Swal.fire('Error al enviar', err.message, 'error');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-symbols-outlined text-[13px]">mail</span> Enviar';
+        });
     }
 
     function cerrarModalExito() {
