@@ -13,7 +13,7 @@
                 {{-- Encabezado informativo del correo --}}
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 360px; margin-bottom: 12px; text-align: center;">
                     <tr>
-                        <td>
+                        <td align="center">
                             <p style="margin: 0; font-size: 13px; font-weight: 700; color: #0b1d38; text-transform: uppercase; letter-spacing: 0.5px;">
                                 Agrosuministros Rodríguez
                             </p>
@@ -207,14 +207,7 @@
                         </td>
                     </tr>
 
-                    {{-- Botón Web para Ver / Imprimir Ticket en Línea --}}
-                    <tr>
-                        <td align="center" style="padding-top: 14px;">
-                            <a href="{{ !empty($factura->id) ? route('factura.ticket', $factura->id) : url('/facturas') }}" target="_blank" style="display: inline-block; background-color: #0b1d38; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; padding: 8px 16px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                🖨️ Ver / Imprimir Ticket Web
-                            </a>
-                        </td>
-                    </tr>
+
 
                 </table>
 

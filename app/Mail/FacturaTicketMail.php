@@ -5,10 +5,11 @@ namespace App\Mail;
 use App\Models\Factura;
 use App\Models\ConfiguracionTienda;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class FacturaTicketMail extends Mailable
+class FacturaTicketMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 

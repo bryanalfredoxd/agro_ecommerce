@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File; // Añadimos esta importación
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\PedidoRecibidoMail;
 use App\Models\Carrito;
 use App\Models\Pedido;
 use App\Models\Pago;
@@ -239,6 +242,15 @@ class CheckoutController extends Controller
 
             // 7. Limpiar Carrito
             Carrito::where('usuario_id', $usuario->id)->delete();
+
+            // 8. Enviar correo de confirmación de orden recibida al cliente
+            try {
+                if ($usuario && filter_var($usuario->email, FILTER_VALIDATE_EMAIL)) {
+                    Mail::to($usuario->email)->send(new PedidoRecibidoMail($pedido));
+                }
+            } catch (\Throwable $mailEx) {
+                Log::warning("Checkout: No se pudo enviar correo de pedido recibido para orden #{$pedido->id}: " . $mailEx->getMessage());
+            }
 
             return redirect()->route('perfil.pedidos')->with('success', '¡Pedido #' . $pedido->id . ' registrado correctamente! En breve verificaremos tu pago.');
 

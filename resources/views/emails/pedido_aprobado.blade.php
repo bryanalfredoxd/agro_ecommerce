@@ -3,149 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedido Confirmado - Agrosuministros Rodríguez</title>
+    <title>¡Pago Aprobado y Pedido Confirmado! - Agrosuministros Rodríguez</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f1f5f9; padding: 30px 10px;">
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f1f5f9; padding: 32px 12px;">
         <tr>
             <td align="center">
-                <!-- CONTENEDOR PRINCIPAL -->
-                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(11,29,56,0.08); border: 1px solid #e2e8f0;">
+                <!-- CONTENEDOR PRINCIPAL DEL EMAIL -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(11, 29, 56, 0.08); border: 1px solid #e2e8f0;">
                     
-                    <!-- ENCABEZADO CON DEGRADADO CORPORATIVO -->
+                    <!-- 1. ENCABEZADO CORPORATIVO -->
                     <tr>
-                        <td style="background: linear-gradient(135deg, #0b1d38 0%, #1e549e 60%, #3492cf 100%); padding: 36px 30px; text-align: center;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 900; letter-spacing: -0.5px;">
-                                Agrosuministros Rodríguez
-                            </h1>
-                            <p style="margin: 6px 0 0 0; color: #aad6f3; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
-                                Soluciones Integrales para el Campo
-                            </p>
+                        <td style="background-color: #0b1d38; padding: 28px 32px; text-align: center; border-bottom: 3px solid #1e549e;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td align="center">
+                                        @php
+                                            $appUrl = config('app.url', '');
+                                            $isLocal = empty($appUrl) || str_contains($appUrl, 'localhost') || str_contains($appUrl, '127.0.0.1');
+                                            $logoUrl = $isLocal 
+                                                ? 'https://raw.githubusercontent.com/bryanalfredoxd/agro_ecommerce/main/public/favicon.ico' 
+                                                : asset('favicon.ico');
+                                        @endphp
+                                        <img src="{{ $logoUrl }}" alt="Agrosuministros Rodríguez" width="70" height="70" style="display: block; margin: 0 auto 12px auto; background-color: #ffffff; border-radius: 50%; padding: 3px; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
+                                        <h1 style="margin: 0; color: #ffffff; font-size: 20px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;">
+                                            {{ $config->nombre_comercio ?? $config->nombre_empresa ?? 'Agrosuministros Rodríguez C.A.' }}
+                                        </h1>
+                                        <p style="margin: 4px 0 0 0; color: #93c5fd; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                                            RIF: {{ $config->rif ?? 'J-50493821-4' }} • Barinitas, Edo. Barinas
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
 
-                    <!-- BANNER DE CONFIRMACIÓN -->
+                    <!-- 2. BANNER DE ESTADO: PAGO APROBADO -->
                     <tr>
-                        <td style="padding: 30px 30px 15px 30px; text-align: center;">
-                            <div style="display: inline-block; width: 60px; height: 60px; line-height: 60px; border-radius: 50%; background-color: #ecfdf5; border: 2px solid #a7f3d0; color: #059669; font-size: 30px; margin-bottom: 12px;">
-                                ✓
+                        <td style="padding: 32px 32px 16px 32px; text-align: center;">
+                            <div style="display: inline-block; background-color: #ecfdf5; border: 1.5px solid #10b981; color: #047857; font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px;">
+                                ✓ PAGO VERIFICADO Y APROBADO
                             </div>
-                            <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0b1d38;">
-                                ¡Tu pago ha sido aprobado!
+                            <h2 style="margin: 0; font-size: 22px; font-weight: 900; color: #0b1d38; letter-spacing: -0.3px;">
+                                ¡Tu pedido está confirmado y en preparación!
                             </h2>
-                            <p style="margin: 8px 0 0 0; font-size: 14px; color: #64748b; line-height: 1.5;">
-                                Hola <strong>{{ $pedido->usuario ? $pedido->usuario->nombre : 'Estimado Cliente' }}</strong>, hemos verificado tu pago y tu orden ya está en proceso de preparación.
+                            <p style="margin: 10px auto 0 auto; max-width: 480px; font-size: 13.5px; color: #334155; line-height: 1.5;">
+                                Hola <strong>{{ $pedido->usuario ? $pedido->usuario->nombre . ' ' . $pedido->usuario->apellido : 'Estimado Cliente' }}</strong>, hemos verificado con éxito tu comprobante de pago. Nuestro almacén ha iniciado el embalaje y alistamiento de tus insumos agropecuarios.
                             </p>
                         </td>
                     </tr>
 
-                    <!-- TARJETA CON DETALLES DE LA ORDEN -->
+                    <!-- 3. DETALLES DE LA ORDEN Y CONCILIACIÓN BANCARIA -->
                     <tr>
-                        <td style="padding: 10px 30px 20px 30px;">
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0; padding: 16px;">
+                        <td style="padding: 12px 32px 20px 32px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px;">
                                 <tr>
-                                    <td style="padding: 6px 12px; font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase;">Número de Orden:</td>
-                                    <td style="padding: 6px 12px; font-size: 14px; color: #1e549e; font-weight: 800; text-align: right;">#{{ $pedido->id }}</td>
-                                </tr>
-                                @if($factura)
-                                <tr>
-                                    <td style="padding: 6px 12px; font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase;">Factura Emitida:</td>
-                                    <td style="padding: 6px 12px; font-size: 14px; color: #0b1d38; font-weight: 800; text-align: right;">{{ $factura->numero_factura }}</td>
-                                </tr>
-                                @endif
-                                <tr>
-                                    <td style="padding: 6px 12px; font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase;">Método de Entrega:</td>
-                                    <td style="padding: 6px 12px; font-size: 13px; color: #0b1d38; font-weight: 700; text-align: right;">
-                                        {{ $pedido->zona_delivery_id ? 'Delivery a Domicilio' : 'Retiro en Tienda Física' }}
+                                    <td colspan="2" style="padding-bottom: 10px; border-bottom: 1px solid #e2e8f0;">
+                                        <span style="font-size: 11px; font-weight: 800; color: #0b1d38; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Resumen de la Transacción
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="padding: 6px 12px; font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase;">Dirección / Punto:</td>
-                                    <td style="padding: 6px 12px; font-size: 13px; color: #334155; text-align: right;">{{ $pedido->direccion_texto }}</td>
+                                    <td style="padding: 8px 0 4px 0; font-size: 12px; color: #475569; font-weight: 600;">Orden de Compra:</td>
+                                    <td align="right" style="padding: 8px 0 4px 0; font-size: 13px; color: #0b1d38; font-weight: 800; font-family: monospace;">#{{ $pedido->id }}</td>
+                                </tr>
+                                @if($factura)
+                                <tr>
+                                    <td style="padding: 4px 0; font-size: 12px; color: #475569; font-weight: 600;">Factura Fiscal Digital:</td>
+                                    <td align="right" style="padding: 4px 0; font-size: 13px; color: #1e549e; font-weight: 800; font-family: monospace;">{{ $factura->numero_factura }}</td>
+                                </tr>
+                                @endif
+                                <tr>
+                                    <td style="padding: 4px 0; font-size: 12px; color: #475569; font-weight: 600;">Fecha de Aprobación:</td>
+                                    <td align="right" style="padding: 4px 0; font-size: 12px; color: #0f172a; font-weight: 700;">{{ now()->format('d/m/Y h:i A') }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 0; font-size: 12px; color: #475569; font-weight: 600;">Método de Pago Verificado:</td>
+                                    <td align="right" style="padding: 4px 0; font-size: 12px; color: #0f172a; font-weight: 700;">
+                                        {{ strtoupper(str_replace('_', ' ', $pedido->pago->metodo ?? 'Transferencia / Pago Móvil')) }}
+                                    </td>
                                 </tr>
                                 @if($pedido->pago && $pedido->pago->referencia_bancaria)
                                 <tr>
-                                    <td style="padding: 6px 12px; font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase;">Ref. de Pago:</td>
-                                    <td style="padding: 6px 12px; font-size: 13px; color: #334155; font-family: monospace; font-weight: 700; text-align: right;">{{ $pedido->pago->referencia_bancaria }}</td>
+                                    <td style="padding: 4px 0; font-size: 12px; color: #475569; font-weight: 600;">Referencia Bancaria:</td>
+                                    <td align="right" style="padding: 4px 0; font-size: 12px; color: #0f172a; font-weight: 800; font-family: monospace;">{{ $pedido->pago->referencia_bancaria }}</td>
+                                </tr>
+                                @endif
+                                <tr>
+                                    <td style="padding: 4px 0; font-size: 12px; color: #475569; font-weight: 600;">Modalidad de Despacho:</td>
+                                    <td align="right" style="padding: 4px 0; font-size: 12px; color: #047857; font-weight: 800;">
+                                        {{ $pedido->zona_delivery_id ? '🚚 Delivery a Domicilio' : '🏬 Retiro en Tienda Física' }}
+                                    </td>
+                                </tr>
+                                @if($pedido->direccion_texto)
+                                <tr>
+                                    <td style="padding: 4px 0 0 0; font-size: 12px; color: #475569; font-weight: 600; vertical-align: top;">Destino de Entrega:</td>
+                                    <td align="right" style="padding: 4px 0 0 0; font-size: 12px; color: #0f172a; font-weight: 600; max-width: 280px; word-break: break-word;">
+                                        {{ $pedido->direccion_texto }}
+                                    </td>
                                 </tr>
                                 @endif
                             </table>
                         </td>
                     </tr>
 
-                    <!-- TABLA DE ARTÍCULOS -->
+                    <!-- 4. TABLA DE ARTÍCULOS COMPRADOS -->
                     <tr>
-                        <td style="padding: 10px 30px;">
-                            <h3 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #0b1d38;">
-                                Resumen de Artículos
-                            </h3>
+                        <td style="padding: 10px 32px;">
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
                                 <thead>
-                                    <tr style="border-bottom: 2px solid #e2e8f0;">
-                                        <th align="left" style="padding: 8px 0; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Producto</th>
-                                        <th align="center" style="padding: 8px 0; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Cant.</th>
-                                        <th align="right" style="padding: 8px 0; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total USD</th>
+                                    <tr>
+                                        <th align="left" style="padding: 8px 4px; font-size: 10.5px; font-weight: 800; color: #0b1d38; text-transform: uppercase; border-bottom: 2px solid #0b1d38;">
+                                            Descripción del Producto
+                                        </th>
+                                        <th align="center" style="padding: 8px 4px; font-size: 10.5px; font-weight: 800; color: #0b1d38; text-transform: uppercase; border-bottom: 2px solid #0b1d38; width: 60px;">
+                                            Cant.
+                                        </th>
+                                        <th align="right" style="padding: 8px 4px; font-size: 10.5px; font-weight: 800; color: #0b1d38; text-transform: uppercase; border-bottom: 2px solid #0b1d38; width: 90px;">
+                                            Total ($)
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($pedido->detalles as $det)
-                                    <tr style="border-bottom: 1px solid #f1f5f9;">
-                                        <td style="padding: 12px 0; font-size: 13px; color: #1e293b; font-weight: 600;">
-                                            {{ $det->producto ? $det->producto->nombre : 'Artículo' }}
-                                        </td>
-                                        <td align="center" style="padding: 12px 0; font-size: 13px; color: #64748b;">
-                                            {{ (float) $det->cantidad_solicitada }}
-                                        </td>
-                                        <td align="right" style="padding: 12px 0; font-size: 13px; color: #1e549e; font-weight: 700;">
-                                            ${{ number_format($det->precio_historico_usd * $det->cantidad_solicitada, 2) }}
-                                        </td>
-                                    </tr>
-                                    @endforeach
+                                    @if($pedido->detalles && count($pedido->detalles) > 0)
+                                        @foreach($pedido->detalles as $det)
+                                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                                            <td style="padding: 10px 4px; font-size: 12.5px; color: #0f172a; font-weight: 700;">
+                                                <div>{{ $det->producto ? $det->producto->nombre : 'Artículo Agropecuario' }}</div>
+                                                @if($det->producto && $det->producto->categoria)
+                                                    <div style="font-size: 10px; color: #475569; font-weight: 500; margin-top: 2px;">
+                                                        Categoría: {{ $det->producto->categoria->nombre }}
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td align="center" style="padding: 10px 4px; font-size: 12.5px; color: #0f172a; font-weight: 700;">
+                                                {{ (float) $det->cantidad_solicitada }}
+                                                @if($det->producto && $det->producto->unidad_medida)
+                                                    <span style="font-size: 10px; color: #475569;">{{ $det->producto->unidad_medida }}</span>
+                                                @endif
+                                            </td>
+                                            <td align="right" style="padding: 10px 4px; font-size: 13px; color: #0b1d38; font-weight: 800;">
+                                                ${{ number_format($det->precio_historico_usd * $det->cantidad_solicitada, 2) }}
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="3" align="center" style="padding: 16px; color: #64748b; font-style: italic;">
+                                                Sin ítems especificados
+                                            </td>
+                                        </tr>
+                                    @endif
                                 </tbody>
                             </table>
                         </td>
                     </tr>
 
-                    <!-- TOTALES -->
+                    <!-- 5. LIQUIDACIÓN DE TOTALES -->
                     <tr>
-                        <td style="padding: 10px 30px 30px 30px;">
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top: 2px dashed #e2e8f0; padding-top: 14px; margin-top: 8px;">
+                        <td style="padding: 10px 32px 32px 32px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top: 1.5px solid #cbd5e1; padding-top: 10px;">
                                 <tr>
-                                    <td style="padding: 4px 0; font-size: 13px; color: #64748b;">Subtotal:</td>
-                                    <td align="right" style="padding: 4px 0; font-size: 13px; color: #334155; font-weight: 700;">${{ number_format($pedido->subtotal_usd, 2) }} USD</td>
+                                    <td style="padding: 3px 0; font-size: 12px; color: #475569; font-weight: 600;">Subtotal Neto:</td>
+                                    <td align="right" style="padding: 3px 0; font-size: 12.5px; color: #0f172a; font-weight: 700;">
+                                        ${{ number_format($pedido->subtotal_usd, 2) }} USD
+                                    </td>
                                 </tr>
                                 @if($pedido->costo_delivery_usd > 0)
                                 <tr>
-                                    <td style="padding: 4px 0; font-size: 13px; color: #64748b;">Costo Delivery:</td>
-                                    <td align="right" style="padding: 4px 0; font-size: 13px; color: #334155; font-weight: 700;">${{ number_format($pedido->costo_delivery_usd, 2) }} USD</td>
+                                    <td style="padding: 3px 0; font-size: 12px; color: #475569; font-weight: 600;">Flete / Delivery:</td>
+                                    <td align="right" style="padding: 3px 0; font-size: 12.5px; color: #0f172a; font-weight: 700;">
+                                        ${{ number_format($pedido->costo_delivery_usd, 2) }} USD
+                                    </td>
                                 </tr>
                                 @endif
                                 <tr>
-                                    <td style="padding: 8px 0; font-size: 16px; font-weight: 800; color: #0b1d38;">TOTAL PAGADO:</td>
-                                    <td align="right" style="padding: 8px 0; font-size: 20px; font-weight: 900; color: #1e549e;">${{ number_format($pedido->total_usd, 2) }} USD</td>
+                                    <td style="padding: 6px 0 2px 0; font-size: 14px; font-weight: 900; color: #0b1d38; border-top: 1.5px solid #0b1d38;">
+                                        TOTAL APROBADO (USD):
+                                    </td>
+                                    <td align="right" style="padding: 6px 0 2px 0; font-size: 17px; font-weight: 900; color: #0b1d38; border-top: 1.5px solid #0b1d38;">
+                                        ${{ number_format($pedido->total_usd, 2) }} USD
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td></td>
-                                    <td align="right" style="font-size: 12px; color: #64748b; font-weight: 600;">Bs. {{ number_format($pedido->total_ves_calculado, 2) }}</td>
+                                    <td style="padding: 2px 0; font-size: 11px; color: #1e549e; font-weight: 700;">
+                                        Equivalente en Moneda Nacional (BCV):
+                                    </td>
+                                    <td align="right" style="padding: 2px 0; font-size: 13px; color: #1e549e; font-weight: 800;">
+                                        Bs. {{ number_format($pedido->total_ves_calculado, 2) }}
+                                    </td>
                                 </tr>
                             </table>
-
-                            <div style="margin-top: 24px; text-align: center;">
-                                <a href="{{ url('/perfil/pedidos/' . $pedido->id) }}" style="display: inline-block; background-color: #1e549e; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-size: 14px; font-weight: 800; box-shadow: 0 4px 14px rgba(30,84,158,0.3);">
-                                    Ver Detalle en Mi Cuenta
-                                </a>
-                            </div>
                         </td>
                     </tr>
 
-                    <!-- PIE DE PÁGINA -->
+
+
+                    <!-- 7. PIE DE PÁGINA Y SOPORTE AL CLIENTE -->
                     <tr>
-                        <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 30px; text-align: center;">
-                            <p style="margin: 0; font-size: 12px; color: #64748b;">
-                                Agrosuministros Rodríguez C.A. &bull; Barinitas, Estado Barinas
+                        <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                            <p style="margin: 0; font-size: 11.5px; font-weight: 700; color: #334155;">
+                                {{ $config->nombre_comercio ?? $config->nombre_empresa ?? 'Agrosuministros Rodríguez C.A.' }}
                             </p>
-                            <p style="margin: 6px 0 0 0; font-size: 11px; color: #94a3b8;">
-                                ¿Tienes alguna pregunta? Contáctanos por WhatsApp al +58 412-9614615
+                            <p style="margin: 4px 0 0 0; font-size: 11px; color: #64748b;">
+                                {{ $config->direccion_fisica ?? 'Calle Principal, Sector Centro, Barinitas, Estado Barinas, Venezuela' }}
+                            </p>
+                            <p style="margin: 8px 0 0 0; font-size: 11px; color: #475569; font-weight: 600;">
+                                ¿Tienes alguna pregunta o requerimiento especial?
+                            </p>
+                            <p style="margin: 3px 0 0 0; font-size: 11px; color: #1e549e; font-weight: 700;">
+                                WhatsApp de Atención: {{ $config->telefono_contacto ?? '+58 412-9614615' }} • {{ $config->email_contacto ?? 'agrosuministrosrodriguez@gmail.com' }}
+                            </p>
+                            <p style="margin: 12px 0 0 0; font-size: 9.5px; color: #94a3b8; line-height: 1.4;">
+                                Este mensaje fue generado de forma automática por el sistema ERP de facturación de Agrosuministros Rodríguez. Por favor no responda directamente a este remitente.
                             </p>
                         </td>
                     </tr>
