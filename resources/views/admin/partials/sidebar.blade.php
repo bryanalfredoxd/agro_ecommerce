@@ -32,7 +32,7 @@
 
             {{-- MÓDULO: Ventas y Pedidos --}}
             @if(Auth::user()->tienePermiso('ver_pedidos') || Auth::user()->tienePermiso('gestionar_pagos') || Auth::user()->tienePermiso('crear_venta_manual') || Auth::user()->tienePermiso('procesar_devoluciones') || Auth::user()->tienePermiso('gestionar_zonas_delivery') || Auth::user()->tienePermiso('ver_logistica'))
-            <details class="group/menu" {{ request()->routeIs('admin.pedidos.*', 'admin.pagos.*', 'admin.pos.*', 'admin.zonas_delivery.*') ? 'open' : '' }}>
+            <details class="group/menu" {{ request()->routeIs('admin.pedidos.*', 'admin.pagos.*', 'admin.pos.*', 'admin.zonas_delivery.*', 'admin.cotizaciones.*') ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer select-none font-semibold text-sm">
                     <div class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-[20px] text-[#3492cf]">shopping_cart</span>
@@ -56,6 +56,7 @@
                     @if(Auth::user()->tienePermiso('crear_venta_manual'))
                         <a href="{{ route('admin.pos.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.pos.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Terminal POS (Venta)</a>
                     @endif
+                    <a href="{{ route('admin.cotizaciones.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.cotizaciones.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Cotizaciones / Presupuestos</a>
                     @if(Auth::user()->tienePermiso('gestionar_zonas_delivery') || Auth::user()->tienePermiso('ver_logistica') || Auth::user()->esAdmin())
                         <a href="{{ route('admin.zonas_delivery.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.zonas_delivery.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Zonas de Delivery (Mapa)</a>
                     @endif

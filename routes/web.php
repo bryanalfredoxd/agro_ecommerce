@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\ConfiguracionTiendaController;
 use App\Http\Controllers\Admin\CuentaBancariaController;
 use App\Http\Controllers\Admin\ZonaDeliveryController;
 use App\Http\Controllers\Admin\TasaCambioController as AdminTasaCambioController;
+use App\Http\Controllers\Admin\CotizacionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -218,6 +219,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/pos/cerrar-caja', [PosController::class, 'cerrarCaja'])->name('pos.cerrarCaja');
         Route::get('/pos/imprimir-cierre/{id}', [PosController::class, 'imprimirCierre'])->name('pos.imprimirCierre');
     });
+
+    // Módulo: Cotizaciones y Presupuestos
+    Route::get('/cotizaciones', [CotizacionController::class, 'index'])->name('cotizaciones.index');
+    Route::get('/cotizaciones/crear', [CotizacionController::class, 'create'])->name('cotizaciones.create');
+    Route::post('/cotizaciones', [CotizacionController::class, 'store'])->name('cotizaciones.store');
+    Route::get('/cotizaciones/buscar-producto', [CotizacionController::class, 'buscarProducto'])->name('cotizaciones.buscar-producto');
+    Route::get('/cotizaciones/buscar-cliente', [CotizacionController::class, 'buscarCliente'])->name('cotizaciones.buscar-cliente');
+    Route::get('/cotizaciones/{id}', [CotizacionController::class, 'show'])->name('cotizaciones.show');
+    Route::get('/cotizaciones/{id}/imprimir', [CotizacionController::class, 'imprimir'])->name('cotizaciones.imprimir');
+    Route::get('/cotizaciones/{id}/pdf', [CotizacionController::class, 'descargarPdf'])->name('cotizaciones.pdf');
+    Route::post('/cotizaciones/{id}/enviar-correo', [CotizacionController::class, 'enviarCorreo'])->name('cotizaciones.enviar_correo');
+    Route::post('/cotizaciones/{id}/estado', [CotizacionController::class, 'cambiarEstado'])->name('cotizaciones.estado');
+    Route::delete('/cotizaciones/{id}', [CotizacionController::class, 'destroy'])->name('cotizaciones.destroy');
 
     // Módulo: Sistema y Configuración
     Route::middleware('permiso:gestionar_horarios')->group(function () {
