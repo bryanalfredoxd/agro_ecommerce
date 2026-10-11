@@ -97,23 +97,49 @@ class CatalogoController extends Controller
 
     public function solicitarProducto(Request $request)
     {
-        // Validación sencilla
-        $request->validate([
+        $rules = [
             'nombre_producto' => 'required|string|max:255',
-            'descripcion_adicional' => 'nullable|string'
-        ]);
+            'descripcion_adicional' => 'nullable|string|max:1000',
+        ];
 
-        // Crear el registro
-        SolicitudProducto::create([
-            // Laravel checkea si hay sesión, sino guarda null
-            'usuario_id' => Auth::check() ? Auth::id() : null,
-            'nombre_producto' => $request->nombre_producto,
-            'descripcion_adicional' => $request->descripcion_adicional,
+        $messages = [
+            'nombre_producto.required' => 'Debes indicar el nombre del insumo o producto que necesitas.',
+        ];
+
+        if (!Auth::check()) {
+            $rules['nombre_contacto'] = 'required|string|max:150';
+            $rules['telefono_contacto'] = 'required|string|max:50';
+            $messages['nombre_contacto.required'] = 'Por favor ingresa tu nombre de contacto.';
+            $messages['telefono_contacto.required'] = 'Por favor ingresa un teléfono o WhatsApp para contactarte.';
+        } else {
+            $rules['nombre_contacto'] = 'nullable|string|max:150';
+            $rules['telefono_contacto'] = 'nullable|string|max:50';
+        }
+
+        $request->validate($rules, $messages);
+
+        $usuario = Auth::user();
+
+        $solicitud = SolicitudProducto::create([
+            'usuario_id' => $usuario ? $usuario->id : null,
+            'nombre_contacto' => $usuario ? null : trim($request->nombre_contacto),
+            'telefono_contacto' => $usuario ? null : trim($request->telefono_contacto),
+            'nombre_producto' => trim($request->nombre_producto),
+            'descripcion_adicional' => $request->descripcion_adicional ? trim($request->descripcion_adicional) : null,
             'estado' => 'pendiente'
         ]);
 
-        // Retornar a la vista con un mensaje de éxito
-        return redirect()->back()->with('success', '¡Gracias por tu sugerencia! Trabajaremos para agregar el producto pronto.');
+        $mensaje = '¡Hemos recibido tu solicitud! Nuestro equipo gestionará el insumo a la brevedad.';
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $mensaje,
+                'solicitud' => $solicitud
+            ]);
+        }
+
+        return redirect()->back()->with('success', $mensaje);
     }
 
     /**

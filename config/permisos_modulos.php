@@ -117,6 +117,13 @@ return [
                 'badge_color' => 'bg-sky-50 text-sky-700 border-sky-200',
                 'descripcion' => 'Permite visualizar el registro cronológico de fluctuaciones de precios.'
             ],
+            'gestionar_solicitudes_productos' => [
+                'nombre' => 'Gestionar Solicitudes de Insumos',
+                'tipo' => 'operativo',
+                'badge' => 'Atención al Cliente',
+                'badge_color' => 'bg-blue-50 text-blue-700 border-blue-200',
+                'descripcion' => 'Permite ver y gestionar las peticiones de productos e insumos hechas por los clientes.'
+            ],
         ]
     ],
     [

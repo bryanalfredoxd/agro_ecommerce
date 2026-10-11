@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\CuentaBancariaController;
 use App\Http\Controllers\Admin\ZonaDeliveryController;
 use App\Http\Controllers\Admin\TasaCambioController as AdminTasaCambioController;
 use App\Http\Controllers\Admin\CotizacionController;
+use App\Http\Controllers\Admin\SolicitudProductoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -192,6 +193,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     Route::get('/historico-precios', [HistoricoPrecioController::class, 'index'])->name('historico_precios.index')->middleware('permiso:ver_historico_precios');
+    Route::get('/solicitudes-insumos', [SolicitudProductoController::class, 'index'])->name('solicitudes_productos.index')->middleware('permiso:ver_productos,gestionar_productos,gestionar_solicitudes_productos');
+    Route::post('/solicitudes-insumos/{id}/estado', [SolicitudProductoController::class, 'actualizarEstado'])->name('solicitudes_productos.actualizar_estado')->middleware('permiso:ver_productos,gestionar_productos,gestionar_solicitudes_productos');
+    Route::delete('/solicitudes-insumos/{id}', [SolicitudProductoController::class, 'destroy'])->name('solicitudes_productos.destroy')->middleware('permiso:ver_productos,gestionar_productos,gestionar_solicitudes_productos');
 
     // Módulo: Ventas y Pedidos
     Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index')->middleware('permiso:ver_pedidos,gestionar_pagos');

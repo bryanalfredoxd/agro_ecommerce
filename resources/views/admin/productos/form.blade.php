@@ -52,7 +52,7 @@
                             <div class="space-y-5">
                                 <div>
                                     <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Nombre del Producto <span class="text-red-500">*</span></label>
-                                    <input type="text" name="nombre" value="{{ old('nombre', $producto->nombre ?? '') }}" required class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none">
+                                    <input type="text" name="nombre" value="{{ old('nombre', $producto->nombre ?? request('nombre', '')) }}" required class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all font-bold text-agro-dark outline-none">
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -78,7 +78,7 @@
 
                                 <div>
                                     <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Descripción / Detalles</label>
-                                    <textarea name="descripcion" rows="4" class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-agro-dark outline-none">{{ old('descripcion', $producto->descripcion ?? '') }}</textarea>
+                                    <textarea name="descripcion" rows="4" class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-500/20 transition-all text-sm text-agro-dark outline-none">{{ old('descripcion', $producto->descripcion ?? request('descripcion', '')) }}</textarea>
                                 </div>
                             </div>
                         </div>

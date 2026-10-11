@@ -85,8 +85,13 @@
                     </a>
                     @endif
                     @if(Auth::user()->tienePermiso('ver_historico_precios'))
-                    <a href="{{ route('admin.historico_precios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-700 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs sm:col-span-2">
+                    <a href="{{ route('admin.historico_precios.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-700 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">history</span> Histórico de Precios
+                    </a>
+                    @endif
+                    @if(Auth::user()->tienePermiso('ver_productos') || Auth::user()->tienePermiso('gestionar_solicitudes_productos'))
+                    <a href="{{ route('admin.solicitudes_productos.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-gray-700 hover:text-green-700 transition-colors border border-transparent hover:border-green-100 font-bold text-xs">
+                        <span class="material-symbols-outlined text-[18px]">box_add</span> Solicitudes de Insumos
                     </a>
                     @endif
                 </div>

@@ -267,8 +267,8 @@
                 </button>
                 
                 <button type="button" 
-                        onclick="document.getElementById('modal-solicitar-producto').classList.remove('hidden')" 
-                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1e549e] hover:bg-[#3492cf] text-white text-xs font-black rounded-xl shadow-xs transition-colors w-full sm:w-auto">
+                        onclick="typeof abrirModalSolicitarProducto === 'function' ? abrirModalSolicitarProducto('{{ addslashes(request('buscar', '')) }}') : document.getElementById('modal-solicitar-producto').classList.remove('hidden')" 
+                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1e549e] hover:bg-[#3492cf] text-white text-xs font-black rounded-xl shadow-xs transition-colors w-full sm:w-auto cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">box_add</span>
                     Solicitar este insumo
                 </button>

@@ -65,8 +65,8 @@
             @endif
 
             {{-- MÓDULO: Catálogo e Inventario --}}
-            @if(Auth::user()->tienePermiso('ver_productos') || Auth::user()->tienePermiso('gestionar_inventario_lotes') || Auth::user()->tienePermiso('gestionar_categorias_marcas') || Auth::user()->tienePermiso('ver_historico_precios'))
-            <details class="group/menu" {{ request()->routeIs('admin.productos.*', 'admin.categorias.*', 'admin.marcas.*', 'admin.historico_precios.*') ? 'open' : '' }}>
+            @if(Auth::user()->tienePermiso('ver_productos') || Auth::user()->tienePermiso('gestionar_inventario_lotes') || Auth::user()->tienePermiso('gestionar_categorias_marcas') || Auth::user()->tienePermiso('ver_historico_precios') || Auth::user()->tienePermiso('gestionar_solicitudes_productos'))
+            <details class="group/menu" {{ request()->routeIs('admin.productos.*', 'admin.categorias.*', 'admin.marcas.*', 'admin.historico_precios.*', 'admin.solicitudes_productos.*') ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer select-none font-semibold text-sm">
                     <div class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-[20px] text-[#3492cf]">category</span>
@@ -86,6 +86,17 @@
                     @endif
                     @if(Auth::user()->tienePermiso('ver_historico_precios'))
                         <a href="{{ route('admin.historico_precios.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.historico_precios.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Histórico de Precios</a>
+                    @endif
+                    @if(Auth::user()->tienePermiso('ver_productos') || Auth::user()->tienePermiso('gestionar_solicitudes_productos'))
+                        <a href="{{ route('admin.solicitudes_productos.index') }}" class="flex items-center justify-between py-1.5 text-xs font-medium {{ request()->routeIs('admin.solicitudes_productos.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">
+                            <span>Solicitudes de Insumos</span>
+                            @php
+                                $solicitudesPendientesCount = \App\Models\SolicitudProducto::where('estado', 'pendiente')->count();
+                            @endphp
+                            @if($solicitudesPendientesCount > 0)
+                                <span class="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-blue-500 text-white leading-none">{{ $solicitudesPendientesCount }}</span>
+                            @endif
+                        </a>
                     @endif
                 </div>
             </details>

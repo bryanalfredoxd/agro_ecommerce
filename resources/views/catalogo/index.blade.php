@@ -212,9 +212,9 @@
                                 Si necesitas un insumo o medicamento específico, solicítalo directamente a nuestro equipo.
                             </p>
                             <button type="button" 
-                                    onclick="document.getElementById('modal-solicitar-producto').classList.remove('hidden')"
-                                    class="w-full py-2 px-3 bg-white hover:bg-[#1e549e] text-[#1e549e] hover:text-white border border-[#3492cf]/30 rounded-lg text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-1.5">
-                                <span class="material-symbols-outlined text-[15px]">box_add</span>
+                                    onclick="abrirModalSolicitarProducto()"
+                                    class="w-full py-2.5 px-3 bg-white hover:bg-[#1e549e] text-[#1e549e] hover:text-white border border-[#3492cf]/30 hover:border-[#1e549e] rounded-xl text-xs font-black transition-all shadow-2xs hover:shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 group">
+                                <span class="material-symbols-outlined text-[17px] group-hover:scale-110 transition-transform">box_add</span>
                                 Solicitar Insumo
                             </button>
                         </div>
@@ -270,19 +270,19 @@
 {{-- ================= MODAL: SOLICITAR PRODUCTO ================= --}}
 <div id="modal-solicitar-producto" class="fixed inset-0 z-[120] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     {{-- Backdrop --}}
-    <div class="fixed inset-0 bg-[#0f2347]/60 backdrop-blur-xs transition-opacity" onclick="document.getElementById('modal-solicitar-producto').classList.add('hidden')"></div>
+    <div class="fixed inset-0 bg-[#0f2347]/60 backdrop-blur-xs transition-opacity" onclick="cerrarModalSolicitarProducto()"></div>
     
     {{-- Dialog --}}
     <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex min-h-full items-end sm:items-center justify-center p-4 text-center">
-            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md animate-fade-in-up border border-slate-100">
+            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg animate-fade-in-up border border-slate-100">
                 
-                <form action="{{ route('catalogo.solicitar') }}" method="POST">
+                <form id="form-solicitar-producto" action="{{ route('catalogo.solicitar') }}" method="POST" onsubmit="enviarSolicitudProducto(event)">
                     @csrf
                     <div class="bg-white px-6 pb-6 pt-7">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-2.5">
-                                <div class="size-10 rounded-xl bg-[#e5f2fb] text-[#1e549e] flex items-center justify-center">
+                                <div class="size-10 rounded-xl bg-[#e5f2fb] text-[#1e549e] flex items-center justify-center shadow-2xs">
                                     <span class="material-symbols-outlined text-[24px]">box_add</span>
                                 </div>
                                 <div>
@@ -293,37 +293,86 @@
                                 </div>
                             </div>
                             <button type="button" 
-                                    onclick="document.getElementById('modal-solicitar-producto').classList.add('hidden')" 
+                                    onclick="cerrarModalSolicitarProducto()" 
                                     class="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full size-8 flex items-center justify-center transition-colors">
                                 <span class="material-symbols-outlined text-[18px]">close</span>
                             </button>
                         </div>
                         
-                        <p class="text-xs text-slate-500 font-medium leading-relaxed mb-5">
-                            Indícanos el insumo, medicina o implemento que necesitas. Nuestro equipo de compras lo gestionará para añadirlo al inventario o despachártelo bajo pedido.
+                        <p class="text-xs text-slate-500 font-medium leading-relaxed mb-4">
+                            ¿No encuentras el insumo, medicamento o herramienta que buscas? Déjanos tu requerimiento y nuestro equipo de compras se encargará de conseguirlo para ti.
                         </p>
+
+                        {{-- Contenedor de Errores AJAX --}}
+                        <div id="modal-solicitud-errores" class="hidden mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold space-y-1"></div>
+
+                        @auth
+                            {{-- Info del Usuario Autenticado --}}
+                            <div class="mb-4 p-3 rounded-xl bg-[#f8fafc] border border-slate-200/80 flex items-center gap-3">
+                                <div class="size-9 rounded-full bg-[#1e549e]/10 text-[#1e549e] flex items-center justify-center font-black text-xs shrink-0">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="text-xs font-bold text-slate-800 truncate">{{ Auth::user()->name }}</div>
+                                    <div class="text-[11px] text-slate-500 truncate">{{ Auth::user()->email }} {{ Auth::user()->telefono ? '• ' . Auth::user()->telefono : '' }}</div>
+                                </div>
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                                    <span class="size-1.5 rounded-full bg-emerald-500"></span> Conectado
+                                </span>
+                            </div>
+                        @else
+                            {{-- Campos para Visitante --}}
+                            <div class="mb-4 p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/70">
+                                <div class="flex items-center gap-1.5 text-amber-800 text-xs font-bold mb-2">
+                                    <span class="material-symbols-outlined text-[17px]">contact_phone</span>
+                                    Datos de Contacto (Solicitud como Visitante)
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label for="nombre_contacto" class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                            Tu Nombre / Empresa <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               name="nombre_contacto" 
+                                               id="nombre_contacto" 
+                                               placeholder="Ej: Carlos Mendoza" 
+                                               class="block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs focus:border-[#3492cf] focus:ring-2 focus:ring-[#3492cf]/20 text-slate-800 placeholder:text-slate-400 transition-all shadow-2xs">
+                                    </div>
+                                    <div>
+                                        <label for="telefono_contacto" class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                            Teléfono / WhatsApp <span class="text-rose-500">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               name="telefono_contacto" 
+                                               id="telefono_contacto" 
+                                               placeholder="Ej: 0414-1234567" 
+                                               class="block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs focus:border-[#3492cf] focus:ring-2 focus:ring-[#3492cf]/20 text-slate-800 placeholder:text-slate-400 transition-all shadow-2xs">
+                                    </div>
+                                </div>
+                            </div>
+                        @endauth
                         
                         <div class="space-y-4">
                             <div>
                                 <label for="nombre_producto" class="block text-[11px] font-black text-slate-700 uppercase tracking-wider mb-1.5">
-                                    Nombre del Producto / Insumo <span class="text-rose-500">*</span>
+                                    Nombre del Insumo o Producto <span class="text-rose-500">*</span>
                                 </label>
                                 <input type="text" 
                                        name="nombre_producto" 
                                        id="nombre_producto" 
                                        required 
-                                       placeholder="Ej: Fertilizante Triple 15 (Saco 50kg), Ivermectina 1%..." 
+                                       placeholder="Ej: Urea perlada 46%, Ivermectina 1%, Alimento iniciador..." 
                                        class="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm focus:border-[#3492cf] focus:ring-2 focus:ring-[#3492cf]/20 text-slate-800 placeholder:text-slate-400 transition-all shadow-2xs focus:bg-white">
                             </div>
                             
                             <div>
                                 <label for="descripcion_adicional" class="block text-[11px] font-black text-slate-700 uppercase tracking-wider mb-1.5">
-                                    Detalles Adicionales (Opcional)
+                                    Detalles o Presentación (Opcional)
                                 </label>
                                 <textarea name="descripcion_adicional" 
                                           id="descripcion_adicional" 
                                           rows="3" 
-                                          placeholder="Presentación preferida, cantidad estimada, marca de preferencia, etc..." 
+                                          placeholder="Presentación preferida (saco 50kg, frasco 100ml), marca requerida o cantidad estimada..." 
                                           class="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm focus:border-[#3492cf] focus:ring-2 focus:ring-[#3492cf]/20 text-slate-800 placeholder:text-slate-400 transition-all shadow-2xs resize-none focus:bg-white"></textarea>
                             </div>
                         </div>
@@ -331,13 +380,15 @@
 
                     <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex flex-col-reverse sm:flex-row justify-end gap-2.5">
                         <button type="button" 
-                                onclick="document.getElementById('modal-solicitar-producto').classList.add('hidden')" 
-                                class="w-full sm:w-auto inline-flex justify-center items-center rounded-xl bg-white px-5 py-2 text-xs font-bold text-slate-600 border border-slate-200 hover:bg-slate-100 transition-colors">
+                                onclick="cerrarModalSolicitarProducto()" 
+                                class="w-full sm:w-auto inline-flex justify-center items-center rounded-xl bg-white px-5 py-2.5 text-xs font-bold text-slate-600 border border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer">
                             Cancelar
                         </button>
                         <button type="submit" 
-                                class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 rounded-xl bg-[#1e549e] hover:bg-[#3492cf] text-white px-5 py-2 text-xs font-black shadow-xs transition-colors">
-                            <span class="material-symbols-outlined text-[17px]">send</span> Enviar Solicitud
+                                id="btn-submit-solicitud"
+                                class="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 rounded-xl bg-[#1e549e] hover:bg-[#3492cf] text-white px-5 py-2.5 text-xs font-black shadow-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span id="btn-submit-solicitud-icon" class="material-symbols-outlined text-[17px]">send</span>
+                            <span id="btn-submit-solicitud-text">Enviar Solicitud</span>
                         </button>
                     </div>
                 </form>
@@ -364,6 +415,147 @@
             isAuth: {{ Auth::check() ? 'true' : 'false' }},
             csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
         };
+
+        // ==============================================================
+        // 📦 GESTIÓN DEL MODAL DE SOLICITAR PRODUCTO
+        // ==============================================================
+        window.abrirModalSolicitarProducto = function(nombre = '') {
+            const modal = document.getElementById('modal-solicitar-producto');
+            const inputNombre = document.getElementById('nombre_producto');
+            const errorDiv = document.getElementById('modal-solicitud-errores');
+            
+            if (errorDiv) {
+                errorDiv.classList.add('hidden');
+                errorDiv.innerHTML = '';
+            }
+
+            if (nombre && inputNombre) {
+                inputNombre.value = nombre;
+            }
+
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+                
+                setTimeout(() => {
+                    if (inputNombre && !nombre) {
+                        inputNombre.focus();
+                    } else {
+                        const inputContacto = document.getElementById('nombre_contacto');
+                        if (inputContacto) inputContacto.focus();
+                    }
+                }, 100);
+            }
+        };
+
+        window.cerrarModalSolicitarProducto = function() {
+            const modal = document.getElementById('modal-solicitar-producto');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+        };
+
+        // Escuchar tecla Escape para cerrar
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.cerrarModalSolicitarProducto();
+            }
+        });
+
+        // Envío interactivo por AJAX
+        window.enviarSolicitudProducto = function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitBtn = document.getElementById('btn-submit-solicitud');
+            const submitIcon = document.getElementById('btn-submit-solicitud-icon');
+            const submitText = document.getElementById('btn-submit-solicitud-text');
+            const errorDiv = document.getElementById('modal-solicitud-errores');
+
+            if (errorDiv) {
+                errorDiv.classList.add('hidden');
+                errorDiv.innerHTML = '';
+            }
+
+            // Estado de carga
+            if (submitBtn) submitBtn.disabled = true;
+            if (submitIcon) submitIcon.textContent = 'progress_activity';
+            if (submitIcon) submitIcon.classList.add('animate-spin');
+            if (submitText) submitText.textContent = 'Enviando...';
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': window.CatalogoConfig.csrfToken
+                },
+                body: formData
+            })
+            .then(async (response) => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw data;
+                }
+                return data;
+            })
+            .then((data) => {
+                // Éxito
+                form.reset();
+                window.cerrarModalSolicitarProducto();
+                if (typeof showToast === 'function') {
+                    showToast(data.message || '¡Solicitud enviada correctamente!', 'success');
+                } else {
+                    alert(data.message || '¡Solicitud enviada correctamente!');
+                }
+            })
+            .catch((err) => {
+                console.error('Error al enviar solicitud de producto:', err);
+                let mensaje = 'No fue posible registrar la solicitud.';
+                if (err && err.errors) {
+                    const list = Object.values(err.errors).flat();
+                    if (errorDiv) {
+                        errorDiv.innerHTML = list.map(m => `<div>• ${m}</div>`).join('');
+                        errorDiv.classList.remove('hidden');
+                    }
+                    if (typeof showToast === 'function') {
+                        showToast(list[0] || 'Por favor verifica los campos', 'error');
+                    }
+                } else if (err && err.message) {
+                    if (errorDiv) {
+                        errorDiv.innerHTML = `<div>• ${err.message}</div>`;
+                        errorDiv.classList.remove('hidden');
+                    }
+                    if (typeof showToast === 'function') {
+                        showToast(err.message, 'error');
+                    }
+                } else {
+                    if (typeof showToast === 'function') {
+                        showToast('Error de conexión al enviar la solicitud', 'error');
+                    }
+                }
+            })
+            .finally(() => {
+                if (submitBtn) submitBtn.disabled = false;
+                if (submitIcon) {
+                    submitIcon.textContent = 'send';
+                    submitIcon.classList.remove('animate-spin');
+                }
+                if (submitText) submitText.textContent = 'Enviar Solicitud';
+            });
+        };
+
+        @if(session('success'))
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    if (typeof showToast === 'function') {
+                        showToast("{{ session('success') }}", 'success');
+                    }
+                }, 300);
+            });
+        @endif
     </script>
     <script src="{{ asset('js/catalogo.js') }}"></script>
 @endpush
