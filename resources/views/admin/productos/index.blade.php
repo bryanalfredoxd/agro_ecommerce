@@ -235,6 +235,94 @@
     </main>
 </div>
 
+{{-- MODAL GESTIÓN DE GALERÍA DE FOTOS (ÁNGULOS Y PRESENTACIONES) --}}
+<div id="modalGaleria" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 transition-all">
+    <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 w-full max-w-2xl overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+        {{-- Cabecera del Modal --}}
+        <div class="px-6 py-4 bg-gradient-to-r from-slate-900 via-slate-800 to-[#1e549e] text-white flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="size-10 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                    <span class="material-symbols-outlined text-white text-2xl">collections</span>
+                </div>
+                <div>
+                    <h3 class="text-base font-black text-white" id="modalGaleriaTitulo">Galería de Fotos</h3>
+                    <p class="text-[11px] text-blue-200 font-medium">Ángulos y presentaciones secundarias del producto</p>
+                </div>
+            </div>
+            <button type="button" onclick="cerrarModalGaleria()" class="size-8 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+
+        {{-- Cuerpo del Modal --}}
+        <div class="p-6 overflow-y-auto space-y-6 flex-1">
+            {{-- Foto Principal (Referencia) --}}
+            <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 flex items-center gap-4">
+                <div class="size-16 rounded-xl overflow-hidden border border-gray-200 bg-white shrink-0 shadow-2xs">
+                    <img id="modalGaleriaFotoPrincipal" src="" alt="Foto Principal" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-black text-gray-800">Foto Principal (Portada)</span>
+                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Siempre Visible</span>
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-0.5">Esta es la imagen de portada en catálogos y tarjetas. Si deseas cambiarla, edita el producto.</p>
+                </div>
+            </div>
+
+            {{-- Subir Nuevas Fotos Secundarias --}}
+            <div>
+                <label class="block text-xs font-black text-gray-700 uppercase tracking-wider mb-2">Añadir más fotos a la galería</label>
+                <div class="border-2 border-dashed border-gray-200 hover:border-[#1e549e] rounded-2xl p-4 transition-all bg-gray-50/50 flex flex-col items-center justify-center relative cursor-pointer group">
+                    <input type="file" id="modalInputGaleria" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="seleccionarFotosModal(event)">
+                    <span class="material-symbols-outlined text-3xl text-gray-400 group-hover:text-[#1e549e] transition-colors mb-1">add_photo_alternate</span>
+                    <span class="text-xs font-bold text-gray-700">Arrastra o haz clic para subir fotos (ángulos, detalles, empaque)</span>
+                    <span class="text-[10px] text-gray-400 mt-0.5">Puedes seleccionar varias fotos a la vez o agregarlas sucesivamente (Máx. 10MB c/u)</span>
+                </div>
+
+                {{-- Preview temporal antes de subir --}}
+                <div id="modalPreviewNuevas" class="mt-3 hidden">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-gray-600" id="modalPreviewCount">0 fotos seleccionadas para subir</span>
+                        <button type="button" id="btnSubirFotosModal" onclick="subirFotosGaleriaAjax()" class="px-3.5 py-1.5 rounded-xl bg-[#1e549e] hover:bg-[#163f77] text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">cloud_upload</span> Subir Ahora
+                        </button>
+                    </div>
+                    <div id="modalPreviewNuevasGrid" class="grid grid-cols-4 gap-2"></div>
+                </div>
+            </div>
+
+            {{-- Fotos Secundarias Guardadas --}}
+            <div>
+                <div class="flex items-center justify-between mb-2.5">
+                    <span class="text-xs font-black text-gray-700 uppercase tracking-wider">Fotos adicionales registradas</span>
+                    <span id="modalGaleriaCount" class="text-[11px] font-bold text-gray-500">0 fotos</span>
+                </div>
+                
+                {{-- Grid de fotos existentes --}}
+                <div id="modalGaleriaGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    {{-- Dinámico con JS --}}
+                </div>
+
+                {{-- Estado Vacío --}}
+                <div id="modalGaleriaEmpty" class="hidden py-8 text-center text-gray-400 border border-dashed border-gray-200 rounded-2xl">
+                    <span class="material-symbols-outlined text-4xl mb-1 text-gray-300">hide_image</span>
+                    <p class="text-xs font-bold text-gray-500">Sin fotos secundarias registradas</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Sube imágenes para que los clientes vean diferentes perspectivas del producto.</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Pie del Modal --}}
+        <div class="px-6 py-3.5 bg-gray-50 border-t border-gray-100 flex items-center justify-end">
+            <button type="button" onclick="cerrarModalGaleria()" class="px-5 py-2 rounded-xl text-xs font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 transition-all shadow-2xs">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+
 {{-- SweetAlert2 --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -837,6 +925,244 @@
                         customClass: { popup: 'rounded-2xl' }
                     });
                     fetchData(1);
+                })
+                .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: err.message,
+                        customClass: { popup: 'rounded-2xl' }
+                    });
+                });
+            }
+        });
+    }
+
+    // ==========================================
+    // GESTIÓN DE GALERÍA DE FOTOS (ÁNGULOS)
+    // ==========================================
+    let currentGaleriaProductoId = null;
+    let fotosSeleccionadasSubida = [];
+
+    function abrirModalGaleria(id, nombre) {
+        currentGaleriaProductoId = id;
+        document.getElementById('modalGaleriaTitulo').innerText = `Galería: ${nombre}`;
+        document.getElementById('modalGaleria').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        
+        // Reset inputs
+        const inputGaleria = document.getElementById('modalInputGaleria');
+        if (inputGaleria) inputGaleria.value = '';
+        const previewWrap = document.getElementById('modalPreviewNuevas');
+        if (previewWrap) previewWrap.classList.add('hidden');
+        const previewGrid = document.getElementById('modalPreviewNuevasGrid');
+        if (previewGrid) previewGrid.innerHTML = '';
+        fotosSeleccionadasSubida = [];
+        
+        cargarFotosGaleria(id);
+    }
+
+    function cerrarModalGaleria() {
+        const modal = document.getElementById('modalGaleria');
+        if (modal) modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+        currentGaleriaProductoId = null;
+    }
+
+    function cargarFotosGaleria(id) {
+        const grid = document.getElementById('modalGaleriaGrid');
+        const emptyState = document.getElementById('modalGaleriaEmpty');
+        const countBadge = document.getElementById('modalGaleriaCount');
+        const fotoPrincipalImg = document.getElementById('modalGaleriaFotoPrincipal');
+
+        grid.innerHTML = '<div class="col-span-full py-6 text-center text-gray-400 flex items-center justify-center gap-2"><span class="material-symbols-outlined animate-spin text-[20px] text-[#1e549e]">progress_activity</span> Cargando fotos...</div>';
+        emptyState.classList.add('hidden');
+
+        fetch(`/admin/productos/${id}/imagenes`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) throw new Error('Error al cargar galería');
+            
+            const prod = data.producto;
+            if (prod.imagen_principal) {
+                fotoPrincipalImg.src = prod.imagen_principal;
+                fotoPrincipalImg.classList.remove('hidden');
+            } else {
+                fotoPrincipalImg.src = '';
+                fotoPrincipalImg.classList.add('hidden');
+            }
+
+            const imagenes = prod.imagenes || [];
+            countBadge.innerText = `${imagenes.length} ${imagenes.length === 1 ? 'foto' : 'fotos'}`;
+
+            if (imagenes.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            grid.innerHTML = imagenes.map(img => `
+                <div class="relative group aspect-square rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-2xs hover:shadow-md transition-all">
+                    <img src="${img.url}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button type="button" onclick="eliminarFotoGaleriaAjax(${img.id})" class="size-8 rounded-xl bg-red-600 text-white flex items-center justify-center shadow hover:bg-red-700 hover:scale-110 active:scale-95 transition-all" title="Eliminar foto">
+                            <span class="material-symbols-outlined text-[17px]">delete</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(err => {
+            grid.innerHTML = `<div class="col-span-full py-4 text-center text-xs text-red-500 font-bold">${err.message}</div>`;
+        });
+    }
+
+    function seleccionarFotosModal(event) {
+        const input = event.target;
+        const newFiles = Array.from(input.files || []);
+
+        newFiles.forEach(file => {
+            if (file.size > 10 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Archivo muy pesado',
+                    text: `La imagen "${file.name}" supera el límite de 10MB.`,
+                    customClass: { popup: 'rounded-2xl' }
+                });
+                return;
+            }
+            fotosSeleccionadasSubida.push(file);
+        });
+
+        // Reset input value para permitir seleccionar más fotos sucesivamente
+        input.value = '';
+        renderModalPreviewNuevas();
+    }
+
+    function renderModalPreviewNuevas() {
+        const previewContainer = document.getElementById('modalPreviewNuevas');
+        const previewGrid = document.getElementById('modalPreviewNuevasGrid');
+        const previewCount = document.getElementById('modalPreviewCount');
+
+        previewGrid.innerHTML = '';
+
+        if (fotosSeleccionadasSubida.length === 0) {
+            previewContainer.classList.add('hidden');
+            return;
+        }
+
+        previewContainer.classList.remove('hidden');
+        previewCount.innerText = `${fotosSeleccionadasSubida.length} foto(s) seleccionada(s) para subir`;
+
+        fotosSeleccionadasSubida.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const card = document.createElement('div');
+                card.className = 'relative group aspect-square rounded-xl overflow-hidden border-2 border-blue-300 bg-gray-100 shadow-2xs';
+                card.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-full object-cover">
+                    <span class="absolute bottom-1 right-1 bg-black/70 text-white font-mono text-[9px] px-1 rounded font-bold">#${index + 1}</span>
+                    <button type="button" onclick="quitarFotoModalPreview(${index})" class="absolute top-1 right-1 size-5 rounded-md bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 active:scale-95 shadow" title="Quitar">
+                        <span class="material-symbols-outlined text-[13px]">close</span>
+                    </button>
+                `;
+                previewGrid.appendChild(card);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function quitarFotoModalPreview(index) {
+        fotosSeleccionadasSubida.splice(index, 1);
+        renderModalPreviewNuevas();
+    }
+
+    function subirFotosGaleriaAjax() {
+        if (!currentGaleriaProductoId || fotosSeleccionadasSubida.length === 0) return;
+
+        const btn = document.getElementById('btnSubirFotosModal');
+        const originalContent = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span> Subiendo...';
+
+        const formData = new FormData();
+        fotosSeleccionadasSubida.forEach(file => {
+            formData.append('imagenes[]', file);
+        });
+
+        fetch(`/admin/productos/${currentGaleriaProductoId}/imagenes`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: formData
+        })
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Error al subir fotos');
+            return data;
+        })
+        .then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Fotos Agregadas!',
+                text: data.message,
+                timer: 1500,
+                showConfirmButton: false,
+                customClass: { popup: 'rounded-2xl' }
+            });
+            document.getElementById('modalInputGaleria').value = '';
+            document.getElementById('modalPreviewNuevas').classList.add('hidden');
+            document.getElementById('modalPreviewNuevasGrid').innerHTML = '';
+            fotosSeleccionadasSubida = [];
+            cargarFotosGaleria(currentGaleriaProductoId);
+            fetchData(currentPage);
+        })
+        .catch(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.message,
+                customClass: { popup: 'rounded-2xl' }
+            });
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalContent;
+        });
+    }
+
+    function eliminarFotoGaleriaAjax(imagenId) {
+        Swal.fire({
+            title: '¿Eliminar foto?',
+            text: 'Esta foto secundaria será eliminada permanentemente.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#9ca3af',
+            confirmButtonText: 'Sí, Eliminar',
+            cancelButtonText: 'Cancelar',
+            customClass: { popup: 'rounded-2xl' }
+        }).then(result => {
+            if (result.isConfirmed) {
+                fetch(`/admin/productos/imagenes/${imagenId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'Error al eliminar');
+                    return data;
+                })
+                .then(data => {
+                    cargarFotosGaleria(currentGaleriaProductoId);
+                    fetchData(currentPage);
                 })
                 .catch(err => {
                     Swal.fire({

@@ -28,19 +28,24 @@
             @foreach($productosDestacados as $producto)
             <article class="group relative flex flex-col bg-white rounded-2xl border border-gray-100 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden h-full">
                 
-                {{-- ÁREA DE IMAGEN --}}
-                <div class="relative w-full aspect-[4/3] bg-gray-50 overflow-hidden">
+                {{-- ÁREA DE IMAGEN (Con imagen completa sin recortes) --}}
+                <div class="relative w-full aspect-[4/3] bg-gradient-to-b from-slate-50/80 to-white overflow-hidden flex items-center justify-center p-3 sm:p-4 border-b border-slate-100">
                     
                     @if($producto->imagen_url)
-                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700 ease-out mix-blend-multiply" 
-                            style="background-image: url('{{ asset($producto->imagen_url) }}');"></div>
+                        <img src="{{ asset($producto->imagen_url) }}" 
+                             alt="{{ $producto->nombre }}" 
+                             loading="lazy"
+                             class="w-full h-full object-contain max-h-full max-w-full drop-shadow-2xs transition-transform duration-500 ease-out group-hover:scale-105">
                     @else
-                        <div class="w-full h-full flex flex-col items-center justify-center text-gray-300 bg-gray-50">
-                            <span class="material-symbols-outlined text-5xl mb-2">image</span>
-                            <span class="text-[10px] font-bold uppercase tracking-widest">Sin Imagen</span>
+                        <div class="w-full h-full flex flex-col items-center justify-center text-slate-300">
+                            <span class="material-symbols-outlined text-5xl">inventory_2</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">Sin Imagen</span>
                         </div>
                     @endif
                     
+                    {{-- Enlace a Detalle de Producto desde la Imagen --}}
+                    <a href="{{ route('catalogo.show', $producto->id) }}" class="absolute inset-0 z-10" title="Ver detalles de {{ $producto->nombre }}"></a>
+
                     {{-- Badges Superior Izquierda (Controlado deshabilitado a solicitud del cliente) --}}
                     {{-- @if($producto->es_controlado)
                     <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start z-10 pointer-events-none">
@@ -64,7 +69,7 @@
                     </div>
                     
                     {{-- Unidad de medida --}}
-                    <div class="absolute bottom-3 left-3 pointer-events-none">
+                    <div class="absolute bottom-3 left-3 pointer-events-none z-20">
                         <span class="inline-block bg-white/95 backdrop-blur-sm text-agro-dark text-[10px] font-bold px-2 py-1 rounded-md shadow-sm uppercase tracking-wider">
                             {{ $producto->unidad_medida }}
                         </span>
@@ -99,10 +104,12 @@
                         </div>
                     </div>
                     
-                    {{-- Título (Sin redirección) --}}
-                    <h3 class="text-slate-900 font-bold text-base leading-snug mb-2 line-clamp-2 min-h-[2.5rem] group-hover:text-[#3492cf] transition-colors cursor-default select-text">
-                        {{ $producto->nombre }}
-                    </h3>
+                    {{-- Título (Con redirección a detalle de producto) --}}
+                    <a href="{{ route('catalogo.show', $producto->id) }}" class="block group/link mb-2" title="Ver detalles de {{ $producto->nombre }}">
+                        <h3 class="text-slate-900 font-bold text-base leading-snug line-clamp-2 min-h-[2.5rem] group-hover/link:text-[#1e549e] group-hover:text-[#1e549e] transition-colors cursor-pointer">
+                            {{ $producto->nombre }}
+                        </h3>
+                    </a>
                     
                     {{-- Descripción --}}
                     <p class="text-xs text-slate-500 mb-4 line-clamp-2 flex-grow leading-relaxed relative z-20">
@@ -112,18 +119,34 @@
                     {{-- Fila Inferior: Precios (USD y VES) y Call to Action (CTA) --}}
                     <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between relative z-20">
                         
-                        {{-- Contenedor de Precios --}}
+                        {{-- Contenedor de Precios (PVP Final al Público) --}}
+                        @php
+                            $precioFinalPvp = $producto->precio_final_pvp;
+                            $precioRegularPvp = $producto->precio_regular_pvp;
+                        @endphp
                         <div class="flex flex-col">
-                            {{-- Precio en Dólares (Principal) --}}
-                            <div class="flex items-baseline gap-1">
-                                <span class="text-xl font-black text-[#1e549e]">${{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">USD</span>
-                            </div>
+                            {{-- Precio en Dólares (PVP Final con IVA) --}}
+                            @if($producto->precio_oferta_usd)
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-xl font-black text-rose-600">${{ number_format($precioFinalPvp, 2) }}</span>
+                                    <span class="text-[11px] text-slate-400 font-bold line-through">${{ number_format($precioRegularPvp, 2) }}</span>
+                                </div>
+                            @else
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-xl font-black text-[#1e549e]">${{ number_format($precioFinalPvp, 2) }}</span>
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">USD</span>
+                                </div>
+                            @endif
                             
-                            {{-- NUEVO: Precio en Bolívares (Calculado Dinámicamente) --}}
-                            <span class="text-[11px] text-slate-500 font-bold mt-0.5 tracking-wide">
-                                Bs. {{ number_format($producto->precio_venta_usd * $tasaDolar, 2, ',', '.') }}
-                            </span>
+                            {{-- Precio en Bolívares Oficial y Etiqueta IVA --}}
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <span class="text-[11px] text-slate-500 font-bold tracking-wide">
+                                    Bs. {{ number_format($precioFinalPvp * $tasaDolar, 2, ',', '.') }}
+                                </span>
+                                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded {{ $producto->precio_incluye_iva ? 'bg-teal-50 text-teal-700' : 'bg-slate-100 text-slate-600' }}" title="{{ $producto->precio_incluye_iva ? 'Precio con IVA incluido' : 'PVP con IVA al 16% (Base $' . number_format($producto->precio_venta_usd, 2) . ')' }}">
+                                    {{ $producto->precio_incluye_iva ? 'IVA inc.' : 'PVP' }}
+                                </span>
+                            </div>
                         </div>
                         
                         {{-- BOTÓN AÑADIR AL CARRITO --}}

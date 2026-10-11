@@ -43,12 +43,40 @@ class Producto extends Model
 
     /**
      * Calcula el precio de venta final al público (PVP) sumando el IVA configurado.
+     * Toma en cuenta si hay precio de oferta vigente.
+     */
+    public function getPrecioFinalPvpAttribute(): float
+    {
+        $iva = \App\Models\ConfiguracionTienda::iva();
+        $precioBase = $this->precio_oferta_usd ?: $this->precio_venta_usd;
+        return round($precioBase * (1 + ($iva / 100)), 2);
+    }
+
+    /**
+     * Alias compatible de precio final PVP.
      */
     public function getPrecioVentaPvpAttribute(): float
     {
+        return $this->getPrecioFinalPvpAttribute();
+    }
+
+    /**
+     * Calcula el PVP del precio regular (antes de oferta) con IVA incluido.
+     */
+    public function getPrecioRegularPvpAttribute(): float
+    {
         $iva = \App\Models\ConfiguracionTienda::iva();
-        $precio = $this->precio_oferta_usd ?: $this->precio_venta_usd;
-        return round($precio * (1 + ($iva / 100)), 2);
+        return round($this->precio_venta_usd * (1 + ($iva / 100)), 2);
+    }
+
+    /**
+     * Retorna el PVP de la oferta con IVA incluido si existe.
+     */
+    public function getPrecioOfertaPvpAttribute(): ?float
+    {
+        if (!$this->precio_oferta_usd) return null;
+        $iva = \App\Models\ConfiguracionTienda::iva();
+        return round($this->precio_oferta_usd * (1 + ($iva / 100)), 2);
     }
 
     // ==========================================

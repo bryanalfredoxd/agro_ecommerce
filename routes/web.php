@@ -52,6 +52,8 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/catalogo', [CatalogoController::class, 'index'])->name('catalogo');
 Route::get('/catalogo/buscar-en-vivo', [CatalogoController::class, 'buscarEnVivo'])->name('catalogo.buscar-en-vivo');
 Route::post('/catalogo/solicitar', [CatalogoController::class, 'solicitarProducto'])->name('catalogo.solicitar');
+Route::get('/catalogo/producto/{id}', [CatalogoController::class, 'show'])->name('catalogo.show');
+Route::get('/producto/{id}', [CatalogoController::class, 'show'])->name('producto.show');
 
 // --- 3. RUTAS DE INVITADOS (GUEST) ---
 Route::middleware('guest')->group(function () {
@@ -191,6 +193,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
         Route::post('/productos/{id}/destacado', [ProductoController::class, 'toggleDestacado'])->name('productos.destacado');
         Route::post('/productos/{id}/restore', [ProductoController::class, 'restore'])->name('productos.restore');
+        Route::get('/productos/{id}/imagenes', [ProductoController::class, 'obtenerImagenes'])->name('productos.imagenes.get');
+        Route::post('/productos/{id}/imagenes', [ProductoController::class, 'subirImagenesGaleria'])->name('productos.imagenes.store');
+        Route::delete('/productos/imagenes/{imagenId}', [ProductoController::class, 'eliminarImagenGaleria'])->name('productos.imagenes.destroy');
     });
 
     Route::get('/historico-precios', [HistoricoPrecioController::class, 'index'])->name('historico_precios.index')->middleware('permiso:ver_historico_precios');

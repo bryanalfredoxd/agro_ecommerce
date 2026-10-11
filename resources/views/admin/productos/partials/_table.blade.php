@@ -76,25 +76,34 @@
                     </div>
                 </td>
                 
-                {{-- Columna 3: Precio --}}
+                {{-- Columna 3: Precio (PVP Final con IVA y Desglose) --}}
+                @php
+                    $precioFinalPvp = $producto->precio_final_pvp;
+                    $precioRegularPvp = $producto->precio_regular_pvp;
+                    $precioBs = $tasa > 0 ? ($precioFinalPvp * $tasa) : 0;
+                @endphp
                 <td class="px-5 py-4 align-top">
                     <div class="flex flex-col">
                         @if($producto->precio_oferta_usd)
                             <div class="flex items-baseline gap-1.5">
-                                <span class="font-black text-rose-600 text-base">${{ number_format($producto->precio_oferta_usd, 2) }}</span>
-                                <span class="text-[11px] font-bold text-gray-400 line-through">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                                <span class="font-black text-rose-600 text-base">${{ number_format($precioFinalPvp, 2) }}</span>
+                                <span class="text-[11px] font-bold text-gray-400 line-through">${{ number_format($precioRegularPvp, 2) }}</span>
                             </div>
                         @else
-                            <span class="font-black text-agro-dark text-base">${{ number_format($producto->precio_venta_usd, 2) }}</span>
+                            <span class="font-black text-agro-dark text-base">${{ number_format($precioFinalPvp, 2) }}</span>
                         @endif
 
+                        {{-- Detalle del IVA y Base Imponible --}}
                         @if($producto->precio_incluye_iva)
+                            <span class="inline-flex items-center gap-0.5 text-[9px] font-extrabold text-teal-700 bg-teal-50 border border-teal-200/80 px-1.5 py-0.5 rounded-md w-fit mt-1" title="Precio final con IVA incluido (Base imponible: ${{ number_format($producto->precio_venta_usd, 2) }})">
+                                <span class="material-symbols-outlined text-[11px]">verified</span> IVA inc. (Base: ${{ number_format($producto->precio_venta_usd, 2) }})
+                            </span>
+                        @else
                             @php
                                 $ivaPct = \App\Models\ConfiguracionTienda::iva();
-                                $pvpCalculado = round(($producto->precio_oferta_usd ?: $producto->precio_venta_usd) * (1 + ($ivaPct / 100)), 2);
                             @endphp
-                            <span class="inline-flex items-center gap-0.5 text-[9px] font-extrabold text-teal-700 bg-teal-50 border border-teal-200/80 px-1.5 py-0.5 rounded-md w-fit mt-1" title="PVP con IVA incluido">
-                                <span class="material-symbols-outlined text-[11px]">payments</span> PVP: ${{ number_format($pvpCalculado, 2) }}
+                            <span class="inline-flex items-center gap-0.5 text-[9px] font-extrabold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md w-fit mt-1" title="PVP final con {{ (float)$ivaPct }}% IVA (Base imponible: ${{ number_format($producto->precio_venta_usd, 2) }})">
+                                <span class="material-symbols-outlined text-[11px]">payments</span> PVP (+{{ (float)$ivaPct }}% IVA | Base: ${{ number_format($producto->precio_venta_usd, 2) }})
                             </span>
                         @endif
 
@@ -170,6 +179,11 @@
                                     <span class="material-symbols-outlined text-[17px]">settings_backup_restore</span>
                                 </button>
                             @else
+                                {{-- Botón Galería de Fotos --}}
+                                <button type="button" onclick="abrirModalGaleria({{ $producto->id }}, '{{ addslashes($producto->nombre) }}')" class="size-8 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-[#1e549e] hover:border-blue-200 hover:bg-blue-50 flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" title="Gestionar Galería de Fotos ({{ $producto->imagenes ? $producto->imagenes->count() : 0 }} adicionales)">
+                                    <span class="material-symbols-outlined text-[17px]">collections</span>
+                                </button>
+
                                 <a href="{{ route('admin.productos.edit', $producto->id) }}" class="size-8 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" title="Editar Producto">
                                     <span class="material-symbols-outlined text-[17px]">edit</span>
                                 </a>

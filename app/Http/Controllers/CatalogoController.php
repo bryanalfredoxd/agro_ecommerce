@@ -190,7 +190,7 @@ class CatalogoController extends Controller
                     'stock_total' => (float) $producto->stock_total,
                     'unidad_medida' => $producto->unidad_medida,
                     'imagen' => $img ? asset($img) : null,
-                    'url' => route('catalogo') . '?buscar=' . urlencode($producto->nombre)
+                    'url' => route('catalogo.show', $producto->id)
                 ];
             });
 
@@ -199,5 +199,48 @@ class CatalogoController extends Controller
             'total' => $productos->count(),
             'query' => $q
         ]);
+    }
+
+    /**
+     * Muestra la pantalla de detalle completo del producto con su galería de imágenes
+     */
+    public function show($id)
+    {
+        $producto = Producto::with([
+            'categoria', 
+            'marca', 
+            'imagenes' => function ($q) {
+                $q->orderBy('orden', 'asc')->orderBy('id', 'asc');
+            }
+        ])
+        ->whereNull('eliminado_at')
+        ->findOrFail($id);
+
+        $tasaDolar = TasaCambio::obtenerValorUSD() ?? 1;
+        $ivaPorcentaje = \App\Models\ConfiguracionTienda::iva();
+
+        $esFavorito = Auth::check()
+            ? \Illuminate\Support\Facades\DB::table('favoritos')
+                ->where('usuario_id', Auth::id())
+                ->where('producto_id', $producto->id)
+                ->exists()
+            : false;
+
+        // Productos relacionados (misma categoría o marca)
+        $relacionados = Producto::where('id', '!=', $producto->id)
+            ->where(function($q) use ($producto) {
+                if ($producto->categoria_id) {
+                    $q->where('categoria_id', $producto->categoria_id);
+                }
+                if ($producto->marca_id) {
+                    $q->orWhere('marca_id', $producto->marca_id);
+                }
+            })
+            ->where('stock_total', '>', 0)
+            ->whereNull('eliminado_at')
+            ->take(4)
+            ->get();
+
+        return view('catalogo.show', compact('producto', 'tasaDolar', 'ivaPorcentaje', 'esFavorito', 'relacionados'));
     }
 }

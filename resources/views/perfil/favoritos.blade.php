@@ -122,6 +122,9 @@
                                         </div>
                                     @endif
 
+                                    {{-- Enlace a Detalle de Producto desde la Imagen --}}
+                                    <a href="{{ route('catalogo.show', $producto->id) }}" class="absolute inset-0 z-10" title="Ver detalles de {{ $producto->nombre }}"></a>
+
                                     {{-- Botón Quitar de Favoritos --}}
                                     <div class="absolute top-3 right-3 z-20">
                                         <button type="button" 
@@ -133,7 +136,7 @@
                                     </div>
                                     
                                     {{-- Unidad de medida --}}
-                                    <div class="absolute bottom-3 left-3 pointer-events-none">
+                                    <div class="absolute bottom-3 left-3 pointer-events-none z-20">
                                         <span class="inline-block bg-white/95 backdrop-blur-sm text-agro-dark text-[10px] font-bold px-2 py-1 rounded-md shadow-sm uppercase tracking-wider">
                                             {{ $producto->unidad_medida }}
                                         </span>
@@ -160,25 +163,43 @@
                                         </div>
                                     </div>
 
-                                    {{-- Título sin redirección --}}
-                                    <h3 class="text-slate-900 font-bold text-base leading-snug mb-2 line-clamp-2 min-h-[2.5rem]">
-                                        {{ $producto->nombre }}
-                                    </h3>
+                                    {{-- Título con redirección a detalle --}}
+                                    <a href="{{ route('catalogo.show', $producto->id) }}" class="block group/link mb-2" title="Ver detalles de {{ $producto->nombre }}">
+                                        <h3 class="text-slate-900 font-bold text-base leading-snug line-clamp-2 min-h-[2.5rem] group-hover/link:text-[#1e549e] group-hover:text-[#1e549e] transition-colors cursor-pointer">
+                                            {{ $producto->nombre }}
+                                        </h3>
+                                    </a>
 
                                     <p class="text-xs text-slate-500 mb-4 line-clamp-2 flex-grow leading-relaxed">
                                         {{ $producto->descripcion }}
                                     </p>
 
-                                    {{-- Precios y Añadir al Carrito --}}
+                                    {{-- Precios y Añadir al Carrito (PVP Final) --}}
+                                    @php
+                                        $precioFinalPvp = $producto->precio_final_pvp;
+                                        $precioRegularPvp = $producto->precio_regular_pvp;
+                                    @endphp
                                     <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
                                         <div class="flex flex-col">
-                                            <div class="flex items-baseline gap-1">
-                                                <span class="text-xl font-black text-[#1e549e]">${{ number_format($producto->precio_venta_usd, 2) }}</span>
-                                                <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">USD</span>
+                                            @if($producto->precio_oferta_usd)
+                                                <div class="flex items-baseline gap-1.5">
+                                                    <span class="text-xl font-black text-rose-600">${{ number_format($precioFinalPvp, 2) }}</span>
+                                                    <span class="text-[11px] text-slate-400 font-bold line-through">${{ number_format($precioRegularPvp, 2) }}</span>
+                                                </div>
+                                            @else
+                                                <div class="flex items-baseline gap-1">
+                                                    <span class="text-xl font-black text-[#1e549e]">${{ number_format($precioFinalPvp, 2) }}</span>
+                                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">USD</span>
+                                                </div>
+                                            @endif
+                                            <div class="flex items-center gap-1.5 mt-0.5">
+                                                <span class="text-[11px] text-slate-500 font-bold tracking-wide">
+                                                    Bs. {{ number_format($precioFinalPvp * $tasaDolar, 2, ',', '.') }}
+                                                </span>
+                                                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded {{ $producto->precio_incluye_iva ? 'bg-teal-50 text-teal-700' : 'bg-slate-100 text-slate-600' }}">
+                                                    {{ $producto->precio_incluye_iva ? 'IVA inc.' : 'PVP' }}
+                                                </span>
                                             </div>
-                                            <span class="text-[11px] text-slate-500 font-bold mt-0.5 tracking-wide">
-                                                Bs. {{ number_format($producto->precio_venta_usd * $tasaDolar, 2, ',', '.') }}
-                                            </span>
                                         </div>
 
                                         <button type="button" 

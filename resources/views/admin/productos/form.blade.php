@@ -263,7 +263,56 @@
                                 @endif
                                 <input type="file" name="imagen" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)">
                             </div>
-                            <p class="text-[10px] text-center text-gray-700">Clic para cambiar imagen (Max 2MB)</p>
+                            <p class="text-[10px] text-center text-gray-700">Clic para cambiar imagen (Max 10MB)</p>
+                        </div>
+
+                        {{-- Panel Galería de Fotos Adicionales (Ángulos y Presentaciones) --}}
+                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <h3 class="text-sm font-black text-agro-dark flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[18px] text-[#1e549e]">collections</span>
+                                        Galería de Fotos
+                                    </h3>
+                                    <p class="text-[11px] text-gray-400 font-medium mt-0.5">Diferentes ángulos, reverso y presentaciones</p>
+                                </div>
+                                <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">Opcional</span>
+                            </div>
+
+                            {{-- Si está editando y ya tiene imágenes de galería guardadas --}}
+                            @if(isset($producto) && $producto->imagenes && $producto->imagenes->count() > 0)
+                                <div class="mb-4">
+                                    <label class="block text-[10px] font-black text-gray-600 uppercase tracking-wider mb-2">Fotos Actuales en Galería</label>
+                                    <div class="grid grid-cols-3 gap-2.5" id="galeria_existente_container">
+                                        @foreach($producto->imagenes as $img)
+                                            <div class="relative group/foto aspect-square rounded-xl overflow-hidden border border-gray-200 bg-gray-50 shadow-2xs" id="item_foto_{{ $img->id }}">
+                                                <img src="{{ asset($img->url_imagen) }}" alt="Foto secundaria" class="w-full h-full object-cover">
+                                                <button type="button" 
+                                                        onclick="marcarParaEliminarFoto({{ $img->id }})" 
+                                                        class="absolute top-1 right-1 size-6 rounded-lg bg-red-600 text-white flex items-center justify-center opacity-0 group-hover/foto:opacity-100 transition-opacity shadow-sm hover:scale-110 active:scale-95" 
+                                                        title="Eliminar esta foto">
+                                                    <span class="material-symbols-outlined text-[14px]">delete</span>
+                                                </button>
+                                                <input type="checkbox" name="eliminar_imagenes[]" value="{{ $img->id }}" id="chk_del_{{ $img->id }}" class="hidden">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <p class="text-[10px] text-red-500 mt-1.5 hidden" id="msg_fotos_eliminadas">Las fotos marcadas con borde rojo se eliminarán al guardar cambios.</p>
+                                </div>
+                            @endif
+
+                            {{-- Input para subir nuevas fotos secundarias --}}
+                            <div class="border-2 border-dashed border-gray-200 rounded-2xl p-4 text-center hover:border-[#1e549e] transition-colors bg-gray-50/60 relative group">
+                                <input type="file" name="imagenes_galeria[]" id="input_imagenes_galeria" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewGaleria(event)">
+                                <div class="flex flex-col items-center justify-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-3xl text-gray-400 group-hover:text-[#1e549e] transition-colors mb-1">add_photo_alternate</span>
+                                    <span class="text-xs font-bold text-gray-700">Subir fotos de ángulos adicionales</span>
+                                    <span class="text-[10px] text-gray-400 mt-0.5">Puedes seleccionar varias fotos a la vez o agregarlas sucesivamente (Máx. 10MB c/u)</span>
+                                </div>
+                            </div>
+
+                            {{-- Previsualizador en vivo de fotos seleccionadas localmente --}}
+                            <div id="galeria_preview_nuevas" class="mt-3 grid grid-cols-3 gap-2 hidden"></div>
                         </div>
 
                         {{-- Panel Precios --}}
@@ -738,6 +787,80 @@
                 if(icon) icon.classList.add('hidden');
             }
             reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    let galeriaDt = new DataTransfer();
+
+    function previewGaleria(event) {
+        const input = event.target;
+        if (!input.files || input.files.length === 0) return;
+
+        Array.from(input.files).forEach(file => {
+            if (file.size > 10 * 1024 * 1024) {
+                alert(`La imagen "${file.name}" supera el límite de 10MB.`);
+                return;
+            }
+            galeriaDt.items.add(file);
+        });
+
+        // Sincronizar input.files con el acumulador
+        input.files = galeriaDt.files;
+        renderGaleriaPreview();
+    }
+
+    function renderGaleriaPreview() {
+        const container = document.getElementById('galeria_preview_nuevas');
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (galeriaDt.files.length === 0) {
+            container.classList.add('hidden');
+            return;
+        }
+
+        container.classList.remove('hidden');
+        Array.from(galeriaDt.files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const card = document.createElement('div');
+                card.className = 'relative aspect-square rounded-xl overflow-hidden border-2 border-blue-200 bg-gray-100 shadow-2xs group/preview animate-fade-in-up';
+                card.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-full object-cover">
+                    <span class="absolute bottom-1 right-1 bg-black/70 text-white font-mono text-[8.5px] px-1 rounded font-bold">#${index + 1}</span>
+                    <button type="button" onclick="quitarFotoGaleriaNueva(${index})" class="absolute top-1 right-1 size-5 rounded-md bg-red-600 text-white flex items-center justify-center opacity-0 group-hover/preview:opacity-100 transition-opacity hover:scale-110 active:scale-95 shadow" title="Quitar">
+                        <span class="material-symbols-outlined text-[13px]">close</span>
+                    </button>
+                `;
+                container.appendChild(card);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function quitarFotoGaleriaNueva(index) {
+        const input = document.getElementById('input_imagenes_galeria');
+        const newDt = new DataTransfer();
+        Array.from(galeriaDt.files).forEach((f, idx) => {
+            if (idx !== index) newDt.items.add(f);
+        });
+        galeriaDt = newDt;
+        if (input) input.files = galeriaDt.files;
+        renderGaleriaPreview();
+    }
+
+    function marcarParaEliminarFoto(id) {
+        const item = document.getElementById('item_foto_' + id);
+        const chk = document.getElementById('chk_del_' + id);
+        const msg = document.getElementById('msg_fotos_eliminadas');
+        
+        if (chk.checked) {
+            chk.checked = false;
+            item.classList.remove('ring-2', 'ring-red-500', 'opacity-40');
+        } else {
+            chk.checked = true;
+            item.classList.add('ring-2', 'ring-red-500', 'opacity-40');
+            if (msg) msg.classList.remove('hidden');
         }
     }
 </script>

@@ -15,7 +15,7 @@ class ProductoController extends Controller
 
     public function index(Request $request)
     {
-        $query = Producto::with(['categoria', 'marca']);
+        $query = Producto::with(['categoria', 'marca', 'imagenes']);
 
         // 1. Buscador inteligente multi-criterio (Nombre, SKU, Código de Barras, ID, Categoría o Marca)
         if ($request->filled('buscar')) {
@@ -137,7 +137,8 @@ class ProductoController extends Controller
             'precio_venta_usd' => 'required|numeric|min:0.01',
             'precio_oferta_usd' => 'nullable|numeric|min:0|lt:precio_venta_usd',
             'costo_promedio_usd' => 'nullable|numeric|min:0',
-            'imagen' => 'nullable|image|max:2048',
+            'imagen' => 'nullable|image|max:10240',
+            'imagenes_galeria.*' => 'nullable|image|max:10240',
             'stock_total' => 'nullable|numeric|min:0',
             'stock_minimo_alerta' => 'nullable|numeric|min:0|lte:stock_total',
             'venta_minima' => 'nullable|numeric|min:0',
@@ -170,7 +171,7 @@ class ProductoController extends Controller
         }
 
         // Evitamos enviar campos no pertenecientes a la BD
-        $data = $request->except(['imagen', '_token', 'attr_keys', 'attr_values', 'tipo_codigo_barras']);
+        $data = $request->except(['imagen', 'imagenes_galeria', '_token', 'attr_keys', 'attr_values', 'tipo_codigo_barras']);
         $data['precio_venta_usd'] = $precioBaseVenta;
         $data['precio_oferta_usd'] = $precioBaseOferta;
         $data['precio_incluye_iva'] = $incluyeIva ? 1 : 0;
@@ -200,12 +201,29 @@ class ProductoController extends Controller
             $producto->save();
         }
 
-        return redirect()->route('admin.productos.index')->with('success', 'Producto creado exitosamente.');
+        // 3. Guardar imágenes adicionales de galería (ángulos y presentaciones)
+        if ($request->hasFile('imagenes_galeria')) {
+            foreach ($request->file('imagenes_galeria') as $idx => $imgFile) {
+                if ($imgFile && $imgFile->isValid()) {
+                    $url = $this->uploadImage($imgFile);
+                    \App\Models\ProductoImagen::create([
+                        'producto_id' => $producto->id,
+                        'url_imagen' => $url,
+                        'es_principal' => 0,
+                        'orden' => $idx + 1
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('admin.productos.index')->with('success', 'Producto creado exitosamente con sus imágenes.');
     }
 
     public function edit($id)
     {
-        $producto = Producto::findOrFail($id);
+        $producto = Producto::with(['imagenes' => function($q) {
+            $q->orderBy('orden', 'asc')->orderBy('id', 'asc');
+        }])->findOrFail($id);
         $categorias = Categoria::orderBy('nombre')->get();
         $marcas = Marca::orderBy('nombre')->get();
         $ivaPorcentaje = \App\Models\ConfiguracionTienda::iva();
@@ -224,7 +242,8 @@ class ProductoController extends Controller
             'precio_venta_usd' => 'required|numeric|min:0.01',
             'precio_oferta_usd' => 'nullable|numeric|min:0|lt:precio_venta_usd',
             'costo_promedio_usd' => 'nullable|numeric|min:0',
-            'imagen' => 'nullable|image|max:2048',
+            'imagen' => 'nullable|image|max:10240',
+            'imagenes_galeria.*' => 'nullable|image|max:10240',
             'stock_total' => 'nullable|numeric|min:0',
             'stock_minimo_alerta' => 'nullable|numeric|min:0|lte:stock_total',
             'venta_minima' => 'nullable|numeric|min:0',
@@ -256,7 +275,7 @@ class ProductoController extends Controller
             ]);
         }
 
-        $data = $request->except(['imagen', '_token', '_method', 'attr_keys', 'attr_values', 'motivo_cambio', 'tipo_codigo_barras']);
+        $data = $request->except(['imagen', 'imagenes_galeria', 'eliminar_imagenes', '_token', '_method', 'attr_keys', 'attr_values', 'motivo_cambio', 'tipo_codigo_barras']);
         $data['precio_venta_usd'] = $precioBaseVenta;
         $data['precio_oferta_usd'] = $precioBaseOferta;
         $data['precio_incluye_iva'] = $incluyeIva ? 1 : 0;
@@ -287,6 +306,34 @@ class ProductoController extends Controller
             $data['imagen_url'] = $this->uploadImage($request->file('imagen'));
         }
 
+        // Eliminar imágenes de galería marcadas para borrado
+        if ($request->has('eliminar_imagenes') && is_array($request->eliminar_imagenes)) {
+            $imgsAEliminar = \App\Models\ProductoImagen::where('producto_id', $producto->id)
+                ->whereIn('id', $request->eliminar_imagenes)
+                ->get();
+            foreach ($imgsAEliminar as $imgDel) {
+                $this->deleteImage($imgDel->url_imagen);
+                $imgDel->delete();
+            }
+        }
+
+        // Subir nuevas imágenes de galería
+        if ($request->hasFile('imagenes_galeria')) {
+            $ultimoOrden = (int) \App\Models\ProductoImagen::where('producto_id', $producto->id)->max('orden');
+            foreach ($request->file('imagenes_galeria') as $imgFile) {
+                if ($imgFile && $imgFile->isValid()) {
+                    $ultimoOrden++;
+                    $url = $this->uploadImage($imgFile);
+                    \App\Models\ProductoImagen::create([
+                        'producto_id' => $producto->id,
+                        'url_imagen' => $url,
+                        'es_principal' => 0,
+                        'orden' => $ultimoOrden
+                    ]);
+                }
+            }
+        }
+
         $precioViejo = (float) $producto->precio_venta_usd;
         $precioNuevo = (float) $precioBaseVenta;
 
@@ -309,6 +356,81 @@ class ProductoController extends Controller
         $producto = Producto::withTrashed()->findOrFail($id);
         $producto->restore(); 
         return response()->json(['success' => true, 'message' => 'Producto reactivado.']);
+    }
+
+    // ==========================================
+    // GESTIÓN RÁPIDA DE GALERÍA DE IMÁGENES (AJAX)
+    // ==========================================
+    public function obtenerImagenes($id)
+    {
+        $producto = Producto::with(['imagenes' => function($q) {
+            $q->orderBy('orden', 'asc')->orderBy('id', 'asc');
+        }])->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'producto' => [
+                'id' => $producto->id,
+                'nombre' => $producto->nombre,
+                'imagen_principal' => $producto->imagen_url ? asset($producto->imagen_url) : null,
+                'imagenes' => $producto->imagenes->map(function($img) {
+                    return [
+                        'id' => $img->id,
+                        'url' => asset($img->url_imagen),
+                        'orden' => $img->orden
+                    ];
+                })
+            ]
+        ]);
+    }
+
+    public function subirImagenesGaleria(Request $request, $id)
+    {
+        $producto = Producto::findOrFail($id);
+
+        $request->validate([
+            'imagenes' => 'required|array|min:1',
+            'imagenes.*' => 'image|max:10240'
+        ]);
+
+        $ultimoOrden = (int) \App\Models\ProductoImagen::where('producto_id', $producto->id)->max('orden');
+        $nuevas = [];
+
+        foreach ($request->file('imagenes') as $imgFile) {
+            if ($imgFile && $imgFile->isValid()) {
+                $ultimoOrden++;
+                $url = $this->uploadImage($imgFile);
+                $registro = \App\Models\ProductoImagen::create([
+                    'producto_id' => $producto->id,
+                    'url_imagen' => $url,
+                    'es_principal' => 0,
+                    'orden' => $ultimoOrden
+                ]);
+                $nuevas[] = [
+                    'id' => $registro->id,
+                    'url' => asset($url),
+                    'orden' => $ultimoOrden
+                ];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => count($nuevas) . ' imagen(es) añadida(s) exitosamente.',
+            'imagenes' => $nuevas
+        ]);
+    }
+
+    public function eliminarImagenGaleria($imagenId)
+    {
+        $img = \App\Models\ProductoImagen::findOrFail($imagenId);
+        $this->deleteImage($img->url_imagen);
+        $img->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Imagen eliminada de la galería.'
+        ]);
     }
 
     private function uploadImage($file)

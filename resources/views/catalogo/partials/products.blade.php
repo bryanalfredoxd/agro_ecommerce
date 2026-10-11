@@ -112,6 +112,9 @@
                             </div>
                         @endif
 
+                        {{-- Enlace a Detalle de Producto desde la Imagen --}}
+                        <a href="{{ route('catalogo.show', $producto->id) }}" class="absolute inset-0 z-10" title="Ver detalles de {{ $producto->nombre }}"></a>
+
                         {{-- Badges Superior Izquierda --}}
                         <div class="absolute top-3 left-3 flex flex-col gap-1 items-start z-10 pointer-events-none">
                             {{-- Badge Controlado (Deshabilitado a solicitud del cliente) --}}
@@ -174,10 +177,12 @@
                             </div>
                         </div>
                         
-                        {{-- Título del Producto (Sin redirección huérfana) --}}
-                        <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-[#1e549e] transition-colors cursor-default select-text">
-                            {{ $producto->nombre }}
-                        </h3>
+                        {{-- Título del Producto (Con enlace a detalle de producto) --}}
+                        <a href="{{ route('catalogo.show', $producto->id) }}" class="block group/link" title="Ver detalles de {{ $producto->nombre }}">
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2 min-h-[2.5rem] group-hover/link:text-[#1e549e] group-hover:text-[#1e549e] transition-colors cursor-pointer">
+                                {{ $producto->nombre }}
+                            </h3>
+                        </a>
 
                         {{-- Marca y SKU --}}
                         <div class="flex items-center justify-between text-xs text-slate-500 mt-1 mb-2">
@@ -208,17 +213,38 @@
                         {{-- Precios y Call to Action --}}
                         <div class="mt-auto pt-3.5 border-t border-slate-100 flex items-end justify-between gap-2 relative z-20">
                             
-                            {{-- Precios USD y Bs --}}
+                            {{-- Precios USD y Bs (PVP Final al Público) --}}
+                            @php
+                                $precioFinalPvp = $producto->precio_final_pvp;
+                                $precioRegularPvp = $producto->precio_regular_pvp;
+                            @endphp
                             <div class="flex flex-col min-w-0">
-                                <div class="flex items-baseline gap-1">
-                                    <span class="text-xl sm:text-2xl font-black text-[#1e549e] tracking-tight">
-                                        ${{ number_format($producto->precio_venta_usd, 2) }}
+                                @if($producto->precio_oferta_usd)
+                                    <div class="flex items-baseline gap-1.5">
+                                        <span class="text-xl sm:text-2xl font-black text-rose-600 tracking-tight">
+                                            ${{ number_format($precioFinalPvp, 2) }}
+                                        </span>
+                                        <span class="text-[11px] text-slate-400 font-bold line-through">
+                                            ${{ number_format($precioRegularPvp, 2) }}
+                                        </span>
+                                    </div>
+                                @else
+                                    <div class="flex items-baseline gap-1">
+                                        <span class="text-xl sm:text-2xl font-black text-[#1e549e] tracking-tight">
+                                            ${{ number_format($precioFinalPvp, 2) }}
+                                        </span>
+                                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">USD</span>
+                                    </div>
+                                @endif
+                                
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <span class="text-[11px] text-slate-500 font-bold tracking-wide truncate">
+                                        Bs. {{ number_format($precioFinalPvp * $tasaDolar, 2, ',', '.') }}
                                     </span>
-                                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">USD</span>
+                                    <span class="text-[9px] font-bold px-1.5 py-0.2 rounded shrink-0 {{ $producto->precio_incluye_iva ? 'bg-teal-50 text-teal-700' : 'bg-slate-100 text-slate-600' }}" title="{{ $producto->precio_incluye_iva ? 'Precio con IVA incluido' : 'PVP con IVA al 16% (Base $' . number_format($producto->precio_venta_usd, 2) . ')' }}">
+                                        {{ $producto->precio_incluye_iva ? 'IVA inc.' : 'PVP' }}
+                                    </span>
                                 </div>
-                                <span class="text-[11px] text-slate-500 font-bold tracking-wide truncate">
-                                    Bs. {{ number_format($producto->precio_venta_usd * $tasaDolar, 2, ',', '.') }}
-                                </span>
                             </div>
                             
                             {{-- Botón Añadir al Carrito --}}
