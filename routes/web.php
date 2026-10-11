@@ -87,6 +87,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/perfil/pedidos', [PerfilController::class, 'pedidos'])->name('perfil.pedidos');
     Route::get('/perfil/pedidos/{id}', [PerfilController::class, 'detallePedido'])->name('perfil.pedido.detalle');
     Route::get('/perfil/pedidos/{id}/ticket', [FacturaController::class, 'ticketPorPedido'])->name('perfil.pedido.ticket');
+    Route::get('/perfil/pedidos/{id}/factura', [FacturaController::class, 'facturaPorPedido'])->name('perfil.pedido.factura');
     Route::get('/factura/{id}/ticket', [FacturaController::class, 'ticket'])->name('factura.ticket');
     Route::get('/factura/{id}/imprimir', [FacturaController::class, 'imprimir'])->name('factura.imprimir');
 
@@ -200,6 +201,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Módulo: Ventas y Pedidos
     Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index')->middleware('permiso:ver_pedidos,gestionar_pagos');
     Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show')->middleware('permiso:ver_pedidos,gestionar_pagos');
+    Route::get('/pedidos/{id}/ticket', [FacturaController::class, 'ticketPorPedido'])->name('pedidos.ticket')->middleware('permiso:ver_pedidos,gestionar_pagos');
+    Route::get('/pedidos/{id}/factura', [FacturaController::class, 'facturaPorPedido'])->name('pedidos.factura')->middleware('permiso:ver_pedidos,gestionar_pagos');
     Route::post('/pedidos/{id}/estado', [PedidoController::class, 'updateStatus'])->name('pedidos.updateStatus')->middleware('permiso:actualizar_estado_pedido');
     Route::post('/pedidos/{id}/aprobar-pago', [PedidoController::class, 'aprobarPago'])->name('pedidos.aprobarPago')->middleware('permiso:gestionar_pagos');
     Route::post('/pedidos/{id}/rechazar-pago', [PedidoController::class, 'rechazarPago'])->name('pedidos.rechazarPago')->middleware('permiso:gestionar_pagos');

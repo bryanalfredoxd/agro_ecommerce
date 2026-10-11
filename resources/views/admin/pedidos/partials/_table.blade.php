@@ -102,6 +102,7 @@
                                     'transferencia' => ['bg' => 'bg-blue-50 text-blue-700 border-blue-200/80', 'nombre' => 'Transferencia', 'icon' => 'account_balance'],
                                     'efectivo_usd', 'efectivo_bs' => ['bg' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80', 'nombre' => 'Efectivo', 'icon' => 'attach_money'],
                                     'punto_venta' => ['bg' => 'bg-indigo-50 text-indigo-700 border-indigo-200/80', 'nombre' => 'Punto de Venta', 'icon' => 'point_of_sale'],
+                                    'biopago' => ['bg' => 'bg-cyan-50 text-cyan-700 border-cyan-200/80', 'nombre' => 'Biopago', 'icon' => 'fingerprint'],
                                     default => ['bg' => 'bg-gray-50 text-gray-700 border-gray-200/80', 'nombre' => ucfirst(str_replace('_', ' ', $pago->metodo ?? 'Otro')), 'icon' => 'credit_card'],
                                 };
                             @endphp
@@ -113,7 +114,7 @@
                                 </span>
 
                                 @if($pago->referencia_bancaria)
-                                    <span class="inline-flex items-center font-mono font-bold text-[10px] text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200/80 select-all" title="Referencia Bancaria">
+                                    <span class="inline-flex items-center font-mono font-bold text-[10px] text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200/80 select-all" title="Referencia">
                                         Ref: {{ $pago->referencia_bancaria }}
                                     </span>
                                 @endif
@@ -122,10 +123,24 @@
                             {{-- Estado del Pago y Botón Comprobante alineados --}}
                             <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
                                 @if($tienePagoRevision)
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-300">
-                                        <span class="material-symbols-outlined text-[13px] text-amber-600 animate-spin">autorenew</span>
-                                        Por Verificar
-                                    </span>
+                                    @if($pago->esPresencial())
+                                        @if($pedido->es_delivery)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-teal-50 text-teal-800 border border-teal-300" title="Cobro en efectivo al entregar">
+                                                <span class="material-symbols-outlined text-[13px] text-teal-600">local_shipping</span>
+                                                Contra Entrega
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-indigo-50 text-indigo-800 border border-indigo-300" title="Cobro en caja/mostrador al retirar">
+                                                <span class="material-symbols-outlined text-[13px] text-indigo-600">store</span>
+                                                Cobro en Sede
+                                            </span>
+                                        @endif
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-300">
+                                            <span class="material-symbols-outlined text-[13px] text-amber-600 animate-spin">autorenew</span>
+                                            Por Verificar
+                                        </span>
+                                    @endif
                                 @elseif($pagoAprobado)
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-emerald-50 text-emerald-800 border border-emerald-300" title="{{ $pago->verificador ? 'Verificado por ' . $pago->verificador->nombre : 'Verificado' }}">
                                         <span class="material-symbols-outlined text-[13px] text-emerald-600">verified</span>
@@ -208,8 +223,8 @@
                         
                         {{-- BOTONES DIRECTOS DE AUDITORÍA DE PAGO (Si está en revisión y tiene permiso) --}}
                         @if($tienePagoRevision && Auth::user()->tienePermiso('gestionar_pagos'))
-                            <button type="button" onclick="aprobarPagoDirecto({{ $pago->id }}, '{{ $pago->referencia_bancaria ?? 'SIN-REF' }}', {{ $pedido->id }})" class="size-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" title="Aprobar Pago y Liberar Pedido">
-                                <span class="material-symbols-outlined text-[18px]">check</span>
+                            <button type="button" onclick="aprobarPagoDirecto({{ $pago->id }}, '{{ $pago->referencia_bancaria ?? 'SIN-REF' }}', {{ $pedido->id }}, {{ $pago->esPresencial() ? 'true' : 'false' }})" class="size-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" title="{{ $pago->esPresencial() ? ($pedido->es_delivery ? 'Confirmar Cobro Contra Entrega' : 'Confirmar Cobro en Caja') : 'Aprobar Pago y Liberar Pedido' }}">
+                                <span class="material-symbols-outlined text-[18px]">{{ $pago->esPresencial() ? 'payments' : 'check' }}</span>
                             </button>
                             <button type="button" onclick="rechazarPagoDirecto({{ $pago->id }}, '{{ $pago->referencia_bancaria ?? 'SIN-REF' }}', {{ $pedido->id }})" class="size-8 rounded-xl bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" title="Rechazar Pago">
                                 <span class="material-symbols-outlined text-[18px]">close</span>
@@ -223,11 +238,14 @@
                             </button>
                         @endif
 
-                        {{-- BOTÓN IMPRIMIR TICKET DIRECTO (Si el pedido está pagado) --}}
+                        {{-- BOTÓN IMPRIMIR (Ticket 80mm o Factura A4) --}}
                         @if(in_array($pedido->estado, ['pagado', 'preparacion', 'en_ruta', 'entregado', 'completado_caja']))
-                            <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" target="_blank" class="size-8 rounded-xl bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" title="Imprimir Ticket Fiscal">
+                            <button type="button" 
+                                    onclick="abrirOpcionesImpresion({{ $pedido->id }}, '{{ $pedido->factura ? $pedido->factura->numero_factura : '' }}')" 
+                                    class="size-8 rounded-xl bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 flex items-center justify-center transition-all shadow-2xs hover:scale-105 active:scale-95" 
+                                    title="Imprimir (Ticket 80mm o Factura A4 / PDF)">
                                 <span class="material-symbols-outlined text-[17px]">print</span>
-                            </a>
+                            </button>
                         @endif
 
                         {{-- BOTÓN VER DETALLE COMPLETO (360°) --}}

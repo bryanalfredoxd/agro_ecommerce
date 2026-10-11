@@ -99,6 +99,127 @@ window.CheckoutConfig = {
             if (totalUsdDisplay) totalUsdDisplay.innerText = '$' + nuevoTotalUsd.toFixed(2);
             if (totalVesDisplay) totalVesDisplay.innerText = 'Bs. ' + formatterVES.format(nuevoTotalUsd * vars.tasaCambio);
         }
+
+        // Ajustar disponibilidad de métodos de pago físicos según el tipo de entrega
+        this.actualizarMetodosParaEntrega(mostrar);
+    },
+
+    // --- Control de Disponibilidad de Métodos de Pago según Entrega ---
+    actualizarMetodosParaEntrega: function (esDelivery) {
+        let metodoDeshabilitadoSeleccionado = false;
+
+        document.querySelectorAll('input[name="metodo_pago_id"], input[name="metodo_pago_id_modal"]').forEach(radio => {
+            let tipo = radio.dataset.tipo;
+            if (!tipo && radio.dataset.cuenta) {
+                try { tipo = JSON.parse(radio.dataset.cuenta).tipo; } catch (e) { }
+            }
+
+            if (['punto_venta', 'biopago'].includes(tipo)) {
+                const label = radio.closest('label');
+                const badge = label ? label.querySelector('.badge-solo-sede') : null;
+
+                if (esDelivery) {
+                    radio.disabled = true;
+                    if (label) {
+                        label.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+                    }
+                    if (badge) badge.classList.remove('hidden');
+
+                    if (radio.checked) {
+                        radio.checked = false;
+                        metodoDeshabilitadoSeleccionado = true;
+                    }
+                } else {
+                    radio.disabled = false;
+                    if (label) {
+                        label.classList.remove('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+                    }
+                    if (badge) badge.classList.add('hidden');
+                }
+            }
+        });
+
+        if (metodoDeshabilitadoSeleccionado) {
+            // Seleccionar automáticamente el primer método de pago habilitado
+            const disponible = document.querySelector('input[name="metodo_pago_id"]:not([disabled])');
+            if (disponible) {
+                disponible.checked = true;
+                this.manejarCambioPago(disponible);
+            }
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Punto de Venta / Biopago no disponible para Delivery',
+                    text: 'Las terminales de punto de venta y Biopago solo se encuentran en nuestra sede física. Para delivery puedes seleccionar Efectivo, Pago Móvil o Transferencia bancaria.',
+                    confirmButtonColor: '#1e549e'
+                });
+            }
+        } else if (window.currentCuentaSeleccionada) {
+            // Actualizar explicaciones presenciales según pickup vs delivery
+            this.renderDatosPago(window.currentCuentaSeleccionada);
+        }
+    },
+
+    // --- Validación en Tiempo Real para Referencias de Pago ---
+    validarInputReferencia: function (input) {
+        if (!input) return;
+        const cuenta = window.currentCuentaSeleccionada;
+        const tipo = cuenta ? cuenta.tipo : (document.querySelector('input[name="metodo_pago_id"]:checked')?.dataset?.tipo || '');
+        const errorMsg = document.getElementById('error-referencia-msg');
+
+        if (tipo === 'pago_movil') {
+            // Solo dígitos numéricos (0-9), longitud hasta 15 dígitos
+            const valorLimpio = input.value.replace(/\D/g, '').slice(0, 15);
+            if (input.value !== valorLimpio) {
+                input.value = valorLimpio;
+            }
+            if (errorMsg) {
+                if (valorLimpio.length > 0 && valorLimpio.length < 4) {
+                    errorMsg.innerHTML = '<span class="material-symbols-outlined text-[14px]">warning</span> La referencia de Pago Móvil debe tener al menos 4 dígitos numéricos.';
+                    errorMsg.classList.remove('hidden');
+                    input.classList.add('border-rose-400', 'bg-rose-50/20');
+                } else {
+                    errorMsg.classList.add('hidden');
+                    errorMsg.innerHTML = '';
+                    input.classList.remove('border-rose-400', 'bg-rose-50/20');
+                }
+            }
+        } else if (tipo === 'transferencia') {
+            // Solo dígitos numéricos (0-9), longitud hasta 25 dígitos
+            const valorLimpio = input.value.replace(/\D/g, '').slice(0, 25);
+            if (input.value !== valorLimpio) {
+                input.value = valorLimpio;
+            }
+            if (errorMsg) {
+                if (valorLimpio.length > 0 && valorLimpio.length < 4) {
+                    errorMsg.innerHTML = '<span class="material-symbols-outlined text-[14px]">warning</span> La referencia de transferencia debe contener al menos 4 dígitos numéricos.';
+                    errorMsg.classList.remove('hidden');
+                    input.classList.add('border-rose-400', 'bg-rose-50/20');
+                } else {
+                    errorMsg.classList.add('hidden');
+                    errorMsg.innerHTML = '';
+                    input.classList.remove('border-rose-400', 'bg-rose-50/20');
+                }
+            }
+        } else if (tipo === 'zelle' || tipo === 'binance') {
+            if (errorMsg) {
+                if (input.value.trim().length > 0 && input.value.trim().length < 3) {
+                    errorMsg.innerHTML = '<span class="material-symbols-outlined text-[14px]">warning</span> Ingrese al menos 3 caracteres identificadores del pago.';
+                    errorMsg.classList.remove('hidden');
+                    input.classList.add('border-rose-400', 'bg-rose-50/20');
+                } else {
+                    errorMsg.classList.add('hidden');
+                    errorMsg.innerHTML = '';
+                    input.classList.remove('border-rose-400', 'bg-rose-50/20');
+                }
+            }
+        } else {
+            if (errorMsg) {
+                errorMsg.classList.add('hidden');
+                errorMsg.innerHTML = '';
+                input.classList.remove('border-rose-400', 'bg-rose-50/20');
+            }
+        }
     },
 
     // --- Cambio directo de dirección seleccionada ---
@@ -273,6 +394,8 @@ window.CheckoutConfig = {
 
         // 3. Evaluar si es Presencial (Efectivo / Punto de Venta) o Digital
         const esPresencial = ['efectivo_usd', 'efectivo_bs', 'punto_venta', 'biopago'].includes(cuenta.tipo);
+        const deliveryRadio = document.querySelector('input[name="metodo_entrega"][value="delivery"]');
+        const esDelivery = deliveryRadio && deliveryRadio.checked;
 
         if (esPresencial) {
             if (grid) {
@@ -285,21 +408,40 @@ window.CheckoutConfig = {
             if (presencialTitulo) {
                 if (cuenta.tipo === 'efectivo_usd') presencialTitulo.innerText = 'Pago en Efectivo (Dólares USD)';
                 else if (cuenta.tipo === 'efectivo_bs') presencialTitulo.innerText = 'Pago en Efectivo (Bolívares en Efectivo)';
-                else if (cuenta.tipo === 'punto_venta') presencialTitulo.innerText = 'Punto de Venta / Tarjeta de Débito';
-                else if (cuenta.tipo === 'biopago') presencialTitulo.innerText = 'Biopago BDV (Huella)';
+                else if (cuenta.tipo === 'punto_venta') presencialTitulo.innerText = 'Punto de Venta / Tarjeta de Débito (En Sede)';
+                else if (cuenta.tipo === 'biopago') presencialTitulo.innerText = 'Biopago BDV (Huella en Sede)';
                 else presencialTitulo.innerText = 'Pago Presencial Directo';
             }
 
             if (presencialDesc) {
-                presencialDesc.innerText = cuenta.instrucciones ||
-                    'Puedes realizar tu pago directamente al momento de recibir tus productos o en nuestro mostrador si seleccionaste retiro en tienda. Te recomendamos disponer del monto exacto o especificar con cuánto pagarás en las notas del pedido.';
+                if (cuenta.tipo === 'punto_venta' || cuenta.tipo === 'biopago') {
+                    presencialDesc.innerText = cuenta.instrucciones ||
+                        'Tu pedido quedará reservado inmediatamente en nuestro inventario. Podrás procesar el pago directamente con tu tarjeta de débito o huella en nuestra caja al momento de retirar tus insumos.';
+                } else if (cuenta.tipo === 'efectivo_usd' || cuenta.tipo === 'efectivo_bs') {
+                    if (esDelivery) {
+                        presencialDesc.innerText = cuenta.instrucciones ||
+                            'Realizarás el pago en efectivo contra entrega directamente al repartidor al momento de recibir tus insumos en tu destino. Te recomendamos disponer del monto exacto o especificar con cuánto pagarás en las notas del pedido.';
+                    } else {
+                        presencialDesc.innerText = cuenta.instrucciones ||
+                            'Tu pedido quedará reservado inmediatamente en nuestro inventario. Podrás pagar en efectivo directamente en nuestro mostrador al retirar tus insumos presentando tu número de pedido.';
+                    }
+                } else {
+                    presencialDesc.innerText = cuenta.instrucciones ||
+                        'Tu mercancía queda reservada en inventario. Realizarás el pago presencial al momento de la entrega o retiro.';
+                }
             }
 
-            // Ocultar campos de referencia bancaria
+            // Ocultar campos de referencia bancaria y limpiar validación previa
+            const errorRefMsg = document.getElementById('error-referencia-msg');
+            if (errorRefMsg) {
+                errorRefMsg.classList.add('hidden');
+                errorRefMsg.innerHTML = '';
+            }
             if (camposRef) camposRef.classList.add('hidden');
             if (inputRef) {
                 inputRef.required = false;
                 inputRef.value = '';
+                inputRef.classList.remove('border-rose-400', 'bg-rose-50/20');
             }
 
         } else {
@@ -419,30 +561,57 @@ window.CheckoutConfig = {
 
             // Mostrar campos de referencia y requerirlo
             if (camposRef) camposRef.classList.remove('hidden');
-            if (inputRef) inputRef.required = true;
+            if (inputRef) {
+                inputRef.required = true;
+                inputRef.classList.remove('border-rose-400', 'bg-rose-50/20');
+            }
 
-            // Personalizar labels y placeholders según método
+            // Personalizar labels, placeholders, inputMode y helpers según método
             if (labelRef && inputRef) {
                 if (cuenta.tipo === 'pago_movil') {
                     labelRef.innerHTML = `Nro. de Referencia Pago Móvil <span class="text-rose-500">*</span>`;
-                    inputRef.placeholder = 'Ej: 12345678 (últimos 6 u 8 dígitos)';
-                    if (helperRef) helperRef.innerText = '';
+                    inputRef.placeholder = 'Ej: 12345678 (solo números)';
+                    inputRef.inputMode = 'numeric';
+                    inputRef.pattern = '[0-9]*';
+                    if (helperRef) {
+                        helperRef.innerText = '';
+                        helperRef.classList.remove('hidden');
+                    }
                 } else if (cuenta.tipo === 'transferencia') {
                     labelRef.innerHTML = `Nro. de Referencia Bancaria <span class="text-rose-500">*</span>`;
-                    inputRef.placeholder = 'Ej: 00987654';
-                    if (helperRef) helperRef.innerText = '';
+                    inputRef.placeholder = 'Ej: 00987654 (solo números)';
+                    inputRef.inputMode = 'numeric';
+                    inputRef.pattern = '[0-9]*';
+                    if (helperRef) {
+                        helperRef.innerText = '';
+                        helperRef.classList.remove('hidden');
+                    }
                 } else if (cuenta.tipo === 'zelle') {
                     labelRef.innerHTML = `Titular que envía / Confirmación <span class="text-rose-500">*</span>`;
                     inputRef.placeholder = 'Ej: Pedro Pérez / Ref #';
-                    if (helperRef) helperRef.innerText = '';
+                    inputRef.inputMode = 'text';
+                    inputRef.pattern = '.*';
+                    if (helperRef) {
+                        helperRef.innerText = '';
+                        helperRef.classList.remove('hidden');
+                    }
                 } else if (cuenta.tipo === 'binance') {
                     labelRef.innerHTML = `TxID / Pay ID / Order ID <span class="text-rose-500">*</span>`;
                     inputRef.placeholder = 'Ej: 294810394';
-                    if (helperRef) helperRef.innerText = '';
+                    inputRef.inputMode = 'text';
+                    inputRef.pattern = '.*';
+                    if (helperRef) {
+                        helperRef.innerText = '';
+                        helperRef.classList.remove('hidden');
+                    }
                 } else {
                     labelRef.innerHTML = `Nro. de Referencia <span class="text-rose-500">*</span>`;
                     inputRef.placeholder = 'Ej: 12345678';
-                    if (helperRef) helperRef.innerText = '';
+                    inputRef.inputMode = 'text';
+                    if (helperRef) {
+                        helperRef.innerText = 'Código o número de comprobante';
+                        helperRef.classList.remove('hidden');
+                    }
                 }
             }
         }
@@ -586,6 +755,7 @@ window.CheckoutConfig = {
             }
             hiddenInput.value = id;
             if (cuenta) {
+                hiddenInput.dataset.tipo = cuenta.tipo;
                 this.renderDatosPago(cuenta);
             }
         }
@@ -607,5 +777,134 @@ document.addEventListener("DOMContentLoaded", () => {
     const metodoSeleccionado = document.querySelector('input[name="metodo_pago_id"]:checked');
     if (metodoSeleccionado) {
         window.CheckoutConfig.manejarCambioPago(metodoSeleccionado);
+    }
+
+    // 3. Validación estricta antes del envío del formulario
+    const checkoutForm = document.getElementById('checkout-form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', (e) => {
+            const metodoRadio = document.querySelector('input[name="metodo_pago_id"]:checked') || document.getElementById('hidden-pago-input');
+            if (!metodoRadio) {
+                e.preventDefault();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Forma de pago requerida',
+                        text: 'Por favor selecciona un método de pago antes de confirmar el pedido.',
+                        confirmButtonColor: '#1e549e'
+                    });
+                } else {
+                    alert('Por favor selecciona un método de pago antes de continuar.');
+                }
+                return;
+            }
+
+            const tipoMetodo = metodoRadio.dataset.tipo || (window.currentCuentaSeleccionada ? window.currentCuentaSeleccionada.tipo : '');
+            const delRadio = document.querySelector('input[name="metodo_entrega"][value="delivery"]');
+            const esDeliv = delRadio && delRadio.checked;
+
+            // Validación: Punto de venta / Biopago no permitido con delivery
+            if (esDeliv && ['punto_venta', 'biopago'].includes(tipoMetodo)) {
+                e.preventDefault();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Método no disponible para Delivery',
+                        text: 'El Punto de Venta y Biopago solo pueden utilizarse con Retiro en Sede. Cambia la forma de pago a Efectivo, Pago Móvil o Transferencia.',
+                        confirmButtonColor: '#1e549e'
+                    });
+                } else {
+                    alert('Punto de venta solo disponible para retiro en sede.');
+                }
+                return;
+            }
+
+            // Validación de referencias para métodos digitales
+            const inputRef = document.getElementById('input-referencia');
+            if (['pago_movil', 'transferencia', 'zelle', 'binance'].includes(tipoMetodo)) {
+                const val = inputRef ? inputRef.value.trim() : '';
+
+                if (!val) {
+                    e.preventDefault();
+                    if (inputRef) {
+                        inputRef.focus();
+                        inputRef.classList.add('border-rose-400', 'bg-rose-50/20');
+                    }
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Referencia requerida',
+                            text: 'Debes ingresar el número de referencia o confirmación de tu pago.',
+                            confirmButtonColor: '#1e549e'
+                        });
+                    } else {
+                        alert('Debes ingresar el número de referencia.');
+                    }
+                    return;
+                }
+
+                if (tipoMetodo === 'pago_movil') {
+                    if (!/^[0-9]{4,15}$/.test(val)) {
+                        e.preventDefault();
+                        if (inputRef) {
+                            inputRef.focus();
+                            inputRef.classList.add('border-rose-400', 'bg-rose-50/20');
+                        }
+                        const msg = 'La referencia de Pago Móvil debe contener solo dígitos numéricos (entre 4 y 15 dígitos).';
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Referencia inválida',
+                                text: msg,
+                                confirmButtonColor: '#1e549e'
+                            });
+                        } else {
+                            alert(msg);
+                        }
+                        return;
+                    }
+                } else if (tipoMetodo === 'transferencia') {
+                    if (!/^[0-9]{4,25}$/.test(val)) {
+                        e.preventDefault();
+                        if (inputRef) {
+                            inputRef.focus();
+                            inputRef.classList.add('border-rose-400', 'bg-rose-50/20');
+                        }
+                        const msg = 'La referencia bancaria debe contener solo dígitos numéricos (entre 4 y 25 dígitos).';
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Referencia inválida',
+                                text: msg,
+                                confirmButtonColor: '#1e549e'
+                            });
+                        } else {
+                            alert(msg);
+                        }
+                        return;
+                    }
+                } else if (tipoMetodo === 'zelle' || tipoMetodo === 'binance') {
+                    if (val.length < 3) {
+                        e.preventDefault();
+                        if (inputRef) {
+                            inputRef.focus();
+                            inputRef.classList.add('border-rose-400', 'bg-rose-50/20');
+                        }
+                        const msg = 'Por favor ingresa al menos 3 caracteres identificadores del pago.';
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Referencia muy corta',
+                                text: msg,
+                                confirmButtonColor: '#1e549e'
+                            });
+                        } else {
+                            alert(msg);
+                        }
+                        return;
+                    }
+                }
+            }
+        });
     }
 });

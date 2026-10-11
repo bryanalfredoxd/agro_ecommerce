@@ -45,8 +45,28 @@ class Pago extends Model
     }
 
     // ==========================================
-    // ACCESSORS
+    // HELPERS Y ACCESSORS
     // ==========================================
+    public function esPresencial(): bool
+    {
+        return in_array($this->metodo, ['efectivo_usd', 'efectivo_bs', 'punto_venta', 'biopago']);
+    }
+
+    public function getNombreMetodoAttribute(): string
+    {
+        return match($this->metodo) {
+            'pago_movil' => 'Pago Móvil',
+            'zelle' => 'Zelle',
+            'binance' => 'Binance Pay',
+            'transferencia' => 'Transferencia Bancaria',
+            'efectivo_usd' => 'Efectivo ($ USD)',
+            'efectivo_bs' => 'Efectivo (Bs)',
+            'punto_venta' => 'Punto de Venta',
+            'biopago' => 'Biopago BDV',
+            default => ucfirst(str_replace('_', ' ', $this->metodo ?? 'Otro'))
+        };
+    }
+
     public function getUrlComprobanteAttribute()
     {
         if (empty($this->captura_pago_url)) {

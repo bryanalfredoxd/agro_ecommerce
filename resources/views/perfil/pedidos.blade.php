@@ -121,7 +121,7 @@
                                     default => 'payments'
                                 };
 
-                                $esDelivery = $pedido->costo_delivery_usd > 0 || !empty($pedido->direccion_texto);
+                                $esDelivery = $pedido->es_delivery;
                             @endphp
 
                             <article class="pedido-card bg-white rounded-3xl shadow-xs border border-slate-200/90 overflow-hidden hover:border-[#3492cf]/60 hover:shadow-sm transition-all group" 
@@ -248,9 +248,15 @@
                                                 @if(in_array($pedido->estado, ['pagado', 'aprobado', 'completado_caja', 'en_ruta', 'entregado']))
                                                     <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" 
                                                        target="_blank" 
-                                                       title="Descargar Ticket o Factura"
+                                                       title="Ticket Térmico (80mm)"
                                                        class="size-10 rounded-xl bg-slate-50 text-slate-600 hover:text-[#1e549e] hover:bg-[#e5f2fb] border border-slate-200 flex items-center justify-center transition-colors shadow-2xs">
-                                                        <span class="material-symbols-outlined text-[18px]">receipt</span>
+                                                        <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                                                    </a>
+                                                    <a href="{{ route('perfil.pedido.factura', $pedido->id) }}" 
+                                                       target="_blank" 
+                                                       title="Factura Fiscal (A4 / PDF)"
+                                                       class="size-10 rounded-xl bg-emerald-50 text-emerald-700 hover:text-white hover:bg-emerald-600 border border-emerald-200 flex items-center justify-center transition-colors shadow-2xs">
+                                                        <span class="material-symbols-outlined text-[18px]">description</span>
                                                     </a>
                                                 @endif
                                             </div>

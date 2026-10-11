@@ -921,15 +921,24 @@
     // ==========================================
     // AUDITORÍA DE PAGO: APROBAR Y RECHAZAR
     // ==========================================
-    function aprobarPagoDirecto(pagoId, referencia, pedidoId = null) {
+    function aprobarPagoDirecto(pagoId, referencia, pedidoId = null, esPresencial = false) {
+        const esCobroPresencial = esPresencial === true || ['COBRO-CONTRA-ENTREGA', 'PAGO-EN-LOCAL', 'PAGO-EN-SITIO', 'EN-SITIO'].includes(String(referencia).toUpperCase());
+        const titulo = esCobroPresencial ? '¿Confirmar Cobro y Entrega en Tienda?' : '¿Aprobar Pago Reportado?';
+        const htmlMsg = esCobroPresencial
+            ? `Confirmas que se ha recibido el pago en caja y entregado los productos al cliente.<br><br><span class="text-xs text-gray-500">Esto marcará el pedido como <b>ENTREGADO</b> en mostrador, descontará el inventario del almacén, emitirá la factura digital y notificará al cliente por correo.</span>`
+            : `Confirmas que los fondos con referencia <b>${referencia}</b> se encuentran acreditados en cuenta bancaria.<br><br><span class="text-xs text-gray-500">Esto marcará el pedido como <b>PAGADO</b>, descontará inventario, emitirá la factura y notificará al cliente por correo.</span>`;
+        const btnText = esCobroPresencial
+            ? '<span class="material-symbols-outlined align-middle mr-1 text-[18px]">payments</span> Sí, Cobrar y Entregar'
+            : '<span class="material-symbols-outlined align-middle mr-1 text-[18px]">verified</span> Sí, Aprobar y Liberar';
+
         Swal.fire({
-            title: '¿Aprobar Pago Reportado?',
-            html: `Confirmas que los fondos con referencia <b>${referencia}</b> se encuentran acreditados en cuenta bancaria.<br><br><span class="text-xs text-gray-500">Esto marcará el pedido como <b>PAGADO</b>, descontará inventario, emitirá la factura y notificará al cliente por correo.</span>`,
+            title: titulo,
+            html: htmlMsg,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#16a34a', 
             cancelButtonColor: '#9ca3af',
-            confirmButtonText: '<span class="material-symbols-outlined align-middle mr-1 text-[18px]">verified</span> Sí, Aprobar y Liberar',
+            confirmButtonText: btnText,
             cancelButtonText: 'Cancelar',
             customClass: { popup: 'rounded-2xl' }
         }).then((result) => {
@@ -1210,6 +1219,80 @@
             closeDetalleModal();
         }
     });
+
+    // ==========================================
+    // SELECCIÓN DE FORMATO DE IMPRESIÓN (TICKET 80mm vs FACTURA A4)
+    // ==========================================
+    function abrirOpcionesImpresion(pedidoId, numeroFactura = '') {
+        const subtitulo = numeroFactura 
+            ? `Factura N° <b>${numeroFactura}</b> &bull; Pedido #<b>${String(pedidoId).padStart(6, '0')}</b>`
+            : `Pedido #<b>${String(pedidoId).padStart(6, '0')}</b>`;
+
+        Swal.fire({
+            title: '<div class="flex items-center justify-center gap-2 text-slate-800 text-lg font-black"><span class="material-symbols-outlined text-[#1e549e] text-2xl">print</span> Seleccionar Formato de Impresión</div>',
+            html: `
+                <p class="text-xs text-gray-500 mb-5 font-medium">${subtitulo}</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                    <!-- Opción 1: Ticket 80mm -->
+                    <button type="button" 
+                            onclick="abrirDocumentoImpresion(${pedidoId}, 'ticket')" 
+                            class="p-4 rounded-2xl border-2 border-gray-100 hover:border-[#1e549e] bg-slate-50/70 hover:bg-blue-50/40 transition-all text-left flex flex-col justify-between group cursor-pointer shadow-2xs hover:shadow-md">
+                        <div>
+                            <div class="flex items-center justify-between mb-2.5">
+                                <div class="size-9 rounded-xl bg-blue-100 text-[#1e549e] flex items-center justify-center group-hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+                                </div>
+                                <span class="text-[9.5px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-100 text-[#1e549e]">80mm</span>
+                            </div>
+                            <h4 class="font-black text-gray-900 text-sm group-hover:text-[#1e549e] transition-colors">Ticket Térmico</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-snug">Formato para impresoras de punto de venta (POS) y térmicas de 80mm.</p>
+                        </div>
+                        <div class="mt-3.5 pt-2 border-t border-gray-200/60 flex items-center gap-1 text-[11px] font-bold text-[#1e549e]">
+                            <span>Abrir Ticket</span>
+                            <span class="material-symbols-outlined text-[14px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                        </div>
+                    </button>
+
+                    <!-- Opción 2: Factura A4 / PDF -->
+                    <button type="button" 
+                            onclick="abrirDocumentoImpresion(${pedidoId}, 'factura')" 
+                            class="p-4 rounded-2xl border-2 border-gray-100 hover:border-emerald-600 bg-slate-50/70 hover:bg-emerald-50/40 transition-all text-left flex flex-col justify-between group cursor-pointer shadow-2xs hover:shadow-md">
+                        <div>
+                            <div class="flex items-center justify-between mb-2.5">
+                                <div class="size-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-[20px]">description</span>
+                                </div>
+                                <span class="text-[9.5px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">A4 / PDF</span>
+                            </div>
+                            <h4 class="font-black text-gray-900 text-sm group-hover:text-emerald-700 transition-colors">Factura Fiscal</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-snug">Documento formal completo en hoja estándar carta/A4, listo para guardar como PDF.</p>
+                        </div>
+                        <div class="mt-3.5 pt-2 border-t border-gray-200/60 flex items-center gap-1 text-[11px] font-bold text-emerald-700">
+                            <span>Abrir Factura A4</span>
+                            <span class="material-symbols-outlined text-[14px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                        </div>
+                    </button>
+                </div>
+            `,
+            showConfirmButton: false,
+            showCloseButton: true,
+            customClass: {
+                popup: 'rounded-3xl max-w-lg p-6 sm:p-7',
+            }
+        });
+    }
+
+    function abrirDocumentoImpresion(pedidoId, tipo) {
+        Swal.close();
+        if (tipo === 'ticket') {
+            window.open(`/admin/pedidos/${pedidoId}/ticket`, '_blank');
+        } else {
+            window.open(`/admin/pedidos/${pedidoId}/factura`, '_blank');
+        }
+    }
+
+    window.abrirOpcionesImpresion = abrirOpcionesImpresion;
+    window.abrirDocumentoImpresion = abrirDocumentoImpresion;
 </script>
 @endpush
 @endsection

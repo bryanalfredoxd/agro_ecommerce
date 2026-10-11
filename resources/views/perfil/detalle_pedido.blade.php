@@ -23,9 +23,17 @@
                 @if(in_array($pedido->estado, ['pagado', 'aprobado', 'completado_caja', 'en_ruta', 'entregado']))
                     <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" 
                        target="_blank" 
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#e5f2fb] hover:bg-[#3492cf] hover:text-white text-[#1e549e] font-bold text-xs transition-colors shadow-2xs">
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#e5f2fb] hover:bg-[#1e549e] hover:text-white text-[#1e549e] font-bold text-xs transition-colors shadow-2xs"
+                       title="Ticket Térmico (80mm)">
                         <span class="material-symbols-outlined text-[16px]">receipt_long</span>
-                        <span class="hidden sm:inline">Ticket / Factura</span>
+                        <span class="hidden sm:inline">Ticket 80mm</span>
+                    </a>
+                    <a href="{{ route('perfil.pedido.factura', $pedido->id) }}" 
+                       target="_blank" 
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-700 font-bold text-xs transition-colors shadow-2xs border border-emerald-200/60"
+                       title="Factura Fiscal A4 / PDF">
+                        <span class="material-symbols-outlined text-[16px]">description</span>
+                        <span class="hidden sm:inline">Factura A4</span>
                     </a>
                 @endif
             </div>
@@ -39,8 +47,9 @@
             $estadoPill = match($pedido->estado) {
                 'pendiente' => ['bg' => 'bg-amber-50 text-amber-700 border-amber-200', 'icono' => 'hourglass_empty', 'texto' => 'Pendiente de Pago', 'paso' => 1],
                 'revision' => ['bg' => 'bg-sky-50 text-sky-700 border-sky-200', 'icono' => 'search', 'texto' => 'En Verificación', 'paso' => 2],
-                'pagado', 'aprobado', 'completado_caja' => ['bg' => 'bg-emerald-50 text-emerald-700 border-emerald-200', 'icono' => 'verified', 'texto' => 'Pago Verificado', 'paso' => 2],
-                'preparacion' => ['bg' => 'bg-indigo-50 text-indigo-700 border-indigo-200', 'icono' => 'inventory', 'texto' => 'En Preparación', 'paso' => 3],
+                'pagado', 'aprobado' => ['bg' => 'bg-emerald-50 text-emerald-700 border-emerald-200', 'icono' => 'verified', 'texto' => ($pedido->es_delivery ? 'Pago Verificado' : 'Listo para Retiro'), 'paso' => 2],
+                'completado_caja' => ['bg' => 'bg-emerald-50 text-emerald-700 border-emerald-200', 'icono' => 'verified', 'texto' => 'Completado en Tienda', 'paso' => 4],
+                'preparacion' => ['bg' => 'bg-indigo-50 text-indigo-700 border-indigo-200', 'icono' => 'inventory', 'texto' => ($pedido->es_delivery ? 'En Preparación' : 'Empacando en Sede'), 'paso' => 3],
                 'en_ruta' => ['bg' => 'bg-purple-50 text-purple-700 border-purple-200', 'icono' => 'local_shipping', 'texto' => 'En Ruta de Entrega', 'paso' => 3],
                 'entregado' => ['bg' => 'bg-slate-100 text-slate-800 border-slate-300', 'icono' => 'package_2', 'texto' => 'Entregado con Éxito', 'paso' => 4],
                 'rechazado', 'cancelado', 'devuelto' => ['bg' => 'bg-rose-50 text-rose-700 border-rose-200', 'icono' => 'cancel', 'texto' => 'Cancelado / Rechazado', 'paso' => 0],
@@ -49,7 +58,7 @@
 
             $esCancelado = in_array($pedido->estado, ['rechazado', 'cancelado', 'devuelto']);
             $pasoActual = $estadoPill['paso'];
-            $esDelivery = $pedido->costo_delivery_usd > 0 || !empty($pedido->direccion_texto);
+            $esDelivery = $pedido->es_delivery;
         @endphp
 
         {{-- ENCABEZADO DE ORDEN --}}
@@ -397,14 +406,24 @@
                             </div>
                         </div>
 
-                        {{-- Botón Ticket / Factura --}}
+                        {{-- Botones Ticket / Factura --}}
                         @if(in_array($pedido->estado, ['pagado', 'aprobado', 'completado_caja', 'en_ruta', 'entregado']))
-                            <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" 
-                               target="_blank" 
-                               class="w-full mt-4 py-3 bg-[#1e549e] hover:bg-[#3492cf] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 active:scale-95">
-                                <span class="material-symbols-outlined text-[18px]">receipt</span>
-                                <span>Ver Factura / Ticket Térmico</span>
-                            </a>
+                            <div class="mt-4 grid grid-cols-2 gap-2">
+                                <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" 
+                                   target="_blank" 
+                                   class="py-3 px-2 bg-[#1e549e] hover:bg-[#164079] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                                   title="Imprimir Ticket Térmico 80mm">
+                                    <span class="material-symbols-outlined text-[17px]">receipt_long</span>
+                                    <span>Ticket (80mm)</span>
+                                </a>
+                                <a href="{{ route('perfil.pedido.factura', $pedido->id) }}" 
+                                   target="_blank" 
+                                   class="py-3 px-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 hover:border-emerald-600 hover:text-emerald-700"
+                                   title="Imprimir Factura Fiscal A4 / Guardar PDF">
+                                    <span class="material-symbols-outlined text-[17px] text-emerald-600">description</span>
+                                    <span>Factura (A4)</span>
+                                </a>
+                            </div>
                         @endif
 
                         {{-- Botón de Soporte WhatsApp --}}

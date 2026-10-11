@@ -149,18 +149,25 @@
                         <div class="flex items-center justify-between gap-2 flex-wrap">
                             <span class="font-black text-xs uppercase px-2.5 py-1 rounded-lg border bg-gray-50 border-gray-200 text-gray-800 inline-flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[15px] text-blue-600">payments</span>
-                                {{ ucfirst(str_replace('_', ' ', $pago->metodo ?? 'Reportado')) }}
+                                {{ $pago->nombre_metodo }}
                             </span>
 
                             @if($tienePagoRevision)
-                                <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-amber-100 text-amber-800 border border-amber-300 inline-flex items-center gap-1 animate-pulse">
-                                    <span class="material-symbols-outlined text-[15px]">pending</span>
-                                    En Revisión
-                                </span>
+                                @if($pago->esPresencial())
+                                    <span class="px-2.5 py-1 rounded-lg text-xs font-black {{ $pedido->es_delivery ? 'bg-teal-100 text-teal-800 border border-teal-300' : 'bg-indigo-100 text-indigo-800 border border-indigo-300' }} inline-flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[15px]">{{ $pedido->es_delivery ? 'local_shipping' : 'store' }}</span>
+                                        {{ $pedido->es_delivery ? 'Cobro Contra Entrega (Efectivo)' : 'Cobro en Mostrador' }}
+                                    </span>
+                                @else
+                                    <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-amber-100 text-amber-800 border border-amber-300 inline-flex items-center gap-1 animate-pulse">
+                                        <span class="material-symbols-outlined text-[15px]">pending</span>
+                                        Por Verificar (Digital)
+                                    </span>
+                                @endif
                             @elseif($pagoAprobado)
                                 <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300 inline-flex items-center gap-1">
                                     <span class="material-symbols-outlined text-[15px]">verified</span>
-                                    Aprobado
+                                    Aprobado / Pagado
                                 </span>
                             @elseif($pagoRechazado)
                                 <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-rose-100 text-rose-800 border border-rose-300 inline-flex items-center gap-1">
@@ -170,17 +177,36 @@
                             @endif
                         </div>
 
+                        {{-- Alerta informativa para Pago Presencial --}}
+                        @if($pago->esPresencial())
+                            <div class="p-3 bg-amber-50/70 rounded-xl border border-amber-200/80">
+                                <div class="flex items-start gap-2 text-xs text-amber-900">
+                                    <span class="material-symbols-outlined text-amber-600 text-sm mt-0.5">info</span>
+                                    <div>
+                                        <p class="font-bold">Modalidad: Pago Presencial ({{ $pago->nombre_metodo }})</p>
+                                        <p class="text-[11px] text-amber-800 mt-0.5">
+                                            @if($pedido->es_delivery)
+                                                El cliente cancelará en efectivo al momento de recibir su pedido con el repartidor.
+                                            @else
+                                                El cliente apartó la mercancía vía web y realizará el pago directamente en caja/mostrador (efectivo o punto de venta/Biopago) al retirar sus insumos.
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         {{-- Referencia y Montos --}}
                         <div class="bg-gray-50/80 p-3 rounded-xl border border-gray-100 space-y-1.5 text-xs">
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-500 font-bold">N° Referencia:</span>
                                 <span class="font-mono font-black text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-200 select-all">
-                                    {{ $pago->referencia_bancaria ?? 'NO REPORTADA' }}
+                                    {{ $pago->referencia_bancaria ?? ($pago->esPresencial() ? 'PAGO-EN-SITIO' : 'NO REPORTADA') }}
                                 </span>
                             </div>
 
                             <div class="flex justify-between items-center">
-                                <span class="text-gray-500 font-bold">Monto Reportado:</span>
+                                <span class="text-gray-500 font-bold">Monto del Pedido:</span>
                                 <div class="text-right">
                                     <span class="font-black text-gray-900">${{ number_format($pago->monto_usd ?? $pedido->total_usd, 2) }}</span>
                                     <span class="text-gray-400 text-[10px] block">Bs. {{ number_format($pago->monto_ves ?? $pedido->total_ves_calculado, 2) }}</span>
@@ -188,7 +214,7 @@
                             </div>
 
                             <div class="flex justify-between items-center text-[11px] text-gray-400">
-                                <span>Fecha del Pago:</span>
+                                <span>Fecha del Registro:</span>
                                 <span>{{ $pago->fecha_pago ? \Carbon\Carbon::parse($pago->fecha_pago)->format('d/m/Y, h:i A') : 'N/A' }}</span>
                             </div>
 
@@ -228,11 +254,13 @@
             {{-- BOTONES DE RESOLUCIÓN DEL PAGO (SI ESTÁ EN REVISIÓN) --}}
             @if($tienePagoRevision)
                 <div class="pt-3 border-t border-amber-200 bg-amber-50/50 -mx-5 -mb-5 p-4 rounded-b-2xl">
-                    <span class="text-[10px] font-black text-amber-800 uppercase tracking-widest block mb-2 text-center">Acción de Tesorería Requerida</span>
+                    <span class="text-[10px] font-black text-amber-800 uppercase tracking-widest block mb-2 text-center">
+                        {{ $pago->esPresencial() ? 'Confirmación de Cobro en Tienda / Entrega' : 'Acción de Tesorería Requerida' }}
+                    </span>
                     <div class="flex gap-2">
-                        <button type="button" onclick="aprobarPagoDirecto({{ $pago->id }}, '{{ $pago->referencia_bancaria ?? 'SIN-REF' }}', {{ $pedido->id }})" class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm">
-                            <span class="material-symbols-outlined text-[17px]">check_circle</span>
-                            Aprobar Pago
+                        <button type="button" onclick="aprobarPagoDirecto({{ $pago->id }}, '{{ $pago->referencia_bancaria ?? 'EN-SITIO' }}', {{ $pedido->id }}, {{ $pago->esPresencial() ? 'true' : 'false' }})" class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[17px]">{{ $pago->esPresencial() ? 'payments' : 'check_circle' }}</span>
+                            {{ $pago->esPresencial() ? 'Confirmar Cobro y Entrega' : 'Aprobar Pago' }}
                         </button>
                         <button type="button" onclick="rechazarPagoDirecto({{ $pago->id }}, '{{ $pago->referencia_bancaria ?? 'SIN-REF' }}', {{ $pedido->id }})" class="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[17px]">cancel</span>
@@ -338,10 +366,14 @@
                 </div>
             @endif
 
-            <div class="pt-2 flex items-center gap-2">
-                <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" target="_blank" class="w-full py-2 bg-white hover:bg-gray-100 text-gray-700 font-bold text-xs rounded-xl border border-gray-200 flex items-center justify-center gap-1.5 transition-colors shadow-2xs">
-                    <span class="material-symbols-outlined text-[16px]">print</span>
-                    Imprimir Ticket Fiscal / Comprobante
+            <div class="pt-2 grid grid-cols-2 gap-2">
+                <a href="{{ route('admin.pedidos.ticket', $pedido->id) }}" target="_blank" class="py-2.5 px-3 bg-white hover:bg-blue-50 text-gray-700 hover:text-[#1e549e] font-bold text-xs rounded-xl border border-gray-200 hover:border-blue-200 flex items-center justify-center gap-1.5 transition-all shadow-2xs" title="Imprimir Ticket Térmico 80mm">
+                    <span class="material-symbols-outlined text-[17px] text-[#1e549e]">receipt_long</span>
+                    <span>Ticket (80mm)</span>
+                </a>
+                <a href="{{ route('admin.pedidos.factura', $pedido->id) }}" target="_blank" class="py-2.5 px-3 bg-white hover:bg-emerald-50 text-gray-700 hover:text-emerald-700 font-bold text-xs rounded-xl border border-gray-200 hover:border-emerald-200 flex items-center justify-center gap-1.5 transition-all shadow-2xs" title="Imprimir Factura Fiscal A4 / Guardar PDF">
+                    <span class="material-symbols-outlined text-[17px] text-emerald-600">description</span>
+                    <span>Factura (A4 / PDF)</span>
                 </a>
             </div>
         </div>

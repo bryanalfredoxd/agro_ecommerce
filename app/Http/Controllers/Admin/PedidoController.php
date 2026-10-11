@@ -127,6 +127,7 @@ class PedidoController extends Controller
     {
         $pedido = Pedido::with([
             'usuario', 
+            'factura',
             'pago.verificador',
             'pagos.verificador',
             'detalles.producto.categoria', 

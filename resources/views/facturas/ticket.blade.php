@@ -136,6 +136,25 @@
             align-items: center;
             gap: 6px;
         }
+        .btn-a4 {
+            background-color: #059669;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(5,150,105,0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: background 0.15s ease;
+        }
+        .btn-a4:hover {
+            background-color: #047857;
+        }
         .btn-close {
             background-color: #e2e8f0;
             color: #334155;
@@ -175,6 +194,9 @@
         <button class="btn-print" onclick="window.print()">
             🖨️ Imprimir Ticket (80mm)
         </button>
+        <a href="{{ route('factura.imprimir', $factura->id) }}" class="btn-a4">
+            📄 Factura A4 (PDF)
+        </a>
         <button class="btn-close" onclick="window.history.back()">
             ✕ Volver
         </button>

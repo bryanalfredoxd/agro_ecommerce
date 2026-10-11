@@ -67,12 +67,19 @@ class FacturaController extends Controller
 
     /**
      * Vista de impresión en formato Ticket Térmico (80mm)
+    /**
+     * Vista de impresión en formato Ticket Térmico (80mm)
      */
     public function ticket($id)
     {
-        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.usuario'])->findOrFail($id);
-        $config = \App\Models\ConfiguracionTienda::first();
+        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])->findOrFail($id);
 
+        $user = auth()->user();
+        if ($user && !$user->esAdmin() && !$user->esPersonal() && $factura->pedido && $factura->pedido->usuario_id !== $user->id) {
+            abort(403, 'No autorizado para visualizar este comprobante.');
+        }
+
+        $config = \App\Models\ConfiguracionTienda::first();
         return view('facturas.ticket', compact('factura', 'config'));
     }
 
@@ -81,9 +88,14 @@ class FacturaController extends Controller
      */
     public function imprimir($id)
     {
-        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.usuario'])->findOrFail($id);
-        $config = \App\Models\ConfiguracionTienda::first();
+        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])->findOrFail($id);
 
+        $user = auth()->user();
+        if ($user && !$user->esAdmin() && !$user->esPersonal() && $factura->pedido && $factura->pedido->usuario_id !== $user->id) {
+            abort(403, 'No autorizado para visualizar este comprobante.');
+        }
+
+        $config = \App\Models\ConfiguracionTienda::first();
         return view('facturas.factura', compact('factura', 'config'));
     }
 
@@ -92,16 +104,16 @@ class FacturaController extends Controller
      */
     public function ticketPorPedido($pedidoId)
     {
-        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.usuario'])
+        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])
             ->where('pedido_id', $pedidoId)
             ->first();
 
         if (!$factura) {
-            // Si el pedido aún no tiene factura pero está pagado, intentamos generarla
+            // Si el pedido aún no tiene factura pero está pagado o en proceso final, intentamos generarla
             $pedido = \App\Models\Pedido::findOrFail($pedidoId);
-            if ($pedido->estado === 'pagado' || $pedido->estado === 'completado_caja') {
+            if (in_array($pedido->estado, ['pagado', 'en_ruta', 'en_camino', 'entregado', 'completado_caja', 'aprobado'])) {
                 \App\Models\Factura::emitirParaPedido($pedido);
-                $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.usuario'])
+                $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])
                     ->where('pedido_id', $pedidoId)
                     ->first();
             }
@@ -111,7 +123,45 @@ class FacturaController extends Controller
             abort(404, 'No hay factura emitida para este pedido.');
         }
 
+        $user = auth()->user();
+        if ($user && !$user->esAdmin() && !$user->esPersonal() && $factura->pedido && $factura->pedido->usuario_id !== $user->id) {
+            abort(403, 'No autorizado para visualizar este comprobante.');
+        }
+
         $config = \App\Models\ConfiguracionTienda::first();
         return view('facturas.ticket', compact('factura', 'config'));
+    }
+
+    /**
+     * Factura A4 / Fiscal accediendo mediante el ID del pedido
+     */
+    public function facturaPorPedido($pedidoId)
+    {
+        $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])
+            ->where('pedido_id', $pedidoId)
+            ->first();
+
+        if (!$factura) {
+            // Si el pedido aún no tiene factura pero está pagado o en proceso final, intentamos generarla
+            $pedido = \App\Models\Pedido::findOrFail($pedidoId);
+            if (in_array($pedido->estado, ['pagado', 'en_ruta', 'en_camino', 'entregado', 'completado_caja', 'aprobado'])) {
+                \App\Models\Factura::emitirParaPedido($pedido);
+                $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])
+                    ->where('pedido_id', $pedidoId)
+                    ->first();
+            }
+        }
+
+        if (!$factura) {
+            abort(404, 'No hay factura emitida para este pedido.');
+        }
+
+        $user = auth()->user();
+        if ($user && !$user->esAdmin() && !$user->esPersonal() && $factura->pedido && $factura->pedido->usuario_id !== $user->id) {
+            abort(403, 'No autorizado para visualizar este comprobante.');
+        }
+
+        $config = \App\Models\ConfiguracionTienda::first();
+        return view('facturas.factura', compact('factura', 'config'));
     }
 }

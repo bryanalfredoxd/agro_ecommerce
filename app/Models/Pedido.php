@@ -73,13 +73,20 @@ protected $fillable = [
      */
     public function getEsDeliveryAttribute(): bool
     {
+        if ($this->canal_venta === 'tienda_fisica' && (float) $this->costo_delivery_usd <= 0 && $this->zona_delivery_id === null) {
+            return false;
+        }
         if ($this->zona_delivery_id !== null) {
             return true;
         }
         if ((float) $this->costo_delivery_usd > 0) {
             return true;
         }
-        if (!empty($this->direccion_texto) && !in_array(trim($this->direccion_texto), ['Retiro en Tienda', 'Retiro en Sede', 'Retiro en Tienda Física', 'Retiro en Sede Física'])) {
+        if (!empty($this->direccion_texto)) {
+            $dirLower = mb_strtolower(trim($this->direccion_texto));
+            if (str_contains($dirLower, 'retiro') || str_contains($dirLower, 'tienda') || str_contains($dirLower, 'sede') || str_contains($dirLower, 'mostrador')) {
+                return false;
+            }
             return true;
         }
         return false;

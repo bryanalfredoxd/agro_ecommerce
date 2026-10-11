@@ -126,6 +126,35 @@ class CheckoutController extends Controller
         $cuentaBancaria = CuentaBancaria::findOrFail($request->metodo_pago_id);
         $tipoMetodoEnum = $cuentaBancaria->tipo_metodo;
 
+        // Validar coherencia: Punto de Venta y Biopago solo aplican para Retiro en Sede Física
+        if (in_array($tipoMetodoEnum, ['punto_venta', 'biopago']) && $request->metodo_entrega === 'delivery') {
+            return back()->with('error', 'El método de pago por Punto de Venta / Biopago solo está disponible para Retiro en Sede física (Mostrador). Para despachos por delivery puedes pagar con Pago Móvil, Transferencia, Zelle, Binance o Efectivo contra entrega.');
+        }
+
+        // Validación estricta de referencias según el método de pago
+        if ($tipoMetodoEnum === 'pago_movil') {
+            $request->validate([
+                'referencia' => 'required|regex:/^[0-9]{4,15}$/',
+            ], [
+                'referencia.required' => 'Debes ingresar el número de referencia del Pago Móvil.',
+                'referencia.regex' => 'La referencia de Pago Móvil debe contener únicamente dígitos numéricos (entre 4 y 15 números).'
+            ]);
+        } elseif ($tipoMetodoEnum === 'transferencia') {
+            $request->validate([
+                'referencia' => 'required|regex:/^[0-9]{4,25}$/',
+            ], [
+                'referencia.required' => 'Debes ingresar el número de referencia bancaria.',
+                'referencia.regex' => 'La referencia de transferencia bancaria debe contener únicamente números.'
+            ]);
+        } elseif (in_array($tipoMetodoEnum, ['zelle', 'binance'])) {
+            $request->validate([
+                'referencia' => 'required|string|min:3|max:100',
+            ], [
+                'referencia.required' => 'Debes ingresar el titular, correo emisor o identificador de confirmación del pago.',
+                'referencia.min' => 'La referencia o titular de confirmación debe tener al menos 3 caracteres.'
+            ]);
+        }
+
         $usuario = Auth::user();
 
         // 3. Validar si el Delivery está activo por el admin
@@ -230,12 +259,21 @@ class CheckoutController extends Controller
                 $rutaCapture = $this->uploadImage($request->file('comprobante'));
             }
 
+            $referenciaFinal = trim($request->referencia ?? '');
+            $esPagoFisico = in_array($tipoMetodoEnum, ['efectivo_usd', 'efectivo_bs', 'punto_venta', 'biopago']);
+
+            if ($esPagoFisico && empty($referenciaFinal)) {
+                $referenciaFinal = ($request->metodo_entrega === 'delivery') 
+                    ? 'COBRO-CONTRA-ENTREGA' 
+                    : 'PAGO-EN-LOCAL';
+            }
+
             Pago::create([
                 'pedido_id' => $pedido->id,
                 'metodo' => $tipoMetodoEnum,
                 'monto_usd' => $totalUsd,
                 'monto_ves' => $totalVes,
-                'referencia_bancaria' => $request->referencia,
+                'referencia_bancaria' => $referenciaFinal,
                 'captura_pago_url' => $rutaCapture,
                 'estado' => 'revision'
             ]);
@@ -252,7 +290,15 @@ class CheckoutController extends Controller
                 Log::warning("Checkout: No se pudo enviar correo de pedido recibido para orden #{$pedido->id}: " . $mailEx->getMessage());
             }
 
-            return redirect()->route('perfil.pedidos')->with('success', '¡Pedido #' . $pedido->id . ' registrado correctamente! En breve verificaremos tu pago.');
+            if ($esPagoFisico) {
+                $mensajeExito = ($request->metodo_entrega === 'delivery')
+                    ? "¡Pedido #{$pedido->id} registrado con éxito! Tu mercancía ha sido apartada y podrás pagar en efectivo al momento de recibir tu entrega."
+                    : "¡Pedido #{$pedido->id} registrado con éxito! Tu mercancía ha sido apartada y podrás pagarla en mostrador (Efectivo o Punto de Venta) al retirar en nuestra sede.";
+            } else {
+                $mensajeExito = "¡Pedido #{$pedido->id} registrado correctamente! En breve verificaremos tu pago.";
+            }
+
+            return redirect()->route('perfil.pedidos')->with('success', $mensajeExito);
 
         });
     }

@@ -18,7 +18,7 @@
                                 Agrosuministros Rodríguez
                             </p>
                             <p style="margin: 3px 0 0 0; font-size: 11px; color: #64748b;">
-                                Tu comprobante digital de compra en tienda
+                                Tu comprobante digital de compra
                             </p>
                         </td>
                     </tr>
@@ -80,7 +80,15 @@
                                 </tr>
                                 <tr>
                                     <td style="font-weight: bold; color: #334155;">Canal:</td>
-                                    <td align="right">MOSTRADOR POS</td>
+                                    <td align="right">
+                                        @if($factura->pedido && $factura->pedido->canal_venta === 'web')
+                                            TIENDA WEB
+                                        @elseif($factura->pedido && $factura->pedido->canal_venta === 'whatsapp')
+                                            PEDIDO WHATSAPP
+                                        @else
+                                            MOSTRADOR POS
+                                        @endif
+                                    </td>
                                 </tr>
                             </table>
                         </td>
@@ -215,7 +223,7 @@
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 360px; margin-top: 14px; text-align: center; font-size: 10px; color: #94a3b8;">
                     <tr>
                         <td>
-                            Enviado automáticamente por el Sistema Punto de Venta (POS)<br>
+                            Enviado automáticamente por Agrosuministros Rodríguez<br>
                             &copy; {{ date('Y') }} Agrosuministros Rodríguez. Todos los derechos reservados.
                         </td>
                     </tr>

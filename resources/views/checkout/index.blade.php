@@ -257,12 +257,13 @@
                                     };
                                 @endphp
 
-                                <label class="relative cursor-pointer group payment-card-radio h-full">
+                                <label class="relative cursor-pointer group payment-card-radio h-full" id="payment-card-label-{{ $metodo->id }}">
                                     <input type="radio" 
                                            name="metodo_pago_id" 
                                            value="{{ $metodo->id }}" 
                                            required 
                                            class="peer sr-only"
+                                           data-tipo="{{ $metodo->tipo_metodo }}"
                                            data-cuenta="{{ json_encode([
                                                'id' => $metodo->id,
                                                'tipo' => $metodo->tipo_metodo,
@@ -280,7 +281,7 @@
                                            onchange="window.CheckoutConfig.manejarCambioPago(this)"
                                            onclick="window.CheckoutConfig.manejarCambioPago(this)">
                                     
-                                    <div class="rounded-2xl border-2 border-slate-200 bg-white p-3.5 sm:p-4 flex flex-col items-center justify-center gap-2 text-center h-full hover:border-slate-300 transition-all relative overflow-hidden peer-checked:border-[#3492cf] peer-checked:bg-[#e5f2fb]/40 shadow-2xs">
+                                    <div class="rounded-2xl border-2 border-slate-200 bg-white p-3.5 sm:p-4 flex flex-col items-center justify-center gap-2 text-center h-full hover:border-slate-300 transition-all relative overflow-hidden peer-checked:border-[#3492cf] peer-checked:bg-[#e5f2fb]/40 shadow-2xs payment-card-box">
                                         
                                         <div class="absolute top-2 right-2 text-white bg-[#1e549e] rounded-full size-4 flex items-center justify-center opacity-0 scale-50 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100">
                                             <span class="material-symbols-outlined text-[12px] font-bold">check</span>
@@ -297,6 +298,12 @@
                                         </div>
                                         
                                         <span class="text-xs font-bold text-slate-800 leading-tight">{{ $metodo->nombre }}</span>
+                                        
+                                        @if(in_array($metodo->tipo_metodo, ['punto_venta', 'biopago']))
+                                            <span class="badge-solo-sede hidden text-[9px] font-black uppercase text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-0.5">
+                                                Solo en Sede
+                                            </span>
+                                        @endif
                                     </div>
                                 </label>
                             @endforeach
@@ -358,15 +365,21 @@
                             {{-- Estado para Pagos Presenciales / Efectivo / Punto de Venta --}}
                             <div id="info-pago-presencial" class="hidden mb-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
                                 <div class="flex items-start gap-3.5">
-                                    <div class="size-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                                    <div class="size-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-2xs">
                                         <span class="material-symbols-outlined text-[26px]">payments</span>
                                     </div>
-                                    <div>
+                                    <div class="flex-1">
                                         <h5 class="text-sm font-black text-slate-900" id="info-presencial-titulo">Pago Presencial Directo</h5>
                                         <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed" id="info-presencial-desc"></p>
-                                        <div class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
-                                            <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                                            No requiere comprobante bancario anticipado
+                                        <div class="mt-3 flex items-center flex-wrap gap-2">
+                                            <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                                                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                                Mercancía reservada en inventario
+                                            </span>
+                                            <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
+                                                <span class="material-symbols-outlined text-[14px]">receipt_long</span>
+                                                No requiere comprobante bancario previo
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -391,15 +404,18 @@
                                             <label for="input-referencia" id="label-referencia" class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                                                 Nro. de Referencia <span class="text-rose-500">*</span>
                                             </label>
-                                            <span id="helper-referencia" class="text-[10px] text-slate-400 font-medium hidden sm:inline">Últimos dígitos</span>
+                                            <span id="helper-referencia" class="text-[10px] text-slate-400 font-medium hidden sm:inline">Solo dígitos numéricos</span>
                                         </div>
                                         <div class="relative">
                                             <input type="text" 
                                                    name="referencia" 
                                                    id="input-referencia" 
+                                                   oninput="window.CheckoutConfig.validarInputReferencia(this)"
+                                                   autocomplete="off"
                                                    class="w-full h-11 rounded-xl border border-slate-200 bg-white focus:border-[#3492cf] focus:ring-2 focus:ring-[#3492cf]/20 text-sm px-4 shadow-2xs font-mono font-bold text-slate-900 placeholder:font-sans placeholder:font-normal placeholder:text-slate-400 transition-all" 
                                                    placeholder="Ej: 12345678">
                                         </div>
+                                        <p id="error-referencia-msg" class="text-xs text-rose-500 font-bold mt-1.5 hidden flex items-center gap-1"></p>
                                     </div>
                                     
                                     <div>
@@ -425,6 +441,7 @@
                                 </div>
                             </div>
                         </div>
+                                    
                     </section>
 
                     {{-- SECCIÓN 4: Notas del Pedido --}}
@@ -657,6 +674,7 @@
                                        name="metodo_pago_id_modal" 
                                        value="{{ $metodo->id }}" 
                                        class="peer sr-only"
+                                       data-tipo="{{ $metodo->tipo_metodo }}"
                                        data-cuenta="{{ json_encode([
                                            'id' => $metodo->id,
                                            'tipo' => $metodo->tipo_metodo,
@@ -688,6 +706,11 @@
                                         @endif
                                     </div>
                                     <span class="text-xs font-bold text-slate-800 leading-tight">{{ $metodo->nombre }}</span>
+                                    @if(in_array($metodo->tipo_metodo, ['punto_venta', 'biopago']))
+                                        <span class="badge-solo-sede hidden text-[9px] font-black uppercase text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-0.5">
+                                            Solo en Sede
+                                        </span>
+                                    @endif
                                 </div>
                             </label>
                         @endforeach
