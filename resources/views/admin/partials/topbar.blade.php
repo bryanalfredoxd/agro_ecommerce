@@ -238,6 +238,64 @@
         }
     }
 
+    // Notificación en el Navegador para activación / desactivación de Delivery
+    window.enviarNotificacionNavegadorDelivery = function(activo) {
+        const titulo = activo 
+            ? '🚚 ¡Servicio de Delivery HABILITADO!' 
+            : '⚠️ ¡Servicio de Delivery PAUSADO!';
+        const cuerpo = activo 
+            ? 'Los clientes ya pueden solicitar envíos a domicilio en la tienda web.' 
+            : 'El servicio de envíos ha sido pausado. Solo retiro en tienda física disponible.';
+        const icono = '{{ asset("favicon.ico") }}';
+
+        // 1. Chime sonoro corporativo
+        reproducirChime();
+
+        // 2. Notificación nativa del Navegador / Sistema Operativo
+        if ("Notification" in window) {
+            if (Notification.permission === 'granted') {
+                try {
+                    const notif = new Notification(titulo, {
+                        body: cuerpo,
+                        icon: icono,
+                        tag: 'delivery-status-alert',
+                        badge: icono
+                    });
+                    notif.onclick = () => window.focus();
+                } catch (e) {
+                    console.log('Error al emitir notificación nativa:', e);
+                }
+            } else if (Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    actualizarEstadoPermisoEscritorio();
+                    if (permission === 'granted') {
+                        try {
+                            new Notification(titulo, { body: cuerpo, icon: icono });
+                        } catch(e) {}
+                    }
+                });
+            }
+        }
+
+        // 3. Notificación Toast visual en la pantalla
+        if (typeof showToast === 'function') {
+            showToast(cuerpo, activo ? 'success' : 'error');
+        } else if (typeof Swal !== 'undefined') {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3500,
+                timerProgressBar: true
+            });
+            Toast.fire({
+                icon: activo ? 'success' : 'warning',
+                title: titulo,
+                text: cuerpo
+            });
+        }
+    };
+
     // ==========================================
     // MOTOR DE NOTIFICACIONES (AJAX POLLING)
     // ==========================================
@@ -304,9 +362,19 @@
                 localStorage.setItem('agro_last_pago_id', lastSeenPagoId);
             }
 
+            // 4. DISPARADOR DE NOTIFICACIÓN DE ESTADO DE DELIVERY (ACTIVADO / PAUSADO)
+            if (data.delivery_activo !== undefined) {
+                const currentDeliveryStr = data.delivery_activo ? '1' : '0';
+                const lastDeliveryState = localStorage.getItem('agro_last_delivery_estado');
+                if (!isInitialFetch && lastDeliveryState !== null && lastDeliveryState !== currentDeliveryStr) {
+                    window.enviarNotificacionNavegadorDelivery(data.delivery_activo);
+                }
+                localStorage.setItem('agro_last_delivery_estado', currentDeliveryStr);
+            }
+
             isInitialFetch = false;
 
-            // 4. Inyectar HTML en la lista
+            // 5. Inyectar HTML en la lista
             lista.innerHTML = '';
             
             if (data.alertas.length === 0) {

@@ -41,14 +41,14 @@
                         </div>
                     @endif
                     
-                    {{-- Badges Superior Izquierda (Solo Controlado, ya no hay Oferta) --}}
+                    {{-- Badges Superior Izquierda (Controlado deshabilitado a solicitud del cliente) --}}
+                    {{-- @if($producto->es_controlado)
                     <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start z-10 pointer-events-none">
-                        @if($producto->es_controlado)
-                            <span class="inline-flex items-center gap-1 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase shadow-sm tracking-wide">
-                                <span class="material-symbols-outlined text-[12px]">lock</span> Controlado
-                            </span>
-                        @endif
+                        <span class="inline-flex items-center gap-1 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-md uppercase shadow-sm tracking-wide">
+                            <span class="material-symbols-outlined text-[12px]">lock</span> Controlado
+                        </span>
                     </div>
+                    @endif --}}
 
                     @php
                         $esFavorito = in_array($producto->id, $favoritosIds);

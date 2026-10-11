@@ -52,13 +52,16 @@
                         </div>
                     </div>
 
+                    @php
+                        $deliveryActivoCatalogo = \App\Models\ConfiguracionTienda::deliveryHabilitado();
+                    @endphp
                     <div class="hidden sm:flex bg-white/10 backdrop-blur-md border border-white/15 px-4 py-3 rounded-2xl items-center gap-3 shadow-xs">
-                        <div class="size-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300">
+                        <div class="size-10 rounded-xl {{ $deliveryActivoCatalogo ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300' }} flex items-center justify-center">
                             <span class="material-symbols-outlined text-[22px]">local_shipping</span>
                         </div>
                         <div>
-                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-300">Despachos</div>
-                            <div class="text-sm font-black text-white">A Nivel Nacional</div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-300">Despacho</div>
+                            <div class="text-sm font-black text-white">{{ $deliveryActivoCatalogo ? 'Disponible' : 'No Disponible' }}</div>
                         </div>
                     </div>
                 </div>

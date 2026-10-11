@@ -77,6 +77,48 @@
                             <p class="text-[10px] text-gray-700 mt-1.5 ml-1">Este texto lo verán los clientes en la página web en lugar del botón "Añadir al Carrito".</p>
                         </div>
                     </div>
+
+                    {{-- Tarjeta 3: Servicio de Delivery / Despacho a Domicilio --}}
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+                            <h3 class="text-lg font-black text-agro-dark flex items-center gap-2">
+                                <span class="material-symbols-outlined text-emerald-600">local_shipping</span> Servicio de Delivery / Despacho
+                            </h3>
+                            <a href="{{ route('admin.zonas_delivery.index') }}" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors">
+                                <span>Administrar Zonas y Tarifas</span>
+                                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                            </a>
+                        </div>
+
+                        <div class="p-5 rounded-2xl border transition-all {{ $config->delivery_activo ? 'bg-emerald-50/50 border-emerald-200' : 'bg-amber-50/50 border-amber-200' }}" id="contenedor_delivery_toggle">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="size-12 rounded-xl {{ $config->delivery_activo ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white' }} flex items-center justify-center shrink-0 shadow-xs" id="icono_delivery_toggle">
+                                        <span class="material-symbols-outlined text-[26px]">{{ $config->delivery_activo ? 'local_shipping' : 'pause_circle' }}</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-black text-slate-800 text-sm sm:text-base">Disponibilidad de Despacho</span>
+                                            <span id="badge_delivery_toggle" class="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider {{ $config->delivery_activo ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300' }}">
+                                                {{ $config->delivery_activo ? 'Despacho Disponible' : 'Pausado / No Disponible' }}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-0.5 font-medium">
+                                            Activa o pausa los envíos a domicilio en la tienda web y actualiza el encabezado público.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center">
+                                    <input type="hidden" name="delivery_activo_presente" value="1">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="delivery_activo" id="delivery_activo" value="1" {{ $config->delivery_activo ? 'checked' : '' }} onchange="actualizarEstadoDelivery(this)" class="sr-only peer">
+                                        <div class="w-14 h-7 bg-gray-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Auditoría Footer --}}
@@ -111,8 +153,16 @@
     @if(session('success'))
         showToast("{{ session('success') }}", 'success');
     @endif
+
+    @if(session('delivery_cambiado'))
+        setTimeout(() => {
+            if (typeof window.enviarNotificacionNavegadorDelivery === 'function') {
+                window.enviarNotificacionNavegadorDelivery({{ session('delivery_cambiado')['activo'] ? 'true' : 'false' }});
+            }
+        }, 300);
+    @endif
     
-    @if($errors->any())
+    @if(isset($errors) && $errors->any())
         showToast("Revisa los errores en el formulario.", 'error');
     @endif
 
@@ -149,7 +199,56 @@
         }
     }
 
-    // 3. Limitar decimales a 2 (usamos el mismo código seguro de los productos)
+    // 3. Control reactivo del Switch de Delivery / Despacho con Notificación del Navegador
+    function actualizarEstadoDelivery(checkbox) {
+        const contenedor = document.getElementById('contenedor_delivery_toggle');
+        const icono = document.getElementById('icono_delivery_toggle');
+        const badge = document.getElementById('badge_delivery_toggle');
+        const activo = checkbox.checked;
+
+        if (contenedor && icono && badge) {
+            if (activo) {
+                contenedor.className = "p-5 rounded-2xl border transition-all bg-emerald-50/50 border-emerald-200";
+                icono.className = "size-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs";
+                icono.innerHTML = '<span class="material-symbols-outlined text-[26px]">local_shipping</span>';
+                badge.className = "text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300";
+                badge.textContent = "Despacho Disponible";
+            } else {
+                contenedor.className = "p-5 rounded-2xl border transition-all bg-amber-50/50 border-amber-200";
+                icono.className = "size-12 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs";
+                icono.innerHTML = '<span class="material-symbols-outlined text-[26px]">pause_circle</span>';
+                badge.className = "text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300";
+                badge.textContent = "Pausado / No Disponible";
+            }
+        }
+
+        // Emitir notificación por el navegador (Web Notifications API)
+        if (typeof window.enviarNotificacionNavegadorDelivery === 'function') {
+            window.enviarNotificacionNavegadorDelivery(activo);
+        }
+
+        // Sincronización inmediata vía AJAX en base de datos
+        fetch('{{ route("admin.zonas_delivery.toggle_master") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ estado: activo ? 1 : 0 })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                showToast(data.message || 'Error al actualizar el estado de delivery', 'error');
+            }
+        })
+        .catch(err => {
+            console.error('Error al sincronizar delivery:', err);
+        });
+    }
+
+    // 4. Limitar decimales a 2 (usamos el mismo código seguro de los productos)
     document.querySelectorAll('.limit-decimals').forEach(input => {
         input.addEventListener('input', function(e) {
             let val = e.target.value;

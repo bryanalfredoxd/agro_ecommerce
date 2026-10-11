@@ -1041,6 +1041,9 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
+                        if (typeof window.enviarNotificacionNavegadorDelivery === 'function') {
+                            window.enviarNotificacionNavegadorDelivery(data.delivery_activo);
+                        }
                         Swal.fire({
                             icon: 'success',
                             title: '¡Actualizado!',

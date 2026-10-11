@@ -39,13 +39,30 @@ class ConfiguracionTiendaController extends Controller
 
         $config = ConfiguracionTienda::firstOrFail();
 
-        $config->update([
+        $datos = [
             'nombre_empresa' => $request->nombre_empresa,
             'iva_porcentaje' => $request->iva_porcentaje,
             'modo_operativo' => $request->modo_operativo,
             'mensaje_cierre_emergencia' => $request->mensaje_cierre_emergencia,
             'ultimo_editor_id' => Auth::id()
-        ]);
+        ];
+
+        $estadoAnterior = (bool) ($config->delivery_activo ?? true);
+        if ($request->has('delivery_activo_presente')) {
+            $nuevoEstado = $request->has('delivery_activo') ? 1 : 0;
+            $datos['delivery_activo'] = $nuevoEstado;
+
+            if ($nuevoEstado !== ($estadoAnterior ? 1 : 0)) {
+                session()->flash('delivery_cambiado', [
+                    'activo' => (bool) $nuevoEstado,
+                    'mensaje' => $nuevoEstado 
+                        ? 'Servicio de Delivery HABILITADO en la tienda web.' 
+                        : 'Servicio de Delivery PAUSADO temporalmente en la tienda web.'
+                ]);
+            }
+        }
+
+        $config->update($datos);
 
         // Sincronizar las series de facturación con el IVA global del sistema
         \App\Models\FacturaAjuste::query()->update([

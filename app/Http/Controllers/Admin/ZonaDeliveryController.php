@@ -148,7 +148,11 @@ class ZonaDeliveryController extends Controller
     public function toggleMasterDelivery(Request $request)
     {
         $config = \App\Models\ConfiguracionTienda::firstOrCreate(['id' => 1]);
-        $nuevoEstado = !((bool) ($config->delivery_activo ?? true));
+        if ($request->has('estado')) {
+            $nuevoEstado = $request->boolean('estado');
+        } else {
+            $nuevoEstado = !((bool) ($config->delivery_activo ?? true));
+        }
         $config->delivery_activo = $nuevoEstado ? 1 : 0;
         $config->ultimo_editor_id = auth()->id();
         $config->save();

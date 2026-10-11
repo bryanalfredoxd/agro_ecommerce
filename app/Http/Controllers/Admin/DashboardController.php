@@ -80,8 +80,8 @@ class DashboardController extends Controller
                     ->whereBetween('fecha_vencimiento', [$hoy, $fechaLimite])
                     ->count();
 
-        // 7. Récipes por Aprobar
-        $recetasPendientes = RecetaVeterinaria::where('estado', 'pendiente')->count();
+        // 7. Récipes por Aprobar (Deshabilitado a solicitud del cliente)
+        $recetasPendientes = 0;
 
         // 8. Nuevos Clientes en el Mes
         $nuevosUsuariosMes = User::where('creado_at', '>=', $inicioMes)->count(); 
@@ -174,7 +174,8 @@ class DashboardController extends Controller
             }
         }
 
-        // 4. Alerta de Récipes Médicos
+        // 4. Alerta de Récipes Médicos (Deshabilitado a solicitud del cliente)
+        /*
         if ($user->tienePermiso('ver_recetas') || $user->tienePermiso('ver_kpis_operativos')) {
             $recetas = RecetaVeterinaria::where('estado', 'pendiente')->count();
             if ($recetas > 0) {
@@ -190,6 +191,7 @@ class DashboardController extends Controller
                 $totalAlertas += $recetas;
             }
         }
+        */
 
         // 5. Último Pedido Pendiente para Alertas Nativas (Windows)
         $ultimoPedidoData = null;
@@ -245,7 +247,8 @@ class DashboardController extends Controller
             'cantidad_eventos' => $totalAlertas,
             'alertas' => $alertas,
             'ultimo_pedido' => $ultimoPedidoData,
-            'ultimo_pago' => $ultimoPagoData
+            'ultimo_pago' => $ultimoPagoData,
+            'delivery_activo' => \App\Models\ConfiguracionTienda::deliveryHabilitado()
         ]);
     }
 }

@@ -114,11 +114,12 @@
 
                         {{-- Badges Superior Izquierda --}}
                         <div class="absolute top-3 left-3 flex flex-col gap-1 items-start z-10 pointer-events-none">
-                            @if($producto->es_controlado)
+                            {{-- Badge Controlado (Deshabilitado a solicitud del cliente) --}}
+                            {{-- @if($producto->es_controlado)
                                 <span class="inline-flex items-center gap-1 bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase shadow-xs tracking-wider">
                                     <span class="material-symbols-outlined text-[12px]">lock</span> Controlado
                                 </span>
-                            @endif
+                            @endif --}}
 
                             @if($producto->es_combo)
                                 <span class="inline-flex items-center gap-1 bg-[#1e549e] text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase shadow-xs tracking-wider">

@@ -128,10 +128,11 @@
                         <span id="tab_badge_combos" class="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 text-blue-700 font-bold">{{ $stats['combos'] }}</span>
                     </button>
 
-                    <button class="prod-tab pb-3 px-2 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-filtro="recetados">
+                    {{-- Tab Venta Controlada / Récipes (Deshabilitado a solicitud del cliente - reactivable a futuro) --}}
+                    {{-- <button class="prod-tab pb-3 px-2 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-filtro="recetados">
                         <span>Venta Controlada</span>
                         <span id="tab_badge_recetados" class="px-1.5 py-0.2 rounded-full text-[10px] bg-purple-100 text-purple-700 font-bold">{{ $stats['recetados'] }}</span>
-                    </button>
+                    </button> --}}
 
                     <button class="prod-tab pb-3 px-2 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-filtro="suspendidos">
                         <span>Pausados / Ocultos</span>

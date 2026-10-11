@@ -218,8 +218,8 @@
     </div>
     @endif
 
-    {{-- 7. KPI: Recetas Pendientes --}}
-    @if(Auth::user()->tienePermiso('ver_kpis_operativos') || Auth::user()->tienePermiso('ver_recetas'))
+    {{-- 7. KPI: Recetas Pendientes (Deshabilitado a solicitud del cliente - reactivable a futuro) --}}
+    {{-- @if(Auth::user()->tienePermiso('ver_kpis_operativos') || Auth::user()->tienePermiso('ver_recetas'))
     <div class="kpi-card bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
         <div class="kpi-bg-circle absolute -right-4 -top-4 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
@@ -233,7 +233,7 @@
             </p>
         </div>
     </div>
-    @endif
+    @endif --}}
 
     {{-- 8. KPI: Usuarios y Clientes --}}
     @if(Auth::user()->tienePermiso('ver_usuarios'))

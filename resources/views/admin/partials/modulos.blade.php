@@ -208,8 +208,8 @@
         </details>
         @endif
 
-        {{-- MÓDULO 7: RECETAS VETERINARIAS --}}
-        @if(Auth::user()->tienePermiso('ver_recetas') || Auth::user()->tienePermiso('auditar_recetas'))
+        {{-- MÓDULO 7: RECETAS VETERINARIAS (Deshabilitado a solicitud del cliente - reactivable a futuro) --}}
+        {{-- @if(Auth::user()->tienePermiso('ver_recetas') || Auth::user()->tienePermiso('auditar_recetas'))
         <details class="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group open:ring-2 open:ring-purple-500/20">
             <summary class="p-6 cursor-pointer list-none [&::-webkit-details-marker]:hidden relative outline-none">
                 <div class="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-50 text-gray-700 rounded-full group-open:bg-purple-50 group-open:text-purple-600 transition-colors">
@@ -239,7 +239,7 @@
                 </div>
             </div>
         </details>
-        @endif
+        @endif --}}
 
         {{-- MÓDULO 8: SISTEMA Y AJUSTES --}}
         @if(Auth::user()->tienePermiso('configurar_tienda') || Auth::user()->tienePermiso('gestionar_cuentas_banco') || Auth::user()->tienePermiso('configurar_apis') || Auth::user()->tienePermiso('gestionar_horarios') || Auth::user()->tienePermiso('ver_logs_auditoria'))

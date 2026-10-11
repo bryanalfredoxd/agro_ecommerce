@@ -1,6 +1,7 @@
 @php
     use App\Models\TasaCambio;
     use App\Models\HorarioSemanal;
+    use App\Models\ConfiguracionTienda;
     
     // Obtener la tasa de cambio
     $tasaDolar = TasaCambio::obtenerValorUSD();
@@ -36,6 +37,9 @@
             $iconoHorario = 'info';
             break;
     }
+
+    // Obtener estado del despacho / delivery directamente de la base de datos
+    $deliveryActivo = ConfiguracionTienda::deliveryHabilitado();
 @endphp
 
 <div class="bg-[#1e549e] text-white w-full border-b border-white/10 text-[11px] sm:text-xs">
@@ -73,12 +77,21 @@
                 
                 <div class="h-3 w-px bg-white/20"></div>
                 
-                <div class="flex items-center gap-1.5 text-white/90">
-                    <span class="material-symbols-outlined text-[16px] text-[#aad6f3]">
-                        local_shipping
-                    </span>
-                    <span class="font-medium whitespace-nowrap">Despachos a Nivel Nacional</span>
-                </div>
+                @if($deliveryActivo)
+                    <div class="flex items-center gap-1.5 text-white/95" title="Servicio de delivery / envíos activo">
+                        <span class="material-symbols-outlined text-[16px] text-[#aad6f3]">
+                            local_shipping
+                        </span>
+                        <span class="font-medium whitespace-nowrap">Despacho Disponible</span>
+                    </div>
+                @else
+                    <div class="flex items-center gap-1.5 text-amber-200/90" title="Envíos a domicilio pausados temporalmente. Solo retiro en tienda física.">
+                        <span class="material-symbols-outlined text-[16px] text-amber-300">
+                            local_shipping
+                        </span>
+                        <span class="font-medium whitespace-nowrap">Despacho No Disponible</span>
+                    </div>
+                @endif
                 
                 <div class="h-3 w-px bg-white/20"></div>
                 

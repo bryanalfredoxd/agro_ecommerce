@@ -145,17 +145,17 @@
                 {{-- Columna 5: Atributos / Tipo --}}
                 <td class="px-5 py-4 align-top text-center">
                     <div class="flex items-center justify-center gap-1">
-                        @if($producto->es_controlado)
+                        {{-- Icono Receta / Controlado (Deshabilitado a solicitud del cliente) --}}
+                        {{-- @if($producto->es_controlado)
                             <span class="inline-flex items-center justify-center size-7 rounded-lg bg-purple-50 text-purple-700 border border-purple-200" title="Venta Controlada (Requiere Receta Agronómica)">
                                 <span class="material-symbols-outlined text-[16px]">prescriptions</span>
                             </span>
-                        @endif
+                        @endif --}}
                         @if($producto->es_combo)
                             <span class="inline-flex items-center justify-center size-7 rounded-lg bg-blue-50 text-blue-700 border border-blue-200" title="Producto Compuesto (Combo / Paquete)">
                                 <span class="material-symbols-outlined text-[16px]">layers</span>
                             </span>
-                        @endif
-                        @if(!$producto->es_controlado && !$producto->es_combo)
+                        @else
                             <span class="text-xs text-gray-300 font-bold">-</span>
                         @endif
                     </div>

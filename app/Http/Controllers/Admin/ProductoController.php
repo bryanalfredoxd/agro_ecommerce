@@ -174,7 +174,7 @@ class ProductoController extends Controller
         $data['precio_venta_usd'] = $precioBaseVenta;
         $data['precio_oferta_usd'] = $precioBaseOferta;
         $data['precio_incluye_iva'] = $incluyeIva ? 1 : 0;
-        $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
+        $data['es_controlado'] = 0; // Deshabilitado a solicitud del cliente (reactivable a futuro: $request->has('es_controlado') ? 1 : 0)
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
 
         if ($request->has('attr_keys') && is_array($request->attr_keys)) {
@@ -260,7 +260,7 @@ class ProductoController extends Controller
         $data['precio_venta_usd'] = $precioBaseVenta;
         $data['precio_oferta_usd'] = $precioBaseOferta;
         $data['precio_incluye_iva'] = $incluyeIva ? 1 : 0;
-        $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
+        $data['es_controlado'] = 0; // Deshabilitado a solicitud del cliente (reactivable a futuro: $request->has('es_controlado') ? 1 : 0)
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
 
         // LÓGICA DE CÓDIGO DE BARRAS AUTOMÁTICO EN LA EDICIÓN

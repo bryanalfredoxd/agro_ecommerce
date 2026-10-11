@@ -230,6 +230,8 @@ return [
             ],
         ]
     ],
+    /*
+    // MÓDULO RECETAS (Deshabilitado a solicitud del cliente - reactivable a futuro)
     [
         'id' => 'modulo_recetas',
         'nombre' => 'Récipes y Control Agronómico',
@@ -253,6 +255,7 @@ return [
             ],
         ]
     ],
+    */
     [
         'id' => 'modulo_configuracion',
         'nombre' => 'Configuración del Sistema',
