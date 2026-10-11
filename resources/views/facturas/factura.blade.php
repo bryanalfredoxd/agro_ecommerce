@@ -659,7 +659,7 @@
                         </tr>
                         @endif
                         <tr class="border-subtle">
-                            <td class="totals-label">IVA ({{ number_format(($config->iva_porcentaje ?? 16), 0) }}%):</td>
+                            <td class="totals-label">IVA ({{ (float)($config->iva_porcentaje ?? 16) }}%):</td>
                             <td class="totals-val">${{ number_format($factura->impuesto_usd, 2) }}</td>
                         </tr>
                         <tr class="totals-row-total-usd">

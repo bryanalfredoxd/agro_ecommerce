@@ -266,7 +266,7 @@
             </div>
             @endif
             <div class="total-row">
-                <span>IVA ({{ number_format(($config->iva_porcentaje ?? 16), 0) }}%):</span>
+                <span>IVA ({{ (float)($config->iva_porcentaje ?? 16) }}%):</span>
                 <span>${{ number_format($factura->impuesto_usd, 2) }}</span>
             </div>
             <div class="total-row total-highlight">

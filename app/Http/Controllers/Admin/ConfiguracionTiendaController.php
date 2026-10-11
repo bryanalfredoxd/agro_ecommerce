@@ -47,6 +47,11 @@ class ConfiguracionTiendaController extends Controller
             'ultimo_editor_id' => Auth::id()
         ]);
 
+        // Sincronizar las series de facturación con el IVA global del sistema
+        \App\Models\FacturaAjuste::query()->update([
+            'porcentaje_iva' => $request->iva_porcentaje
+        ]);
+
         return redirect()->route('admin.configuracion.index')->with('success', 'Configuración actualizada correctamente.');
     }
 }

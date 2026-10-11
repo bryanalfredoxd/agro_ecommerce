@@ -72,10 +72,12 @@
                         </div>
 
                         <div>
-                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Impuesto a aplicar (%) <span class="text-red-500">*</span></label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-3.5 font-bold text-gray-700">%</span>
-                                <input type="number" id="porcentaje_iva" name="porcentaje_iva" step="0.01" min="0" max="100" value="16.00" required class="w-full h-12 pl-10 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all font-bold text-agro-dark outline-none">
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Impuesto a aplicar (IVA Global)</label>
+                            <div class="h-12 px-4 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-between">
+                                <span class="text-sm font-black text-teal-700 font-mono">{{ number_format($ivaGlobal ?? 16, 2) }}%</span>
+                                <span class="text-[10px] font-bold text-gray-600 bg-white px-2.5 py-1 rounded-md border border-gray-200 shadow-2xs flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[13px] text-teal-600">lock</span> Configuración Global
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -136,7 +138,6 @@
             document.getElementById('ajuste_id').value = ajuste.id;
             document.getElementById('serie').value = ajuste.serie;
             document.getElementById('proximo_numero').value = ajuste.proximo_numero;
-            document.getElementById('porcentaje_iva').value = ajuste.porcentaje_iva;
         }
 
         const modal = document.getElementById('serieModal');

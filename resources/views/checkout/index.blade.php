@@ -500,7 +500,7 @@
                                 </div>
 
                                 <div class="flex justify-between text-xs sm:text-sm text-slate-600 font-medium">
-                                    <span>Impuestos (IVA 16%)</span>
+                                    <span>Impuestos (IVA {{ (float)($ivaPorcentaje ?? 16) }}%)</span>
                                     <span class="text-slate-800 font-bold">${{ number_format($montoIva, 2) }}</span>
                                 </div>
 

@@ -42,9 +42,12 @@
 
                 {{-- Impuesto (IVA) --}}
                 <td class="px-6 py-4">
-                    <span class="font-black text-gray-700 bg-gray-100 px-2 py-1 rounded border border-gray-200">
-                        {{ number_format($ajuste->porcentaje_iva, 2) }}%
-                    </span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-black text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200 font-mono text-xs">
+                            {{ number_format($ajuste->porcentaje_iva, 2) }}%
+                        </span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">IVA Global</span>
+                    </div>
                 </td>
 
                 {{-- Acciones --}}

@@ -267,36 +267,109 @@
                         </div>
 
                         {{-- Panel Precios --}}
+                        {{-- Panel Precios --}}
                         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-                            <h3 class="text-lg font-black text-agro-dark mb-4 flex items-center gap-2">
-                                <span class="material-symbols-outlined text-green-600">payments</span> Precios (USD)
-                            </h3>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-black text-agro-dark flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-green-600">payments</span> Precios e Impuestos (USD)
+                                </h3>
+                                <span class="text-[10px] font-bold text-[#1e549e] bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200" title="IVA oficial del sistema">
+                                    IVA: {{ (float)($ivaPorcentaje ?? 16) }}%
+                                </span>
+                            </div>
                             
                             <div class="space-y-4">
+                                {{-- SWITCH / TOGGLE: ¿EL PRECIO INCLUYE IVA? --}}
+                                <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 transition-colors hover:border-slate-300">
+                                    <label class="flex items-start gap-3 cursor-pointer select-none">
+                                        <input type="checkbox" name="precio_incluye_iva" id="precio_incluye_iva" value="1" 
+                                               {{ old('precio_incluye_iva', $producto->precio_incluye_iva ?? false) ? 'checked' : '' }}
+                                               onchange="actualizarDesgloseIva()"
+                                               class="mt-1 w-5 h-5 text-teal-600 rounded-md border-gray-300 focus:ring-teal-500 cursor-pointer">
+                                        <div class="flex-1">
+                                            <span class="text-xs font-black text-slate-800 block">¿El precio ingresado ya incluye el {{ (float)($ivaPorcentaje ?? 16) }}% de IVA?</span>
+                                            <span class="text-[10px] text-slate-500 font-medium block mt-0.5">
+                                                Si está marcado, el sistema guardará en base de datos el precio base (-{{ (float)($ivaPorcentaje ?? 16) }}%) para no duplicar el impuesto al vender.
+                                            </span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                {{-- PRECIO DE VENTA --}}
                                 <div>
-                                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Precio de Venta <span class="text-red-500">*</span></label>
+                                    <div class="flex items-center justify-between mb-1.5 ml-1">
+                                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest" id="label_precio_venta">
+                                            Precio de Venta <span class="text-red-500">*</span>
+                                        </label>
+                                        <span id="badge_modo_precio" class="text-[10px] font-bold px-2 py-0.5 rounded-md text-emerald-700 bg-emerald-50 border border-emerald-200">
+                                            Neto + IVA
+                                        </span>
+                                    </div>
+                                    @php
+                                        $precioDisplay = '';
+                                        if (isset($producto)) {
+                                            $ivaPctVal = (float)($ivaPorcentaje ?? 16);
+                                            if ($producto->precio_incluye_iva) {
+                                                $precioDisplay = number_format(round($producto->precio_venta_usd * (1 + ($ivaPctVal / 100)), 2), 2, '.', '');
+                                            } else {
+                                                $precioDisplay = number_format($producto->precio_venta_usd, 2, '.', '');
+                                            }
+                                        }
+                                    @endphp
                                     <div class="relative">
                                         <span class="absolute left-4 top-3.5 font-bold text-gray-700">$</span>
-                                        <input type="number" step="0.01" name="precio_venta_usd" id="precio_venta" onblur="validarPrecios()" value="{{ old('precio_venta_usd', $producto->precio_venta_usd ?? '') }}" required class="limit-decimals w-full h-12 pl-8 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white text-xl font-black text-agro-dark outline-none">
+                                        <input type="number" step="0.01" min="0.01" name="precio_venta_usd" id="precio_venta" 
+                                               oninput="actualizarDesgloseIva()" onblur="validarPrecios()" 
+                                               value="{{ old('precio_venta_usd', $precioDisplay) }}" required 
+                                               class="limit-decimals w-full h-12 pl-8 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-green-500 focus:bg-white text-xl font-black text-agro-dark outline-none transition-all">
                                     </div>
                                 </div>
-                                
-                                {{--<div>
-                                    <label class="block text-[10px] font-black text-red-500 uppercase tracking-widest mb-1.5 ml-1">Precio Oferta (Opcional)</label>
-                                    <div class="relative">
-                                        <span class="absolute left-4 top-3.5 font-bold text-red-500">$</span>
-                                        <input type="number" step="0.01" name="precio_oferta_usd" id="precio_oferta" onblur="validarPrecios()" value="{{ old('precio_oferta_usd', $producto->precio_oferta_usd ?? '') }}" class="limit-decimals w-full h-12 pl-8 pr-4 rounded-xl bg-red-50/50 border border-red-100 focus:border-red-400 focus:bg-white text-lg font-bold text-red-600 outline-none">
+
+                                {{-- TARJETA REACTIVA DE DESGLOSE DE IMPUESTOS --}}
+                                <div id="card_desglose_iva" class="p-3.5 rounded-2xl bg-gradient-to-br from-slate-50 to-gray-100/80 border border-gray-200/80 text-xs space-y-2">
+                                    <div class="flex items-center justify-between font-bold text-gray-500 text-[11px] border-b border-gray-200/60 pb-1.5">
+                                        <span class="flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[15px] text-teal-600">calculate</span>
+                                            Desglose fiscal automático
+                                        </span>
+                                        <span class="text-[10px] text-gray-400 font-mono font-normal">Fórmula oficial</span>
                                     </div>
-                                    <p id="error-oferta" class="text-[10px] text-red-500 font-bold hidden mt-1 ml-1">Error: La oferta debe ser menor al precio de venta.</p>
-                                </div>--}}
+                                    
+                                    <div class="space-y-1.5 pt-0.5">
+                                        <div class="flex justify-between items-center text-slate-600">
+                                            <span id="lbl_texto_base">Base imponible a guardar en BD:</span>
+                                            <span class="font-mono font-black text-slate-900" id="lbl_valor_base">$0.00</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-slate-600">
+                                            <span>IVA ({{ (float)($ivaPorcentaje ?? 16) }}%):</span>
+                                            <span class="font-mono font-bold text-teal-700" id="lbl_valor_iva">$0.00</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-slate-800 pt-1 border-t border-gray-200 font-black">
+                                            <span>Precio total al cliente:</span>
+                                            <span class="font-mono text-emerald-700 text-sm" id="lbl_valor_total">$0.00</span>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-[10px] text-gray-500 leading-tight pt-1" id="lbl_explicacion_iva">
+                                        El precio ingresado se considerará la base imponible sin impuestos.
+                                    </p>
+                                </div>
+
+                                {{-- COSTO PROMEDIO --}}
                                 <div>
                                     <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Costo Promedio (Interno)</label>
                                     <div class="relative">
                                         <span class="absolute left-4 top-3.5 font-bold text-gray-700">$</span>
-                                        <input type="number" step="0.01" name="costo_promedio_usd" id="costo_promedio" onblur="validarPrecios()" value="{{ old('costo_promedio_usd', $producto->costo_promedio_usd ?? '0.00') }}" class="w-full h-12 pl-8 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-gray-400 focus:bg-white text-sm font-bold text-gray-700 outline-none">
+                                        <input type="number" step="0.01" min="0" name="costo_promedio_usd" id="costo_promedio" 
+                                               oninput="actualizarDesgloseIva()" onblur="validarPrecios()" 
+                                               value="{{ old('costo_promedio_usd', $producto->costo_promedio_usd ?? '0.00') }}" 
+                                               class="w-full h-12 pl-8 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-gray-400 focus:bg-white text-sm font-bold text-gray-700 outline-none transition-all">
                                     </div>
-                                    <p id="error-costo" class="text-[10px] text-red-500 font-bold hidden mt-1 ml-1">Error: Costo mayor al precio (Pérdida).</p>
+                                    <p id="error-costo" class="text-[10px] text-red-500 font-bold hidden mt-1 ml-1">
+                                        Error: El costo no puede ser mayor a la base imponible sin IVA.
+                                    </p>
                                 </div>
+
                                 @if(isset($producto))
                                 <div class="pt-4 border-t border-gray-100">
                                     <label class="block text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1.5 ml-1">Motivo del cambio de precio (Para Auditoría)</label>
@@ -520,10 +593,56 @@
         }
     }
 
+    const IVA_GLOBAL_PCT = {{ (float)($ivaPorcentaje ?? 16) }};
+
+    function actualizarDesgloseIva() {
+        const inputVal = parseFloat(document.getElementById('precio_venta').value) || 0;
+        const incluyeIva = document.getElementById('precio_incluye_iva').checked;
+        const badgeModo = document.getElementById('badge_modo_precio');
+        const lblTextoBase = document.getElementById('lbl_texto_base');
+        const lblValorBase = document.getElementById('lbl_valor_base');
+        const lblValorIva = document.getElementById('lbl_valor_iva');
+        const lblValorTotal = document.getElementById('lbl_valor_total');
+        const lblExplicacion = document.getElementById('lbl_explicacion_iva');
+
+        let base = 0;
+        let iva = 0;
+        let total = 0;
+
+        if (incluyeIva) {
+            badgeModo.innerText = 'PVP (IVA Incluido)';
+            badgeModo.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md text-teal-800 bg-teal-100 border border-teal-300';
+            
+            // El precio ingresado es el precio final con IVA
+            total = inputVal;
+            base = total > 0 ? +(total / (1 + (IVA_GLOBAL_PCT / 100))).toFixed(2) : 0;
+            iva = +(total - base).toFixed(2);
+
+            lblTextoBase.innerText = `Base imponible (-${IVA_GLOBAL_PCT}% en BD):`;
+            lblExplicacion.innerHTML = `Ingresaste <b>$${total.toFixed(2)}</b> con IVA incluido. En BD se guardará la base imponible de <b>$${base.toFixed(2)}</b>. Al venderse, el sistema sumará el ${IVA_GLOBAL_PCT}% ($${iva.toFixed(2)}) totalizando <b>$${total.toFixed(2)}</b> al cliente.`;
+        } else {
+            badgeModo.innerText = 'Neto + IVA';
+            badgeModo.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md text-emerald-700 bg-emerald-50 border border-emerald-200';
+
+            // El precio ingresado es la base imponible neta
+            base = inputVal;
+            iva = +(base * (IVA_GLOBAL_PCT / 100)).toFixed(2);
+            total = +(base + iva).toFixed(2);
+
+            lblTextoBase.innerText = 'Base imponible a guardar en BD:';
+            lblExplicacion.innerHTML = `Ingresaste <b>$${base.toFixed(2)}</b> precio neto. En BD se guardará <b>$${base.toFixed(2)}</b> y al venderse el sistema sumará el ${IVA_GLOBAL_PCT}% de IVA ($${iva.toFixed(2)}), cobrando <b>$${total.toFixed(2)}</b> al cliente.`;
+        }
+
+        lblValorBase.innerText = `$${base.toFixed(2)}`;
+        lblValorIva.innerText = `$${iva.toFixed(2)}`;
+        lblValorTotal.innerText = `$${total.toFixed(2)}`;
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         automatizarUnidadesVenta();
         automatizarContenido();
         actualizarPreviewContenido();
+        actualizarDesgloseIva();
     });
 
     // ==========================================
@@ -531,23 +650,29 @@
     // ==========================================
     function validarPrecios() {
         const pVenta = parseFloat(document.getElementById('precio_venta').value) || 0;
-        const pOferta = parseFloat(document.getElementById('precio_oferta').value) || 0;
+        const pOferta = parseFloat(document.getElementById('precio_oferta')?.value) || 0;
         const pCosto = parseFloat(document.getElementById('costo_promedio').value) || 0;
+        const incluyeIva = document.getElementById('precio_incluye_iva')?.checked || false;
+        const baseVenta = incluyeIva && pVenta > 0 ? +(pVenta / (1 + (IVA_GLOBAL_PCT / 100))).toFixed(2) : pVenta;
         
         let hasError = false;
 
         if (pOferta > 0 && pOferta >= pVenta) {
-            document.getElementById('error-oferta').classList.remove('hidden');
+            document.getElementById('error-oferta')?.classList.remove('hidden');
             hasError = true;
         } else {
-            document.getElementById('error-oferta').classList.add('hidden');
+            document.getElementById('error-oferta')?.classList.add('hidden');
         }
 
-        if (pCosto > 0 && pCosto > pVenta) {
-            document.getElementById('error-costo').classList.remove('hidden');
+        if (pCosto > 0 && pCosto > baseVenta && baseVenta > 0) {
+            const errCosto = document.getElementById('error-costo');
+            if (errCosto) {
+                errCosto.innerText = `Error: Costo ($${pCosto.toFixed(2)}) mayor a la base imponible sin IVA ($${baseVenta.toFixed(2)}) (pérdida).`;
+                errCosto.classList.remove('hidden');
+            }
             hasError = true;
         } else {
-            document.getElementById('error-costo').classList.add('hidden');
+            document.getElementById('error-costo')?.classList.add('hidden');
         }
         
         return !hasError;

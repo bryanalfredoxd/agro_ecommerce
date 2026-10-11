@@ -18,6 +18,7 @@ class Producto extends Model
         'categoria_id', 'marca_id', 'proveedor_defecto_id', 'nombre', 
         'descripcion', 'imagen_url', 'sku', 'codigo_barras', 
         'costo_promedio_usd', 'precio_venta_usd', 'precio_oferta_usd', 
+        'precio_incluye_iva',
         'unidad_medida', 'contenido_neto', 'unidad_contenido', 
         'es_controlado', 'atributos_json', 'stock_total', 
         'stock_minimo_alerta', 'venta_minima', 'paso_venta', 
@@ -28,6 +29,7 @@ class Producto extends Model
         'es_controlado' => 'boolean',
         'es_combo' => 'boolean',
         'destacado' => 'boolean',
+        'precio_incluye_iva' => 'boolean',
         'atributos_json' => 'array',
         'precio_venta_usd' => 'decimal:2',
         'precio_oferta_usd' => 'decimal:2',
@@ -38,6 +40,16 @@ class Producto extends Model
         'venta_minima' => 'decimal:3',   
         'paso_venta' => 'decimal:3',    
     ];
+
+    /**
+     * Calcula el precio de venta final al público (PVP) sumando el IVA configurado.
+     */
+    public function getPrecioVentaPvpAttribute(): float
+    {
+        $iva = \App\Models\ConfiguracionTienda::iva();
+        $precio = $this->precio_oferta_usd ?: $this->precio_venta_usd;
+        return round($precio * (1 + ($iva / 100)), 2);
+    }
 
     // ==========================================
     // RELACIONES

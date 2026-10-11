@@ -48,7 +48,10 @@
                                     <span class="absolute left-4 top-3.5 font-bold text-gray-700">%</span>
                                     <input type="number" step="0.01" min="0" max="100" name="iva_porcentaje" value="{{ old('iva_porcentaje', $config->iva_porcentaje) }}" required class="limit-decimals w-full h-12 pl-10 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-blue-600 text-lg outline-none">
                                 </div>
-                                <p class="text-[10px] text-gray-700 mt-1 ml-1 font-medium">Este porcentaje se calculará automáticamente en los carritos web y el POS.</p>
+                                <p class="text-[10px] text-blue-700 mt-1.5 ml-1 font-semibold flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">verified</span>
+                                    Porcentaje único y centralizado para todo el sistema (Tienda Web, POS, Facturación, Cotizaciones y Productos).
+                                </p>
                             </div>
                         </div>
                     </div>

@@ -193,9 +193,9 @@ class CotizacionController extends Controller
                 ];
             }
 
-            // Manejo de IVA
+            // Manejo de IVA estrictamente centralizado en ConfiguracionTienda
             $aplicaIva = $request->boolean('aplica_iva');
-            $ivaPorcentaje = $aplicaIva ? (float)($request->iva_porcentaje ?: 16.00) : 0.00;
+            $ivaPorcentaje = $aplicaIva ? \App\Models\ConfiguracionTienda::iva() : 0.00;
             $ivaUsd = $aplicaIva ? round($subtotalUsd * ($ivaPorcentaje / 100), 2) : 0.00;
 
             $totalUsd = round($subtotalUsd + $ivaUsd, 2);

@@ -226,16 +226,16 @@
                                         <div class="flex items-center justify-between">
                                             <label class="text-xs font-bold text-slate-700 flex items-center gap-2 cursor-pointer select-none">
                                                 <input type="checkbox" name="aplica_iva" id="checkAplicaIva" value="1" onchange="recalcularTotales()" class="rounded text-[#1e549e] focus:ring-blue-500">
-                                                <span>Aplicar Impuesto IVA</span>
+                                                <span>Aplicar Impuesto IVA ({{ (float)$ivaPorcentajeDefecto }}%)</span>
                                             </label>
                                             <div class="flex items-center gap-1.5" id="contenedorPorcentajeIva" style="display: none;">
-                                                <input type="number" name="iva_porcentaje" id="inputIvaPorcentaje" value="{{ $ivaPorcentajeDefecto }}" min="0" max="100" step="0.5" oninput="recalcularTotales()"
-                                                       class="w-16 px-2 py-1 text-xs font-bold text-right border border-gray-300 rounded-lg outline-none font-mono">
-                                                <span class="text-xs font-bold text-gray-500">%</span>
+                                                <span class="text-xs font-black text-[#1e549e] bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200 shadow-2xs">
+                                                    {{ (float)$ivaPorcentajeDefecto }}% IVA Global
+                                                </span>
                                             </div>
                                         </div>
                                         <p class="text-[10px] text-gray-500">
-                                            Por defecto las cotizaciones operan en monto neto. Activa la casilla si requieres desglosar el 16% de IVA fiscal.
+                                            Por defecto las cotizaciones operan en monto neto. Activa la casilla si requieres desglosar el {{ (float)$ivaPorcentajeDefecto }}% de IVA fiscal configurado en el sistema.
                                         </p>
                                     </div>
 
@@ -533,7 +533,7 @@
         const checkAplicaIva = document.getElementById('checkAplicaIva').checked;
         const contIva = document.getElementById('contenedorPorcentajeIva');
         const filaIva = document.getElementById('filaIvaDisplay');
-        const ivaPorc = parseFloat(document.getElementById('inputIvaPorcentaje').value) || 16.00;
+        const ivaPorc = {{ (float)$ivaPorcentajeDefecto }};
 
         let iva = 0;
         if (checkAplicaIva) {

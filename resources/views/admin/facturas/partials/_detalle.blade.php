@@ -102,7 +102,7 @@
         </div>
         @endif
         <div class="flex justify-between">
-            <span>IVA ({{ number_format(($config->iva_porcentaje ?? 16), 0) }}%):</span>
+            <span>IVA ({{ (float)($config->iva_porcentaje ?? 16) }}%):</span>
             <span>${{ number_format($factura->impuesto_usd, 2) }}</span>
         </div>
 

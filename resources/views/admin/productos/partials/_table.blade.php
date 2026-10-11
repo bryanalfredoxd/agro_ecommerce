@@ -88,6 +88,16 @@
                             <span class="font-black text-agro-dark text-base">${{ number_format($producto->precio_venta_usd, 2) }}</span>
                         @endif
 
+                        @if($producto->precio_incluye_iva)
+                            @php
+                                $ivaPct = \App\Models\ConfiguracionTienda::iva();
+                                $pvpCalculado = round(($producto->precio_oferta_usd ?: $producto->precio_venta_usd) * (1 + ($ivaPct / 100)), 2);
+                            @endphp
+                            <span class="inline-flex items-center gap-0.5 text-[9px] font-extrabold text-teal-700 bg-teal-50 border border-teal-200/80 px-1.5 py-0.5 rounded-md w-fit mt-1" title="PVP con IVA incluido">
+                                <span class="material-symbols-outlined text-[11px]">payments</span> PVP: ${{ number_format($pvpCalculado, 2) }}
+                            </span>
+                        @endif
+
                         @if($precioBs > 0)
                             <span class="text-[11px] font-bold text-gray-500 mt-0.5">
                                 Bs. {{ number_format($precioBs, 2) }}

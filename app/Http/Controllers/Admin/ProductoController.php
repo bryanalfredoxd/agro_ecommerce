@@ -122,17 +122,21 @@ class ProductoController extends Controller
     {
         $categorias = Categoria::orderBy('nombre')->get();
         $marcas = Marca::orderBy('nombre')->get();
-        return view('admin.productos.form', compact('categorias', 'marcas'));
+        $ivaPorcentaje = \App\Models\ConfiguracionTienda::iva();
+        return view('admin.productos.form', compact('categorias', 'marcas', 'ivaPorcentaje'));
     }
 
     public function store(Request $request)
     {
+        $ivaPorcentaje = \App\Models\ConfiguracionTienda::iva();
+        $incluyeIva = $request->boolean('precio_incluye_iva');
+
         $request->validate([
             'nombre' => 'required|string|max:255',
             'sku' => 'nullable|string|unique:productos,sku',
-            'precio_venta_usd' => 'required|numeric|min:0',
+            'precio_venta_usd' => 'required|numeric|min:0.01',
             'precio_oferta_usd' => 'nullable|numeric|min:0|lt:precio_venta_usd',
-            'costo_promedio_usd' => 'nullable|numeric|min:0|lte:precio_venta_usd',
+            'costo_promedio_usd' => 'nullable|numeric|min:0',
             'imagen' => 'nullable|image|max:2048',
             'stock_total' => 'nullable|numeric|min:0',
             'stock_minimo_alerta' => 'nullable|numeric|min:0|lte:stock_total',
@@ -141,13 +145,35 @@ class ProductoController extends Controller
             'contenido_neto' => 'nullable|numeric|min:0',
         ], [
             'precio_oferta_usd.lt' => 'El precio de oferta no puede ser mayor ni igual al precio de venta.',
-            'costo_promedio_usd.lte' => 'El costo promedio no puede ser mayor al precio de venta (pérdida).',
             'stock_minimo_alerta.lte' => 'La alerta de stock no puede ser mayor al stock físico total.',
         ]);
 
-        // Evitamos enviar el campo 'tipo_codigo_barras' a la BD porque no existe esa columna
+        // Cálculo del precio base desglosando IVA si el usuario especificó que ya lo incluye
+        $precioVentaInput = (float) $request->precio_venta_usd;
+        $precioBaseVenta = $incluyeIva 
+            ? round($precioVentaInput / (1 + ($ivaPorcentaje / 100)), 2)
+            : round($precioVentaInput, 2);
+
+        $precioBaseOferta = null;
+        if ($request->filled('precio_oferta_usd')) {
+            $precioOfertaInput = (float) $request->precio_oferta_usd;
+            $precioBaseOferta = $incluyeIva 
+                ? round($precioOfertaInput / (1 + ($ivaPorcentaje / 100)), 2)
+                : round($precioOfertaInput, 2);
+        }
+
+        // Validación de costo contra la base imponible del precio
+        if ($request->filled('costo_promedio_usd') && (float)$request->costo_promedio_usd > $precioBaseVenta) {
+            return back()->withInput()->withErrors([
+                'costo_promedio_usd' => 'El costo promedio ($' . number_format($request->costo_promedio_usd, 2) . ' USD) no puede ser mayor a la base imponible del producto ($' . number_format($precioBaseVenta, 2) . ' USD).'
+            ]);
+        }
+
+        // Evitamos enviar campos no pertenecientes a la BD
         $data = $request->except(['imagen', '_token', 'attr_keys', 'attr_values', 'tipo_codigo_barras']);
-        
+        $data['precio_venta_usd'] = $precioBaseVenta;
+        $data['precio_oferta_usd'] = $precioBaseOferta;
+        $data['precio_incluye_iva'] = $incluyeIva ? 1 : 0;
         $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
 
@@ -169,7 +195,6 @@ class ProductoController extends Controller
         $producto = Producto::create($data);
 
         // 2. LÓGICA DE CÓDIGO DE BARRAS AUTOMÁTICO
-        // Si el usuario eligió 'NO' (autogenerado), asignamos el ID recién creado
         if ($request->tipo_codigo_barras === 'no' || empty($producto->codigo_barras)) {
             $producto->codigo_barras = (string)$producto->id;
             $producto->save();
@@ -183,19 +208,22 @@ class ProductoController extends Controller
         $producto = Producto::findOrFail($id);
         $categorias = Categoria::orderBy('nombre')->get();
         $marcas = Marca::orderBy('nombre')->get();
-        return view('admin.productos.form', compact('producto', 'categorias', 'marcas'));
+        $ivaPorcentaje = \App\Models\ConfiguracionTienda::iva();
+        return view('admin.productos.form', compact('producto', 'categorias', 'marcas', 'ivaPorcentaje'));
     }
 
     public function update(Request $request, $id)
     {
         $producto = Producto::findOrFail($id);
+        $ivaPorcentaje = \App\Models\ConfiguracionTienda::iva();
+        $incluyeIva = $request->boolean('precio_incluye_iva');
 
         $request->validate([
             'nombre' => 'required|string|max:255',
             'sku' => 'nullable|string|unique:productos,sku,'.$id,
-            'precio_venta_usd' => 'required|numeric|min:0',
+            'precio_venta_usd' => 'required|numeric|min:0.01',
             'precio_oferta_usd' => 'nullable|numeric|min:0|lt:precio_venta_usd',
-            'costo_promedio_usd' => 'nullable|numeric|min:0|lte:precio_venta_usd',
+            'costo_promedio_usd' => 'nullable|numeric|min:0',
             'imagen' => 'nullable|image|max:2048',
             'stock_total' => 'nullable|numeric|min:0',
             'stock_minimo_alerta' => 'nullable|numeric|min:0|lte:stock_total',
@@ -204,12 +232,34 @@ class ProductoController extends Controller
             'contenido_neto' => 'nullable|numeric|min:0',
         ], [
             'precio_oferta_usd.lt' => 'El precio de oferta no puede ser mayor ni igual al precio de venta.',
-            'costo_promedio_usd.lte' => 'El costo promedio no puede ser mayor al precio de venta (pérdida).',
             'stock_minimo_alerta.lte' => 'La alerta de stock no puede ser mayor al stock físico total.',
         ]);
 
+        // Cálculo del precio base desglosando IVA si el usuario especificó que ya lo incluye
+        $precioVentaInput = (float) $request->precio_venta_usd;
+        $precioBaseVenta = $incluyeIva 
+            ? round($precioVentaInput / (1 + ($ivaPorcentaje / 100)), 2)
+            : round($precioVentaInput, 2);
+
+        $precioBaseOferta = null;
+        if ($request->filled('precio_oferta_usd')) {
+            $precioOfertaInput = (float) $request->precio_oferta_usd;
+            $precioBaseOferta = $incluyeIva 
+                ? round($precioOfertaInput / (1 + ($ivaPorcentaje / 100)), 2)
+                : round($precioOfertaInput, 2);
+        }
+
+        // Validación de costo contra la base imponible del precio
+        if ($request->filled('costo_promedio_usd') && (float)$request->costo_promedio_usd > $precioBaseVenta) {
+            return back()->withInput()->withErrors([
+                'costo_promedio_usd' => 'El costo promedio ($' . number_format($request->costo_promedio_usd, 2) . ' USD) no puede ser mayor a la base imponible del producto ($' . number_format($precioBaseVenta, 2) . ' USD).'
+            ]);
+        }
+
         $data = $request->except(['imagen', '_token', '_method', 'attr_keys', 'attr_values', 'motivo_cambio', 'tipo_codigo_barras']);
-        
+        $data['precio_venta_usd'] = $precioBaseVenta;
+        $data['precio_oferta_usd'] = $precioBaseOferta;
+        $data['precio_incluye_iva'] = $incluyeIva ? 1 : 0;
         $data['es_controlado'] = $request->has('es_controlado') ? 1 : 0;
         $data['es_combo'] = $request->has('es_combo') ? 1 : 0;
 
@@ -238,7 +288,7 @@ class ProductoController extends Controller
         }
 
         $precioViejo = (float) $producto->precio_venta_usd;
-        $precioNuevo = (float) $request->precio_venta_usd;
+        $precioNuevo = (float) $precioBaseVenta;
 
         if ($precioViejo !== $precioNuevo) {
             \App\Models\HistoricoPrecioProducto::create([

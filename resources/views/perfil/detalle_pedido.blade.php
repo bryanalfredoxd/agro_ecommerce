@@ -367,7 +367,7 @@
                         </div>
 
                         <div class="flex justify-between items-center text-xs sm:text-sm text-slate-500 font-medium">
-                            <span>Impuestos (IVA 16%)</span>
+                            <span>Impuestos (IVA {{ (float)(\App\Models\ConfiguracionTienda::iva()) }}%)</span>
                             <span class="text-slate-800 font-bold">
                                 ${{ number_format(max(0, $pedido->total_usd - $pedido->subtotal_usd - $pedido->costo_delivery_usd), 2) }}
                             </span>

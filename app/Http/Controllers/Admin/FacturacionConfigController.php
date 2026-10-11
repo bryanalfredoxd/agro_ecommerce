@@ -11,12 +11,13 @@ class FacturacionConfigController extends Controller
     public function index(Request $request)
     {
         $ajustes = FacturaAjuste::orderBy('id', 'asc')->paginate(10);
+        $ivaGlobal = \App\Models\ConfiguracionTienda::iva();
 
         if ($request->ajax()) {
-            return view('admin.facturacion_config.partials._table', compact('ajustes'))->render();
+            return view('admin.facturacion_config.partials._table', compact('ajustes', 'ivaGlobal'))->render();
         }
 
-        return view('admin.facturacion_config.index', compact('ajustes'));
+        return view('admin.facturacion_config.index', compact('ajustes', 'ivaGlobal'));
     }
 
     public function store(Request $request)
@@ -24,13 +25,12 @@ class FacturacionConfigController extends Controller
         $request->validate([
             'serie' => 'required|string|max:10|unique:factura_ajustes,serie',
             'proximo_numero' => 'required|integer|min:1',
-            'porcentaje_iva' => 'required|numeric|min:0|max:100',
         ]);
 
         FacturaAjuste::create([
             'serie' => strtoupper($request->serie),
             'proximo_numero' => $request->proximo_numero,
-            'porcentaje_iva' => $request->porcentaje_iva,
+            'porcentaje_iva' => \App\Models\ConfiguracionTienda::iva(),
             'activo' => 1
         ]);
 
@@ -44,13 +44,12 @@ class FacturacionConfigController extends Controller
         $request->validate([
             'serie' => 'required|string|max:10|unique:factura_ajustes,serie,' . $id,
             'proximo_numero' => 'required|integer|min:1',
-            'porcentaje_iva' => 'required|numeric|min:0|max:100',
         ]);
 
         $ajuste->update([
             'serie' => strtoupper($request->serie),
             'proximo_numero' => $request->proximo_numero,
-            'porcentaje_iva' => $request->porcentaje_iva,
+            'porcentaje_iva' => \App\Models\ConfiguracionTienda::iva(),
         ]);
 
         return response()->json(['success' => true, 'message' => 'Serie actualizada correctamente.']);

@@ -99,7 +99,7 @@ class CheckoutController extends Controller
         
         return view('checkout.index', compact(
             'carrito', 'subtotal', 'montoIva', 'totalUsd', 'totalVes', 
-            'tasaValor', 'direcciones', 'metodosPago', 'zonas', 'deliveryActivo'
+            'tasaValor', 'direcciones', 'metodosPago', 'zonas', 'deliveryActivo', 'ivaPorcentaje'
         ));
     }
 
