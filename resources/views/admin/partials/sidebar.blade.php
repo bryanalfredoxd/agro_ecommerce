@@ -172,6 +172,17 @@
             </details>
             @endif
 
+            {{-- MÓDULO: Auditoría y Trazabilidad (Logs) --}}
+            @if(Auth::user()->tienePermiso('ver_logs_auditoria'))
+            <a href="{{ route('admin.logs.index') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl {{ request()->routeIs('admin.logs.*') ? 'bg-[#1e549e] text-white font-black shadow-md' : 'text-slate-300 hover:bg-white/5 hover:text-white font-semibold' }} transition-all text-sm group">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.logs.*') ? 'text-white' : 'text-[#3492cf]' }} group-hover:scale-110 transition-transform">manage_search</span>
+                    <span>Logs & Auditoría</span>
+                </div>
+                <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Activo</span>
+            </a>
+            @endif
+
             {{-- MÓDULO: Configuración del Sistema --}}
             @if(Auth::user()->tienePermiso('configurar_tienda') || Auth::user()->tienePermiso('gestionar_cuentas_banco') || Auth::user()->tienePermiso('gestionar_horarios'))
             <details class="group/menu" {{ request()->routeIs('admin.configuracion.*', 'admin.cuentas_bancarias.*', 'admin.horarios.*') ? 'open' : '' }}>

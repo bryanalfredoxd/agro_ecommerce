@@ -42,6 +42,7 @@ use App\Http\Controllers\Admin\CotizacionController;
 use App\Http\Controllers\Admin\SolicitudProductoController;
 use App\Http\Controllers\Admin\EstadisticasController;
 use App\Http\Controllers\Admin\DevolucionController;
+use App\Http\Controllers\Admin\AuditoriaLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -150,6 +151,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index')->middleware('permiso:ver_usuarios');
     Route::get('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'getPermisosExtra'])->name('usuarios.permisos_extra.get')->middleware('permiso:gestionar_roles_permisos');
     Route::post('/usuarios/{id}/permisos-extra', [UsuarioController::class, 'updatePermisosExtra'])->name('usuarios.permisos_extra.post')->middleware('permiso:gestionar_roles_permisos');
+
+    // Módulo: Auditoría y Logs del Sistema (Historial inmutable de auditoría)
+    Route::get('/logs', [AuditoriaLogController::class, 'index'])->name('logs.index')->middleware('permiso:ver_logs_auditoria');
+    Route::get('/logs/{id}', [AuditoriaLogController::class, 'show'])->name('logs.show')->middleware('permiso:ver_logs_auditoria');
+    Route::get('/logs-exportar/csv', [AuditoriaLogController::class, 'exportar'])->name('logs.exportar')->middleware('permiso:ver_logs_auditoria');
 
     // Módulo: Finanzas, Facturación y Caja
     Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index')->middleware('permiso:ver_facturas');
