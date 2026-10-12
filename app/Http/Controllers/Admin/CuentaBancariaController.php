@@ -37,7 +37,8 @@ class CuentaBancariaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tipo_metodo' => 'required|in:pago_movil,zelle,efectivo_usd,efectivo_bs,transferencia,punto_venta,binance,biopago',
+            'tipo_metodo' => 'required|in:pago_movil,zelle,efectivo_usd,efectivo_bs,transferencia,punto_venta,binance,biopago,cashea',
+            'modalidad_pago' => 'nullable|in:divisas,bolivares,cashea',
             'nombre_titular' => 'nullable|string|max:255',
             'banco_entidad' => 'nullable|string|max:255',
             'numero_cuenta' => 'nullable|string|max:255',
@@ -47,7 +48,16 @@ class CuentaBancariaController extends Controller
             'instrucciones_adicionales' => 'nullable|string'
         ]);
 
-        CuentaBancaria::create($request->all());
+        $data = $request->all();
+        if (empty($data['modalidad_pago'])) {
+            $data['modalidad_pago'] = match($request->tipo_metodo) {
+                'zelle', 'binance', 'efectivo_usd' => 'divisas',
+                'cashea' => 'cashea',
+                default => 'bolivares',
+            };
+        }
+
+        CuentaBancaria::create($data);
 
         return response()->json(['success' => true, 'message' => 'Método de pago registrado exitosamente.']);
     }
@@ -57,12 +67,20 @@ class CuentaBancariaController extends Controller
         $cuenta = CuentaBancaria::findOrFail($id);
 
         $request->validate([
-            'tipo_metodo' => 'required|in:pago_movil,zelle,efectivo_usd,efectivo_bs,transferencia,punto_venta,binance,biopago',
-            // Puedes agregar más validaciones dependiendo del método si lo deseas
+            'tipo_metodo' => 'required|in:pago_movil,zelle,efectivo_usd,efectivo_bs,transferencia,punto_venta,binance,biopago,cashea',
+            'modalidad_pago' => 'nullable|in:divisas,bolivares,cashea',
         ]);
 
         // Asegurarnos de limpiar los campos que no se envían
         $data = $request->all();
+        if (empty($data['modalidad_pago'])) {
+            $data['modalidad_pago'] = match($request->tipo_metodo) {
+                'zelle', 'binance', 'efectivo_usd' => 'divisas',
+                'cashea' => 'cashea',
+                default => 'bolivares',
+            };
+        }
+
         $camposNulos = ['nombre_titular', 'banco_entidad', 'numero_cuenta', 'telefono', 'identificacion', 'email', 'instrucciones_adicionales'];
         foreach($camposNulos as $campo) {
             if(!isset($data[$campo])) $data[$campo] = null;

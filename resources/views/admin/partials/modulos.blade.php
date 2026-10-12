@@ -38,6 +38,9 @@
                     <a href="{{ route('admin.cotizaciones.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">request_quote</span> Cotizaciones y Presupuestos
                     </a>
+                    <a href="{{ route('admin.estadisticas.index') }}" class="flex items-center gap-2 p-3 rounded-xl bg-blue-50/70 hover:bg-blue-100/80 text-blue-800 hover:text-blue-900 transition-colors border border-blue-200/60 font-bold text-xs">
+                        <span class="material-symbols-outlined text-[18px] text-blue-600">query_stats</span> Analítica y Top Ventas
+                    </a>
                     @if(Auth::user()->tienePermiso('procesar_devoluciones'))
                     <a href="#" class="flex items-center gap-2 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-600 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100 font-bold text-xs">
                         <span class="material-symbols-outlined text-[18px]">assignment_return</span> Devoluciones

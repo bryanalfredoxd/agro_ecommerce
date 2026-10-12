@@ -378,9 +378,16 @@
                         <div class="flex justify-between items-center text-xs sm:text-sm text-slate-500 font-medium">
                             <span>Impuestos (IVA {{ (float)(\App\Models\ConfiguracionTienda::iva()) }}%)</span>
                             <span class="text-slate-800 font-bold">
-                                ${{ number_format(max(0, $pedido->total_usd - $pedido->subtotal_usd - $pedido->costo_delivery_usd), 2) }}
+                                ${{ number_format(max(0, $pedido->total_usd - $pedido->subtotal_usd - $pedido->costo_delivery_usd - ($pedido->recargo_usd ?? 0)), 2) }}
                             </span>
                         </div>
+
+                        @if($pedido->recargo_usd > 0)
+                            <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-amber-800 bg-amber-50/70 p-2.5 rounded-xl border border-amber-200/70">
+                                <span>Ajuste por Forma de Pago ({{ ucfirst($pedido->modalidad_pago ?? 'Modalidad') }} {{ (float)$pedido->recargo_porcentaje }}%)</span>
+                                <span>+${{ number_format($pedido->recargo_usd, 2) }}</span>
+                            </div>
+                        @endif
 
                         {{-- Total Final --}}
                         <div class="border-t border-slate-100 pt-3 mt-3">

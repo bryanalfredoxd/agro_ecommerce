@@ -119,9 +119,16 @@
                     <span class="text-gray-500 font-bold">Subtotal Neto</span>
                     <span class="font-bold text-gray-700" id="subtotal_usd_ui">$0.00</span>
                 </div>
-                <div class="flex justify-between items-center mb-2 text-xs">
+                <div class="flex justify-between items-center mb-1 text-xs">
                     <span class="text-gray-500 font-bold">IVA ({{ number_format($porcentajeIva, 0) }}%)</span>
                     <span class="font-bold text-gray-700" id="iva_usd_ui">$0.00</span>
+                </div>
+                <div class="flex justify-between items-center mb-2 text-xs hidden" id="fila_recargo_ui">
+                    <span class="text-amber-700 font-bold flex items-center gap-1" id="label_recargo_ui">
+                        <span class="material-symbols-outlined text-[13px]">percent</span>
+                        <span>Ajuste Modalidad</span>
+                    </span>
+                    <span class="font-bold text-amber-800" id="recargo_usd_ui">+$0.00</span>
                 </div>
                 <div class="flex justify-between items-end border-t border-dashed border-gray-200 pt-2 mb-3">
                     <span class="text-base font-black text-agro-dark uppercase tracking-wider">Total</span>
@@ -139,6 +146,40 @@
         {{-- COLUMNA DERECHA: BÚSQUEDA Y CATÁLOGO DE PRODUCTOS (FLEX-1) --}}
         <section class="flex-1 min-w-0 flex flex-col h-full bg-slate-100/70 overflow-hidden" style="flex: 1; min-width: 0;">
             
+            {{-- Barra de Modalidad de Pago y Divisa en Vivo --}}
+            <div class="px-3.5 py-2 bg-gradient-to-r from-[#0b1d38] via-[#12315e] to-[#1e549e] border-b border-[#3492cf]/30 shrink-0 flex flex-wrap items-center justify-between gap-2 text-white shadow-2xs">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[10px] font-black uppercase tracking-wider text-[#aad6f3] flex items-center gap-1 shrink-0">
+                        <span class="material-symbols-outlined text-[16px] text-teal-300">price_change</span>
+                        Modalidad de Pago:
+                    </span>
+                    <div class="inline-flex p-0.5 bg-black/30 backdrop-blur-xs rounded-xl border border-white/10 shrink-0 shadow-inner" id="pos_modalidad_group">
+                        <button type="button" onclick="cambiarModalidadPos('divisas')" id="btn_mod_pos_divisas" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-emerald-500 text-white shadow-sm" title="Precios en Divisas / Dólares (Alt+1)">
+                            <span>💵 Divisas (USD)</span>
+                            <span class="text-[9.5px] opacity-90 font-mono font-black">({{ (!empty($recargosPos['divisas']['porcentaje']) && $recargosPos['divisas']['porcentaje'] > 0) ? '+' . $recargosPos['divisas']['porcentaje'] . '%' : '0%' }})</span>
+                        </button>
+                        <button type="button" onclick="cambiarModalidadPos('bolivares')" id="btn_mod_pos_bolivares" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10" title="Precios en Bolívares / Pago Móvil / Punto de Venta (Alt+2)">
+                            <span>🇻🇪 Bolívares (VES)</span>
+                            <span class="text-[9.5px] font-mono font-black {{ (!empty($recargosPos['bolivares']['porcentaje']) && $recargosPos['bolivares']['porcentaje'] > 0) ? 'text-amber-300' : 'opacity-90' }}">({{ (!empty($recargosPos['bolivares']['porcentaje']) && $recargosPos['bolivares']['porcentaje'] > 0) ? '+' . $recargosPos['bolivares']['porcentaje'] . '%' : '0%' }})</span>
+                        </button>
+                        <button type="button" onclick="cambiarModalidadPos('cashea')" id="btn_mod_pos_cashea" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10" title="Precios Cashea Financiado (Alt+3)">
+                            <span>🛍️ Cashea</span>
+                            <span class="text-[9.5px] font-mono font-black {{ (!empty($recargosPos['cashea']['porcentaje']) && $recargosPos['cashea']['porcentaje'] > 0) ? 'text-amber-300' : 'opacity-90' }}">({{ (!empty($recargosPos['cashea']['porcentaje']) && $recargosPos['cashea']['porcentaje'] > 0) ? '+' . $recargosPos['cashea']['porcentaje'] . '%' : '0%' }})</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2.5 text-xs font-bold shrink-0">
+                    <span class="text-[10px] text-[#aad6f3] hidden md:inline-flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[13px] text-teal-300">bolt</span>
+                        Precios ajustados en tiempo real
+                    </span>
+                    <span class="px-2.5 py-1 bg-black/25 rounded-lg text-[11px] font-mono font-bold text-teal-300 border border-teal-400/20 shadow-inner">
+                        BCV: Bs. {{ number_format($valorTasa, 2) }}
+                    </span>
+                </div>
+            </div>
+
             {{-- Barra de Búsqueda --}}
             <div class="p-3 bg-white border-b border-gray-200 shadow-2xs shrink-0 flex items-center gap-2">
                 <div class="relative flex-1">
@@ -179,7 +220,15 @@
                     @if(isset($productosIniciales) && count($productosIniciales) > 0)
                         @foreach($productosIniciales as $prod)
                             @php
-                                $precio = $prod->precio_oferta_usd ? (float)$prod->precio_oferta_usd : (float)$prod->precio_venta_usd;
+                                $precioBase = $prod->precio_oferta_usd ? (float)$prod->precio_oferta_usd : (float)$prod->precio_venta_usd;
+                                $precioOriginalBase = (float)$prod->precio_venta_usd;
+                                $tieneOferta = $prod->precio_oferta_usd && (float)$prod->precio_oferta_usd < $precioOriginalBase;
+                                
+                                // PRECIO FINAL PVP (con IVA incluido) y equivalencias
+                                $precioFinalPvp = $prod->precio_final_pvp;
+                                $precioRegularPvp = $prod->precio_regular_pvp;
+                                $precioBsPvp = $valorTasa > 0 ? round($precioFinalPvp * $valorTasa, 2) : 0;
+
                                 $imgUrl = $prod->imagen_url ? asset($prod->imagen_url) : null;
                                 $catNombre = $prod->categoria ? $prod->categoria->nombre : 'General';
                                 
@@ -192,11 +241,11 @@
                                 };
 
                                 $ventaMin = (float)($prod->venta_minima ?: 1);
-                                $minimoTotal = $precio * $ventaMin;
+                                $minimoTotal = $precioFinalPvp * $ventaMin;
                                 $stockTotal = (float)$prod->stock_total;
                                 $esPocoStock = $stockTotal <= ($prod->stock_minimo_alerta ?: 5);
                             @endphp
-                            <div id="product-card-{{ $prod->id }}" data-id="{{ $prod->id }}" onclick='agregarAlCarrito(@json($prod))' class="bg-white rounded-2xl border border-gray-200 hover:border-teal-500 shadow-2xs hover:shadow-md cursor-pointer transition-all active:scale-95 flex flex-col h-full overflow-hidden group relative">
+                            <div id="product-card-{{ $prod->id }}" data-id="{{ $prod->id }}" data-pvp="{{ $precioFinalPvp }}" data-regular="{{ $precioRegularPvp }}" data-base="{{ $precioBase }}" onclick='agregarAlCarrito(@json($prod))' class="product-item-card bg-white rounded-2xl border border-gray-200 hover:border-teal-500 shadow-2xs hover:shadow-md cursor-pointer transition-all active:scale-95 flex flex-col h-full overflow-hidden group relative">
                                 {{-- Imagen y Badges Flotantes --}}
                                 <div class="h-24 bg-gray-50 flex items-center justify-center p-2 border-b border-gray-100 group-hover:bg-teal-50/30 transition-colors relative">
                                     @if($imgUrl)
@@ -205,7 +254,7 @@
                                         <span class="material-symbols-outlined text-3xl text-gray-300">image</span>
                                     @endif
 
-                                    @if($prod->precio_oferta_usd && $prod->precio_oferta_usd < $prod->precio_venta_usd)
+                                    @if($tieneOferta)
                                         <span class="absolute top-1.5 left-1.5 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-2xs">
                                             OFERTA
                                         </span>
@@ -235,19 +284,26 @@
                                             </div>
                                         @endif
 
-                                        {{-- Precios y Unidades --}}
+                                        {{-- Precios y Unidades: Precio Final (PVP) Destacado --}}
                                         <div class="flex justify-between items-end pt-1 border-t border-gray-100">
                                             <div>
-                                                @if($prod->precio_oferta_usd && $prod->precio_oferta_usd < $prod->precio_venta_usd)
-                                                    <span class="line-through text-gray-400 text-[10px] font-bold block">${{ number_format($prod->precio_venta_usd, 2) }}</span>
+                                                @if($tieneOferta)
+                                                    <span class="line-through text-gray-400 text-[10px] font-bold block">${{ number_format($precioRegularPvp, 2) }}</span>
                                                 @endif
                                                 <div class="flex items-baseline gap-0.5">
-                                                    <span class="font-black text-primary text-sm">${{ number_format($precio, 2) }}</span>
+                                                    <span class="card-precio-usd font-black {{ $tieneOferta ? 'text-rose-600' : 'text-primary' }} text-base leading-none">${{ number_format($precioFinalPvp, 2) }}</span>
                                                     <span class="text-[10px] font-bold text-gray-500">/ {{ $unidadLabel }}</span>
+                                                </div>
+                                                <div class="flex items-center gap-1 mt-0.5 flex-wrap">
+                                                    <span class="text-[8.5px] font-extrabold px-1.5 py-0.2 rounded {{ $prod->precio_incluye_iva ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'bg-slate-100 text-slate-600 border border-slate-200' }}" title="Base imponible: ${{ number_format($precioBase, 2) }}">
+                                                        {{ $prod->precio_incluye_iva ? 'IVA inc.' : 'PVP' }}
+                                                    </span>
+                                                    <span class="card-mod-badge text-[8.5px] font-extrabold px-1.5 py-0.2 rounded hidden"></span>
+                                                    <span class="text-[8.5px] font-semibold text-gray-400">Base: ${{ number_format($precioBase, 2) }}</span>
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <span class="text-[10px] font-black text-gray-600 block">Bs. {{ number_format($precio * $valorTasa, 2) }}</span>
+                                                <span class="card-precio-bs text-xs font-black text-gray-700 block">Bs. {{ number_format($precioBsPvp, 2) }}</span>
                                                 <span class="text-[8.5px] font-medium text-gray-400">/ {{ $unidadLabel }}</span>
                                             </div>
                                         </div>
@@ -288,6 +344,7 @@
                     <div>
                         <p class="text-[9.5px] font-black text-gray-700 uppercase tracking-widest">Total a Cobrar</p>
                         <p class="text-2xl font-black text-agro-dark leading-none mt-1" id="checkout_total_usd">$0.00</p>
+                        <p class="text-[10px] font-bold text-amber-700 mt-1 hidden" id="checkout_recargo_badge">+0.0% recargo</p>
                     </div>
                     <div class="text-right">
                         <p class="text-[9.5px] font-black text-gray-700 uppercase tracking-widest">Equivalente BCV</p>
@@ -311,13 +368,14 @@
                     <div>
                         <label class="block text-[9.5px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Método de Pago</label>
                         <select id="metodo_pago" onchange="actualizarMetodoPagoUnico()" class="w-full h-10 px-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-primary focus:bg-white outline-none font-bold text-agro-dark text-xs">
-                            <option value="efectivo_usd">💵 Efectivo Dólares (USD)</option>
-                            <option value="efectivo_bs">💵 Efectivo Bolívares (VES)</option>
-                            <option value="pago_movil">📱 Pago Móvil</option>
-                            <option value="punto_venta">💳 Punto de Venta / Tarjeta</option>
-                            <option value="zelle">⚡ Zelle</option>
-                            <option value="binance">🟡 Binance Pay</option>
-                            <option value="transferencia">🏦 Transferencia Bancaria</option>
+                            <option value="efectivo_usd" data-modalidad="divisas">💵 Efectivo Dólares (USD){{ (!empty($recargosPos['divisas']['porcentaje']) && $recargosPos['divisas']['porcentaje'] > 0) ? ' (+' . $recargosPos['divisas']['porcentaje'] . '%)' : '' }}</option>
+                            <option value="efectivo_bs" data-modalidad="bolivares">💵 Efectivo Bolívares (VES){{ (!empty($recargosPos['bolivares']['porcentaje']) && $recargosPos['bolivares']['porcentaje'] > 0) ? ' (+' . $recargosPos['bolivares']['porcentaje'] . '%)' : '' }}</option>
+                            <option value="pago_movil" data-modalidad="bolivares">📱 Pago Móvil{{ (!empty($recargosPos['bolivares']['porcentaje']) && $recargosPos['bolivares']['porcentaje'] > 0) ? ' (+' . $recargosPos['bolivares']['porcentaje'] . '%)' : '' }}</option>
+                            <option value="punto_venta" data-modalidad="bolivares">💳 Punto de Venta / Tarjeta{{ (!empty($recargosPos['bolivares']['porcentaje']) && $recargosPos['bolivares']['porcentaje'] > 0) ? ' (+' . $recargosPos['bolivares']['porcentaje'] . '%)' : '' }}</option>
+                            <option value="zelle" data-modalidad="divisas">⚡ Zelle{{ (!empty($recargosPos['divisas']['porcentaje']) && $recargosPos['divisas']['porcentaje'] > 0) ? ' (+' . $recargosPos['divisas']['porcentaje'] . '%)' : '' }}</option>
+                            <option value="binance" data-modalidad="divisas">🟡 Binance Pay{{ (!empty($recargosPos['divisas']['porcentaje']) && $recargosPos['divisas']['porcentaje'] > 0) ? ' (+' . $recargosPos['divisas']['porcentaje'] . '%)' : '' }}</option>
+                            <option value="transferencia" data-modalidad="bolivares">🏦 Transferencia Bancaria{{ (!empty($recargosPos['bolivares']['porcentaje']) && $recargosPos['bolivares']['porcentaje'] > 0) ? ' (+' . $recargosPos['bolivares']['porcentaje'] . '%)' : '' }}</option>
+                            <option value="cashea" data-modalidad="cashea">🛍️ Cashea (Financiado){{ (!empty($recargosPos['cashea']['porcentaje']) && $recargosPos['cashea']['porcentaje'] > 0) ? ' (+' . $recargosPos['cashea']['porcentaje'] . '%)' : '' }}</option>
                         </select>
                     </div>
 
@@ -393,6 +451,7 @@
                                     <option value="zelle">Zelle</option>
                                     <option value="binance">Binance Pay</option>
                                     <option value="transferencia">Transferencia</option>
+                                    <option value="cashea">Cashea</option>
                                 </select>
                             </div>
                             <div>
@@ -598,6 +657,8 @@
     let carrito = [];
     const tasaBcv = parseFloat({{ $valorTasa }});
     const ivaPorcentaje = parseFloat({{ $porcentajeIva }});
+    const recargosPos = @json($recargosPos ?? []);
+    let modalidadPosActual = 'divisas';
     let searchTimeout;
     let clienteSearchTimeout;
     let categoriaSeleccionada = null;
@@ -611,6 +672,8 @@
     };
 
     let modoPagoActual = 'unico';
+    let modalTotalUsdActual = 0;
+    let modalTotalVesActual = 0;
     let pagosMixtos = [];
     let ultimaVentaExitosa = null;
     let ultimoResumenCierre = null;
@@ -621,6 +684,63 @@
     const cartContainer = document.getElementById('cart-container');
     const emptyMsg = document.getElementById('empty-cart-msg');
     const btnCobrar = document.getElementById('btnCobrar');
+
+    // ==========================================
+    // GESTIÓN DE MODALIDAD Y PRECIOS PORCENTUALES
+    // ==========================================
+    function getPorcentajeModalidad(mod) {
+        if (!recargosPos || !recargosPos[mod]) return 0;
+        if (typeof recargosPos[mod] === 'object' && recargosPos[mod] !== null) {
+            return parseFloat(recargosPos[mod].porcentaje) || 0;
+        }
+        return parseFloat(recargosPos[mod]) || 0;
+    }
+
+    function cambiarModalidadPos(nuevaMod) {
+        modalidadPosActual = nuevaMod;
+
+        // 1. Estilos visuales de los botones de modalidad
+        const btnDivisas = document.getElementById('btn_mod_pos_divisas');
+        const btnBs = document.getElementById('btn_mod_pos_bolivares');
+        const btnCashea = document.getElementById('btn_mod_pos_cashea');
+
+        if (btnDivisas) btnDivisas.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ' + (nuevaMod === 'divisas' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-white/10');
+        if (btnBs) btnBs.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ' + (nuevaMod === 'bolivares' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-white/10');
+        if (btnCashea) btnCashea.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ' + (nuevaMod === 'cashea' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-white/10');
+
+        // 2. Actualizar tarjetas visibles en el catálogo
+        actualizarPreciosTarjetasModalidad();
+
+        // 3. Recalcular carrito y totales del ticket
+        renderizarCarrito();
+    }
+
+    function actualizarPreciosTarjetasModalidad() {
+        const pct = getPorcentajeModalidad(modalidadPosActual);
+        const factor = 1 + (pct / 100);
+
+        document.querySelectorAll('.product-item-card').forEach(card => {
+            const pvpBase = parseFloat(card.dataset.pvp) || 0;
+            const pvpAjustado = pvpBase * factor;
+            const bsAjustado = pvpAjustado * tasaBcv;
+
+            const spanUsd = card.querySelector('.card-precio-usd');
+            const spanBs = card.querySelector('.card-precio-bs');
+            const badgeMod = card.querySelector('.card-mod-badge');
+
+            if (spanUsd) spanUsd.innerText = `$${pvpAjustado.toFixed(2)}`;
+            if (spanBs) spanBs.innerText = `Bs. ${bsAjustado.toFixed(2)}`;
+
+            if (badgeMod) {
+                if (pct > 0) {
+                    badgeMod.innerText = `${modalidadPosActual === 'bolivares' ? 'VES' : 'CSH'} (+${pct}%)`;
+                    badgeMod.className = 'card-mod-badge text-[8.5px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300 inline-block';
+                } else {
+                    badgeMod.className = 'card-mod-badge hidden';
+                }
+            }
+        });
+    }
 
     // ==========================================
     // 1. FILTRADO & BÚSQUEDA DE PRODUCTOS
@@ -670,11 +790,22 @@
 
     function renderizarGridProductos(productos) {
         grid.innerHTML = '';
+        const pctMod = getPorcentajeModalidad(modalidadPosActual);
+        const factorMod = 1 + (pctMod / 100);
+
         if (productos && productos.length > 0) {
             productos.forEach(prod => {
-                let precio = parseFloat(prod.precio_oferta_usd ? prod.precio_oferta_usd : prod.precio_venta_usd);
-                let precioOriginal = parseFloat(prod.precio_venta_usd);
-                let tieneOferta = prod.precio_oferta_usd && parseFloat(prod.precio_oferta_usd) < precioOriginal;
+                let precioBase = parseFloat(prod.precio_oferta_usd ? prod.precio_oferta_usd : prod.precio_venta_usd);
+                let precioOriginalBase = parseFloat(prod.precio_venta_usd);
+                let tieneOferta = prod.precio_oferta_usd && parseFloat(prod.precio_oferta_usd) < precioOriginalBase;
+                
+                let precioFinalPvp = parseFloat(prod.precio_final_pvp) || (precioBase * (1 + (ivaPorcentaje / 100)));
+                let precioRegularPvp = parseFloat(prod.precio_regular_pvp) || (precioOriginalBase * (1 + (ivaPorcentaje / 100)));
+                
+                // Precios ajustados a la modalidad activa
+                let pvpAjustado = precioFinalPvp * factorMod;
+                let precioBsAjustado = pvpAjustado * tasaBcv;
+
                 let imgUrl = prod.imagen_url ? (prod.imagen_url.startsWith('http') ? prod.imagen_url : `/${prod.imagen_url.replace(/^\//, '')}`) : '';
                 let imgHtml = imgUrl 
                     ? `<img src="${imgUrl}" class="w-full h-full object-cover mix-blend-multiply" alt="${prod.nombre}">` 
@@ -683,7 +814,7 @@
                 let catNombre = prod.categoria ? prod.categoria.nombre : 'General';
                 let unidadLabel = formatUnidad(prod.unidad_medida);
                 let ventaMin = parseFloat(prod.venta_minima) || 1;
-                let minimoTotal = precio * ventaMin;
+                let minimoTotal = pvpAjustado * ventaMin;
                 let stockTotal = parseFloat(prod.stock_total) || 0;
                 let alertaStock = parseFloat(prod.stock_minimo_alerta) || 5;
                 let esPocoStock = stockTotal <= alertaStock;
@@ -708,14 +839,23 @@
                     </div>
                 ` : '';
 
-                let precioHtml = tieneOferta 
-                    ? `<span class="line-through text-gray-400 text-[10px] font-bold block">$${precioOriginal.toFixed(2)}</span>` 
+                let precioRegularHtml = tieneOferta 
+                    ? `<span class="line-through text-gray-400 text-[10px] font-bold block">$${(precioRegularPvp * factorMod).toFixed(2)}</span>` 
                     : '';
 
+                let badgeIvaHtml = prod.precio_incluye_iva 
+                    ? `<span class="text-[8.5px] font-extrabold px-1.5 py-0.2 rounded bg-teal-50 text-teal-700 border border-teal-200" title="Base: $${precioBase.toFixed(2)}">IVA inc.</span>` 
+                    : `<span class="text-[8.5px] font-extrabold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200" title="Base: $${precioBase.toFixed(2)}">PVP</span>`;
+
+                let badgeModHtml = (pctMod > 0)
+                    ? `<span class="card-mod-badge text-[8.5px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300 inline-block">${modalidadPosActual === 'bolivares' ? 'VES' : 'CSH'} (+${pctMod}%)</span>`
+                    : `<span class="card-mod-badge text-[8.5px] font-extrabold px-1.5 py-0.2 rounded hidden"></span>`;
+
+                let colorPrecio = tieneOferta ? 'text-rose-600' : 'text-primary';
                 let prodJson = JSON.stringify(prod).replace(/'/g, "&apos;");
 
                 grid.innerHTML += `
-                    <div id="product-card-${prod.id}" data-id="${prod.id}" onclick='agregarAlCarrito(${prodJson})' class="bg-white rounded-2xl border border-gray-200 hover:border-teal-500 shadow-2xs hover:shadow-md cursor-pointer transition-all active:scale-95 flex flex-col h-full overflow-hidden group relative">
+                    <div id="product-card-${prod.id}" data-id="${prod.id}" data-pvp="${precioFinalPvp}" data-regular="${precioRegularPvp}" data-base="${precioBase}" onclick='agregarAlCarrito(${prodJson})' class="product-item-card bg-white rounded-2xl border border-gray-200 hover:border-teal-500 shadow-2xs hover:shadow-md cursor-pointer transition-all active:scale-95 flex flex-col h-full overflow-hidden group relative">
                         <div class="h-24 bg-gray-50 flex items-center justify-center p-2 border-b border-gray-100 group-hover:bg-teal-50/30 transition-colors relative">
                             ${imgHtml}
                             ${badgeOferta}
@@ -730,14 +870,19 @@
                                 ${avisoVentaMin}
                                 <div class="flex justify-between items-end pt-1 border-t border-gray-100">
                                     <div>
-                                        ${precioHtml}
+                                        ${precioRegularHtml}
                                         <div class="flex items-baseline gap-0.5">
-                                            <span class="font-black text-primary text-sm">$${precio.toFixed(2)}</span>
+                                            <span class="card-precio-usd font-black ${colorPrecio} text-base leading-none">$${pvpAjustado.toFixed(2)}</span>
                                             <span class="text-[10px] font-bold text-gray-500">/ ${unidadLabel}</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 mt-0.5 flex-wrap">
+                                            ${badgeIvaHtml}
+                                            ${badgeModHtml}
+                                            <span class="text-[8.5px] font-semibold text-gray-400">Base: $${precioBase.toFixed(2)}</span>
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-[10px] font-black text-gray-600 block">Bs. ${(precio * tasaBcv).toFixed(2)}</span>
+                                        <span class="card-precio-bs text-xs font-black text-gray-700 block">Bs. ${precioBsAjustado.toFixed(2)}</span>
                                         <span class="text-[8.5px] font-medium text-gray-400">/ ${unidadLabel}</span>
                                     </div>
                                 </div>
@@ -846,7 +991,7 @@
         }
 
         clienteSearchTimeout = setTimeout(() => {
-            fetch(`/admin/pos/buscar-cliente?buscar=${encodeURIComponent(texto.trim())}`)
+            fetch(`{{ url('/admin/pos/buscar-cliente') }}?buscar=${encodeURIComponent(texto.trim())}`)
             .then(res => res.json())
             .then(data => {
                 if (data.clientes && data.clientes.length > 0) {
@@ -929,7 +1074,7 @@
             statusMsg.innerHTML = '<span class="text-teal-600 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[11px] animate-spin">autorenew</span> Consultando CNE</span>';
         }
 
-        fetch(`/admin/pos/consultar-cedula?documento=${encodeURIComponent(valorDoc)}`)
+        fetch(`{{ url('/admin/pos/consultar-cedula') }}?documento=${encodeURIComponent(valorDoc)}`)
         .then(res => res.json())
         .then(data => {
             if (data.success) {
@@ -1218,14 +1363,19 @@
         let subtotalUsd = 0;
         carrito.forEach(item => subtotalUsd += (item.precio * item.cantidad));
         let ivaUsd = subtotalUsd * (ivaPorcentaje / 100);
-        let totalUsd = subtotalUsd + ivaUsd;
-        let totalVes = totalUsd * tasaBcv;
-        return { subtotalUsd, ivaUsd, totalUsd, totalVes };
+        let baseConIva = subtotalUsd + ivaUsd;
+
+        let pctRecargo = getPorcentajeModalidad(modalidadPosActual);
+        let recargoUsd = Math.round((baseConIva * (pctRecargo / 100)) * 100) / 100;
+        let totalUsd = Math.round((baseConIva + recargoUsd) * 100) / 100;
+        let totalVes = Math.round((totalUsd * tasaBcv) * 100) / 100;
+
+        return { subtotalUsd, ivaUsd, baseConIva, pctRecargo, recargoUsd, totalUsd, totalVes };
     }
 
     function renderizarCarrito() {
         cartContainer.innerHTML = '';
-        const { subtotalUsd, ivaUsd, totalUsd, totalVes } = getTotalesVenta();
+        const { subtotalUsd, ivaUsd, baseConIva, pctRecargo, recargoUsd, totalUsd, totalVes } = getTotalesVenta();
 
         if (carrito.length === 0) {
             cartContainer.appendChild(emptyMsg);
@@ -1235,9 +1385,12 @@
             emptyMsg.classList.add('hidden');
             btnCobrar.disabled = false;
 
+            const factorMod = 1 + (pctRecargo / 100);
+
             carrito.forEach((item, index) => {
-                let subItem = item.precio * item.cantidad;
+                let subItem = (item.precio * item.cantidad) * factorMod;
                 let subItemVes = subItem * tasaBcv;
+                let pvpItem = item.precio * (1 + (ivaPorcentaje / 100)) * factorMod;
                 let unidadLabel = formatUnidad(item.unidad_medida);
 
                 let avisoMin = (item.venta_minima && item.venta_minima !== 1) 
@@ -1249,8 +1402,10 @@
                         <div class="flex justify-between items-start gap-2 mb-1.5">
                             <div class="pr-6">
                                 <h4 class="font-bold text-agro-dark text-xs leading-tight line-clamp-2">${item.nombre}</h4>
-                                <div class="flex items-center gap-1 mt-0.5">
-                                    <span class="text-[10.5px] text-gray-500 font-semibold">$${item.precio.toFixed(2)} / ${unidadLabel}</span>
+                                <div class="flex items-center gap-1 mt-0.5 flex-wrap">
+                                    <span class="text-[11px] font-black text-agro-dark">$${pvpItem.toFixed(2)}</span>
+                                    <span class="text-[9.5px] text-gray-400 font-medium">(Base: $${item.precio.toFixed(2)}) / ${unidadLabel}</span>
+                                    ${pctRecargo > 0 ? `<span class="text-[8.5px] font-bold px-1 bg-amber-50 text-amber-800 border border-amber-200 rounded">+${pctRecargo}%</span>` : ''}
                                     ${avisoMin}
                                 </div>
                             </div>
@@ -1292,6 +1447,22 @@
 
         document.getElementById('subtotal_usd_ui').innerText = `$${subtotalUsd.toFixed(2)}`;
         document.getElementById('iva_usd_ui').innerText = `$${ivaUsd.toFixed(2)}`;
+
+        const filaRecargo = document.getElementById('fila_recargo_ui');
+        const labelRecargo = document.getElementById('label_recargo_ui');
+        const recargoUsdUi = document.getElementById('recargo_usd_ui');
+
+        if (pctRecargo > 0) {
+            if (filaRecargo) filaRecargo.classList.remove('hidden');
+            if (labelRecargo) {
+                const nombreMod = modalidadPosActual === 'bolivares' ? 'Bolívares (VES)' : (modalidadPosActual === 'cashea' ? 'Cashea' : 'Divisas');
+                labelRecargo.innerHTML = `<span class="material-symbols-outlined text-[13px]">percent</span><span>Ajuste ${nombreMod} (+${pctRecargo}%)</span>`;
+            }
+            if (recargoUsdUi) recargoUsdUi.innerText = `+$${recargoUsd.toFixed(2)}`;
+        } else {
+            if (filaRecargo) filaRecargo.classList.add('hidden');
+        }
+
         document.getElementById('total_usd_ui').innerText = `$${totalUsd.toFixed(2)}`;
         document.getElementById('total_ves_ui').innerText = `Bs. ${totalVes.toFixed(2)}`;
         
@@ -1315,6 +1486,18 @@
         if (e.key === 'F4') {
             e.preventDefault();
             togglePanelCliente();
+        }
+        if (e.altKey && e.key === '1') {
+            e.preventDefault();
+            cambiarModalidadPos('divisas');
+        }
+        if (e.altKey && e.key === '2') {
+            e.preventDefault();
+            cambiarModalidadPos('bolivares');
+        }
+        if (e.altKey && e.key === '3') {
+            e.preventDefault();
+            cambiarModalidadPos('cashea');
         }
         if (e.key === 'Enter') {
             const exitoModal = document.getElementById('ventaExitosaModal');
@@ -1343,42 +1526,145 @@
             btnM.className = 'flex-1 py-1.5 text-xs font-black rounded-lg transition-all text-gray-500 hover:text-agro-dark flex items-center justify-center gap-1.5';
             secU.classList.remove('hidden');
             secM.classList.add('hidden');
+            actualizarMetodoPagoUnico();
         } else {
             btnM.className = 'flex-1 py-1.5 text-xs font-black rounded-lg transition-all bg-white text-agro-dark shadow-xs flex items-center justify-center gap-1.5';
             btnU.className = 'flex-1 py-1.5 text-xs font-black rounded-lg transition-all text-gray-500 hover:text-agro-dark flex items-center justify-center gap-1.5';
             secM.classList.remove('hidden');
             secU.classList.add('hidden');
+
+            const { totalUsd, totalVes } = getTotalesVenta();
+            modalTotalUsdActual = totalUsd;
+            modalTotalVesActual = totalVes;
+            document.getElementById('checkout_total_usd').innerText = `$${totalUsd.toFixed(2)}`;
+            document.getElementById('checkout_total_ves').innerText = `Bs. ${totalVes.toFixed(2)}`;
+            const recargoBadge = document.getElementById('checkout_recargo_badge');
+            if (recargoBadge) recargoBadge.classList.add('hidden');
+
             actualizarUIProgresoMixto();
         }
     }
 
+    function getTotalesActualesModal() {
+        if (modalTotalUsdActual > 0 || modalTotalVesActual > 0) {
+            return {
+                totalUsd: modalTotalUsdActual,
+                totalVes: modalTotalVesActual
+            };
+        }
+        const { totalUsd, totalVes } = getTotalesVenta();
+        return { totalUsd, totalVes };
+    }
+
     function actualizarMetodoPagoUnico() {
         const metodo = document.getElementById('metodo_pago').value;
+        const opt = document.getElementById('metodo_pago').selectedOptions[0];
+        const modalidad = opt ? (opt.dataset.modalidad || (metodo === 'cashea' ? 'cashea' : (['efectivo_usd', 'zelle', 'binance'].includes(metodo) ? 'divisas' : 'bolivares'))) : 'divisas';
+        
+        // Sincronizar modalidad activa si el cajero cambió el selector en el modal
+        if (modalidad !== modalidadPosActual) {
+            modalidadPosActual = modalidad;
+            const btnDivisas = document.getElementById('btn_mod_pos_divisas');
+            const btnBs = document.getElementById('btn_mod_pos_bolivares');
+            const btnCashea = document.getElementById('btn_mod_pos_cashea');
+
+            if (btnDivisas) btnDivisas.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ' + (modalidad === 'divisas' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-white/10');
+            if (btnBs) btnBs.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ' + (modalidad === 'bolivares' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-white/10');
+            if (btnCashea) btnCashea.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ' + (modalidad === 'cashea' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-white/10');
+
+            actualizarPreciosTarjetasModalidad();
+        }
+
+        let pct = 0;
+        if (recargosPos && recargosPos[modalidad]) {
+            if (typeof recargosPos[modalidad] === 'object' && recargosPos[modalidad] !== null) {
+                pct = parseFloat(recargosPos[modalidad].porcentaje) || 0;
+            } else {
+                pct = parseFloat(recargosPos[modalidad]) || 0;
+            }
+        }
+
+        const { subtotalUsd, ivaUsd } = getTotalesVenta();
+        const base = subtotalUsd + ivaUsd;
+        const recargoUsd = Math.round((base * (pct / 100)) * 100) / 100;
+        const finalUsd = Math.round((base + recargoUsd) * 100) / 100;
+        const finalVes = Math.round((finalUsd * tasaBcv) * 100) / 100;
+
+        modalTotalUsdActual = finalUsd;
+        modalTotalVesActual = finalVes;
+
+        document.getElementById('checkout_total_usd').innerText = `$${finalUsd.toFixed(2)}`;
+        document.getElementById('checkout_total_ves').innerText = `Bs. ${finalVes.toFixed(2)}`;
+
+        const recargoBadge = document.getElementById('checkout_recargo_badge');
+        if (recargoBadge) {
+            if (Math.abs(pct) > 0.001) {
+                const signo = pct > 0 ? '+' : '';
+                recargoBadge.innerText = `Ajuste (${modalidad.toUpperCase()}: ${signo}${pct.toFixed(1)}%) = ${signo}$${recargoUsd.toFixed(2)}`;
+                recargoBadge.classList.remove('hidden');
+            } else {
+                recargoBadge.classList.add('hidden');
+            }
+        }
+
         const cajaRef = document.getElementById('caja_referencia');
         const cajaCalc = document.getElementById('caja_calculadora_vuelto');
         const labelMoneda = document.getElementById('label_moneda_recibida');
         const simboloRecibido = document.getElementById('simbolo_recibido');
+        const botonesBilletes = document.getElementById('botones_billetes');
 
         if (metodo === 'efectivo_usd') {
             cajaCalc.classList.remove('hidden');
             labelMoneda.innerText = 'Moneda: Dólares (USD)';
             simboloRecibido.innerText = '$';
             cajaRef.classList.add('hidden');
+            if (botonesBilletes) {
+                botonesBilletes.innerHTML = `
+                    <button type="button" onclick="setBilletesRapido('exacto')" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">Exacto</button>
+                    <button type="button" onclick="setBilletesRapido(5)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">$5</button>
+                    <button type="button" onclick="setBilletesRapido(10)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">$10</button>
+                    <button type="button" onclick="setBilletesRapido(20)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">$20</button>
+                    <button type="button" onclick="setBilletesRapido(50)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">$50</button>
+                    <button type="button" onclick="setBilletesRapido(100)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">$100</button>
+                `;
+            }
         } else if (metodo === 'efectivo_bs') {
             cajaCalc.classList.remove('hidden');
             labelMoneda.innerText = 'Moneda: Bolívares (VES)';
             simboloRecibido.innerText = 'Bs.';
             cajaRef.classList.add('hidden');
+            if (botonesBilletes) {
+                botonesBilletes.innerHTML = `
+                    <button type="button" onclick="setBilletesRapido('exacto')" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">Exacto</button>
+                    <button type="button" onclick="setBilletesRapido(100)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">Bs. 100</button>
+                    <button type="button" onclick="setBilletesRapido(200)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">Bs. 200</button>
+                    <button type="button" onclick="setBilletesRapido(500)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">Bs. 500</button>
+                    <button type="button" onclick="setBilletesRapido(1000)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">Bs. 1000</button>
+                    <button type="button" onclick="setBilletesRapido(2000)" class="px-2 py-0.5 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800">Bs. 2000</button>
+                `;
+            }
+        } else if (metodo === 'cashea') {
+            cajaCalc.classList.add('hidden');
+            cajaRef.classList.remove('hidden');
+            const refInput = document.getElementById('referencia_pago');
+            if (refInput) {
+                refInput.placeholder = 'Ej: CSH-849204 (Código en app Cashea)';
+                refInput.focus();
+            }
         } else {
             cajaCalc.classList.add('hidden');
             cajaRef.classList.remove('hidden');
-            document.getElementById('referencia_pago').focus();
+            const refInput = document.getElementById('referencia_pago');
+            if (refInput) {
+                refInput.placeholder = 'Ej: 12345678';
+                refInput.focus();
+            }
         }
         calcularVuelto();
     }
 
     function setBilletesRapido(monto) {
-        const { totalUsd, totalVes } = getTotalesVenta();
+        const { totalUsd, totalVes } = getTotalesActualesModal();
         const metodo = document.getElementById('metodo_pago').value;
         const input = document.getElementById('monto_recibido_input');
 
@@ -1391,7 +1677,7 @@
     }
 
     function calcularVuelto() {
-        const { totalUsd, totalVes } = getTotalesVenta();
+        const { totalUsd, totalVes } = getTotalesActualesModal();
         const metodo = document.getElementById('metodo_pago').value;
         const input = document.getElementById('monto_recibido_input');
         const recibido = parseFloat(input.value) || 0;
@@ -1512,9 +1798,22 @@
     }
 
     function abrirModalCobro() {
+        if (carrito.length === 0) return;
         pagosMixtos = [];
         cambiarModoPago('unico');
-        document.getElementById('metodo_pago').value = 'efectivo_usd';
+
+        // Preseleccionar método coherente con la modalidad de precio activa
+        const selectMetodo = document.getElementById('metodo_pago');
+        if (selectMetodo) {
+            if (modalidadPosActual === 'bolivares') {
+                selectMetodo.value = 'pago_movil';
+            } else if (modalidadPosActual === 'cashea') {
+                selectMetodo.value = 'cashea';
+            } else {
+                selectMetodo.value = 'efectivo_usd';
+            }
+        }
+
         document.getElementById('monto_recibido_input').value = '';
         actualizarMetodoPagoUnico();
 
@@ -1557,6 +1856,7 @@
         let payload = {
             carrito: carrito,
             tipo_pago: modoPagoActual,
+            modalidad_pago: modalidadPosActual,
             cliente_documento: docFinal,
             cliente_nombre: nomFinal,
             cliente_email: emailFinal,
@@ -1569,7 +1869,7 @@
         if (modoPagoActual === 'unico') {
             const metodo = document.getElementById('metodo_pago').value;
             const referencia = document.getElementById('referencia_pago').value;
-            const metodosDigitales = ['pago_movil', 'zelle', 'binance', 'transferencia', 'punto_venta'];
+            const metodosDigitales = ['pago_movil', 'zelle', 'binance', 'transferencia', 'punto_venta', 'cashea'];
 
             if (metodosDigitales.includes(metodo) && referencia.trim() === '') {
                 Swal.fire('Falta Referencia', 'Por favor ingresa el número de referencia del comprobante.', 'warning');
@@ -1578,7 +1878,8 @@
 
             if (['efectivo_usd', 'efectivo_bs'].includes(metodo)) {
                 const rec = parseFloat(document.getElementById('monto_recibido_input').value) || 0;
-                const totalComp = metodo === 'efectivo_bs' ? totalVes : totalUsd;
+                const { totalUsd: totalActualUsd, totalVes: totalActualVes } = getTotalesActualesModal();
+                const totalComp = metodo === 'efectivo_bs' ? totalActualVes : totalActualUsd;
                 if (rec > 0 && rec >= totalComp) {
                     vueltoCalculado = metodo === 'efectivo_bs' ? ((rec - totalComp) / tasaBcv) : (rec - totalComp);
                 }
@@ -1644,7 +1945,9 @@
 
         const vueltoRow = document.getElementById('modal_exito_vuelto_row');
         if (data.vuelto_usd && data.vuelto_usd > 0) {
-            document.getElementById('modal_exito_vuelto').innerText = `$${parseFloat(data.vuelto_usd).toFixed(2)}`;
+            const vUsd = parseFloat(data.vuelto_usd);
+            const vVes = vUsd * tasaBcv;
+            document.getElementById('modal_exito_vuelto').innerText = `$${vUsd.toFixed(2)} (Bs. ${vVes.toFixed(2)})`;
             vueltoRow.classList.remove('hidden');
         } else {
             vueltoRow.classList.add('hidden');
@@ -1751,13 +2054,13 @@
         if (ultimaVentaExitosa && ultimaVentaExitosa.ticket_url) {
             window.open(ultimaVentaExitosa.ticket_url, '_blank');
         } else if (ultimaVentaExitosa && ultimaVentaExitosa.factura_id) {
-            window.open(`/factura/${ultimaVentaExitosa.factura_id}/ticket`, '_blank');
+            window.open(`{{ url('/factura') }}/${ultimaVentaExitosa.factura_id}/ticket`, '_blank');
         }
     }
 
     function imprimirA4Directo() {
         if (ultimaVentaExitosa && ultimaVentaExitosa.factura_id) {
-            window.open(`/factura/${ultimaVentaExitosa.factura_id}/imprimir`, '_blank');
+            window.open(`{{ url('/factura') }}/${ultimaVentaExitosa.factura_id}/imprimir`, '_blank');
         }
     }
 

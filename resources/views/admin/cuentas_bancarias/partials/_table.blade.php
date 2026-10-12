@@ -24,7 +24,7 @@
                     @endif
                 </td>
 
-                {{-- Columna 2: Tipo de Método --}}
+                {{-- Columna 2: Tipo de Método y Modalidad --}}
                 <td class="px-6 py-4">
                     @php
                         $metodoBadge = match($cuenta->tipo_metodo) {
@@ -33,14 +33,33 @@
                             'binance' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                             'transferencia' => 'bg-blue-50 text-blue-700 border-blue-200',
                             'efectivo_usd', 'efectivo_bs' => 'bg-green-50 text-green-700 border-green-200',
+                            'cashea' => 'bg-purple-100 text-purple-900 border-purple-300',
                             default => 'bg-gray-50 text-gray-700 border-gray-200',
                         };
+
+                        $modalidad = $cuenta->modalidad_pago ?: 'bolivares';
+                        $recargoPct = \App\Models\ConfiguracionTienda::recargoPorcentaje($modalidad, 'web');
+                        $modBadge = match($modalidad) {
+                            'divisas' => 'bg-emerald-50 text-emerald-800 border-emerald-300',
+                            'cashea' => 'bg-purple-50 text-purple-800 border-purple-300',
+                            default => 'bg-blue-50 text-blue-800 border-blue-300',
+                        };
+                        $modLabel = match($modalidad) {
+                            'divisas' => 'Divisas' . ($recargoPct > 0 ? " (+{$recargoPct}%)" : ' (+0%)'),
+                            'cashea' => 'Cashea' . ($recargoPct > 0 ? " (+{$recargoPct}%)" : ' (+0%)'),
+                            default => 'Bolívares' . ($recargoPct > 0 ? " (+{$recargoPct}%)" : ' (+0%)'),
+                        };
                     @endphp
-                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border {{ $metodoBadge }}">
-                        {{ str_replace('_', ' ', $cuenta->tipo_metodo) }}
-                    </span>
+                    <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border {{ $metodoBadge }}">
+                            {{ str_replace('_', ' ', $cuenta->tipo_metodo) }}
+                        </span>
+                        <span class="inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border {{ $modBadge }}">
+                            {{ $modLabel }}
+                        </span>
+                    </div>
                     @if($cuenta->banco_entidad)
-                        <p class="text-sm font-bold text-agro-dark mt-1">{{ $cuenta->banco_entidad }}</p>
+                        <p class="text-sm font-bold text-agro-dark mt-0.5">{{ $cuenta->banco_entidad }}</p>
                     @endif
                 </td>
 

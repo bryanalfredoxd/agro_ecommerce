@@ -38,6 +38,7 @@ use App\Http\Controllers\Admin\ZonaDeliveryController;
 use App\Http\Controllers\Admin\TasaCambioController as AdminTasaCambioController;
 use App\Http\Controllers\Admin\CotizacionController;
 use App\Http\Controllers\Admin\SolicitudProductoController;
+use App\Http\Controllers\Admin\EstadisticasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -130,6 +131,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Pantalla Principal - Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Módulo: Estadísticas y Analítica Completa del Sistema
+    Route::get('/estadisticas', [EstadisticasController::class, 'index'])->name('estadisticas.index');
+    Route::get('/estadisticas/data', [EstadisticasController::class, 'data'])->name('estadisticas.data');
 
     // Módulo: Usuarios y Roles
     Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit'])->middleware('permiso:gestionar_roles_permisos');

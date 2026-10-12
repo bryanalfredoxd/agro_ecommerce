@@ -46,6 +46,7 @@
                         <option value="zelle">Zelle</option>
                         <option value="transferencia">Transferencia</option>
                         <option value="binance">Binance</option>
+                        <option value="cashea">Cashea</option>
                     </select>
                     <span class="material-symbols-outlined absolute right-3 top-3 text-gray-700 pointer-events-none">filter_list</span>
                 </div>
@@ -83,19 +84,34 @@
                 
                 <div class="p-6 space-y-5">
                     
-                    {{-- Selector de Tipo (Controla la UI) --}}
-                    <div>
-                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Tipo de Operación <span class="text-red-500">*</span></label>
-                        <select id="tipo_metodo" name="tipo_metodo" onchange="actualizarCamposVisibles()" required class="w-full h-12 px-4 rounded-xl bg-blue-50/50 border border-blue-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-black text-blue-800 outline-none cursor-pointer">
-                            <option value="pago_movil">Pago Móvil</option>
-                            <option value="zelle">Zelle</option>
-                            <option value="transferencia">Transferencia Bancaria (Bs)</option>
-                            <option value="binance">Binance Pay</option>
-                            <option value="efectivo_usd">Efectivo en Tienda (USD)</option>
-                            <option value="efectivo_bs">Efectivo en Tienda (Bs)</option>
-                            <option value="punto_venta">Punto de Venta</option>
-                        </select>
+                    {{-- Selector de Tipo y Modalidad de Cobro --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Tipo de Operación <span class="text-red-500">*</span></label>
+                            <select id="tipo_metodo" name="tipo_metodo" onchange="alCambiarTipoMetodo()" required class="w-full h-12 px-4 rounded-xl bg-blue-50/50 border border-blue-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-black text-blue-800 outline-none cursor-pointer">
+                                <option value="pago_movil">Pago Móvil</option>
+                                <option value="zelle">Zelle</option>
+                                <option value="transferencia">Transferencia Bancaria (Bs)</option>
+                                <option value="binance">Binance Pay</option>
+                                <option value="efectivo_usd">Efectivo en Tienda (USD)</option>
+                                <option value="efectivo_bs">Efectivo en Tienda (Bs)</option>
+                                <option value="punto_venta">Punto de Venta</option>
+                                <option value="cashea">Cashea (Cuotas)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Modalidad de Precio / Recargo <span class="text-red-500">*</span></label>
+                            <select id="modalidad_pago" name="modalidad_pago" required class="w-full h-12 px-4 rounded-xl bg-emerald-50/50 border border-emerald-200 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 transition-all font-black text-emerald-900 outline-none cursor-pointer">
+                                <option value="divisas">💵 Divisas (USD / USDT)</option>
+                                <option value="bolivares">🇻🇪 Bolívares (VES)</option>
+                                <option value="cashea">🟣 Cashea (Cuotas)</option>
+                            </select>
+                        </div>
                     </div>
+                    <p class="text-[10px] text-gray-500 -mt-2 ml-1">
+                        La modalidad asignada determina el porcentaje (%) de recargo global que se aplicará en checkout y caja al seleccionar este método.
+                    </p>
 
                     {{-- CAMPOS DINÁMICOS --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -192,6 +208,19 @@
     }
 
     // LÓGICA DEL FORMULARIO DINÁMICO
+    function alCambiarTipoMetodo() {
+        const metodo = document.getElementById('tipo_metodo').value;
+        const modSelect = document.getElementById('modalidad_pago');
+        if (['zelle', 'binance', 'efectivo_usd'].includes(metodo)) {
+            modSelect.value = 'divisas';
+        } else if (metodo === 'cashea') {
+            modSelect.value = 'cashea';
+        } else {
+            modSelect.value = 'bolivares';
+        }
+        actualizarCamposVisibles();
+    }
+
     function actualizarCamposVisibles() {
         const metodo = document.getElementById('tipo_metodo').value;
         
@@ -213,6 +242,9 @@
         else if (metodo === 'binance') {
             document.querySelectorAll('.grupo-titular, .grupo-email').forEach(el => el.classList.remove('hidden'));
         }
+        else if (metodo === 'cashea') {
+            document.querySelectorAll('.grupo-titular, .grupo-telefono, .grupo-identificacion').forEach(el => el.classList.remove('hidden'));
+        }
         // Para efectivo y punto de venta no hace falta pedir datos adicionales, solo el titular/instrucciones.
     }
 
@@ -226,6 +258,7 @@
             document.getElementById('modalTitle').innerText = 'Editar Método';
             document.getElementById('cuenta_id').value = cuenta.id;
             document.getElementById('tipo_metodo').value = cuenta.tipo_metodo;
+            document.getElementById('modalidad_pago').value = cuenta.modalidad_pago || (['zelle', 'binance', 'efectivo_usd'].includes(cuenta.tipo_metodo) ? 'divisas' : (cuenta.tipo_metodo === 'cashea' ? 'cashea' : 'bolivares'));
             document.getElementById('nombre_titular').value = cuenta.nombre_titular || '';
             document.getElementById('banco_entidad').value = cuenta.banco_entidad || '';
             document.getElementById('numero_cuenta').value = cuenta.numero_cuenta || '';
@@ -233,9 +266,10 @@
             document.getElementById('identificacion').value = cuenta.identificacion || '';
             document.getElementById('email').value = cuenta.email || '';
             document.getElementById('instrucciones_adicionales').value = cuenta.instrucciones_adicionales || '';
+            actualizarCamposVisibles();
+        } else {
+            alCambiarTipoMetodo();
         }
-
-        actualizarCamposVisibles(); // Disparar la lógica visual
 
         const modal = document.getElementById('cuentaModal');
         const backdrop = document.getElementById('modalBackdrop');

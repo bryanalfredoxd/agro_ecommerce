@@ -46,12 +46,225 @@
                                 <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Porcentaje de Impuesto (IVA) %</label>
                                 <div class="relative">
                                     <span class="absolute left-4 top-3.5 font-bold text-gray-700">%</span>
-                                    <input type="number" step="0.01" min="0" max="100" name="iva_porcentaje" value="{{ old('iva_porcentaje', $config->iva_porcentaje) }}" required class="limit-decimals w-full h-12 pl-10 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-blue-600 text-lg outline-none">
+                                    <input type="number" step="0.01" min="0" max="100" name="iva_porcentaje" id="iva_porcentaje" value="{{ old('iva_porcentaje', $config->iva_porcentaje) }}" required class="limit-decimals w-full h-12 pl-10 pr-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all font-bold text-blue-600 text-lg outline-none">
                                 </div>
                                 <p class="text-[10px] text-blue-700 mt-1.5 ml-1 font-semibold flex items-center gap-1">
                                     <span class="material-symbols-outlined text-[14px]">verified</span>
                                     Porcentaje único y centralizado para todo el sistema (Tienda Web, POS, Facturación, Cotizaciones y Productos).
                                 </p>
+                            </div>
+                        </div>
+
+                        {{-- SECCIÓN: 3 MODALIDADES GLOBALES DE PRECIO (DIVISAS, BOLÍVARES, CASHEA) --}}
+                        <div class="mt-8 pt-6 border-t border-gray-100">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                                <div>
+                                    <h4 class="text-sm font-black text-agro-dark uppercase tracking-wider flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-emerald-600 text-[20px]">price_change</span>
+                                        Modalidades de Precio y Recargos Globales
+                                    </h4>
+                                    <p class="text-xs text-gray-500 mt-0.5">
+                                        Define el porcentaje adicional (%) para los 3 métodos de venta y su ámbito de aplicación.
+                                    </p>
+                                </div>
+                                <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 w-fit">
+                                    Ajuste Global
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                
+                                {{-- 1. MODALIDAD DIVISAS --}}
+                                <div class="bg-gradient-to-b from-emerald-50/40 to-white rounded-2xl border border-emerald-200/80 p-4.5 flex flex-col justify-between shadow-2xs">
+                                    <div>
+                                        <div class="flex items-center justify-between gap-2 mb-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="size-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                    <span class="material-symbols-outlined text-[18px]">attach_money</span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="text-xs font-black text-slate-800 leading-tight">Divisas (USD / USDT)</h5>
+                                                    <span class="text-[10px] text-emerald-700 font-bold">Zelle, Binance, Efectivo $</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label class="block text-[10px] font-black text-slate-600 uppercase tracking-wider mb-1">
+                                                    Recargo % sobre PVP
+                                                </label>
+                                                <div class="relative">
+                                                    <span class="absolute left-3.5 top-2.5 text-xs font-black text-emerald-700">%</span>
+                                                    <input type="number" 
+                                                           step="0.01" 
+                                                           min="0" 
+                                                           max="100" 
+                                                           name="recargo_divisas_pct" 
+                                                           id="recargo_divisas_pct" 
+                                                           value="{{ old('recargo_divisas_pct', $config->recargo_divisas_pct ?? 0.00) }}" 
+                                                           oninput="actualizarSimuladorPrecios()"
+                                                           required 
+                                                           class="limit-decimals w-full h-10 pl-8 pr-3 rounded-xl bg-white border border-emerald-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 font-black text-emerald-800 text-sm outline-none transition-all">
+                                                </div>
+                                                <p class="text-[10px] text-slate-600 font-medium mt-1">
+                                                    0% = Precio directo estipulado.
+                                                </p>
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-[10px] font-black text-slate-600 uppercase tracking-wider mb-1">
+                                                    Ámbito de Aplicación
+                                                </label>
+                                                <select name="recargo_divisas_aplica" class="w-full h-9 px-3 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 outline-none cursor-pointer focus:border-emerald-500">
+                                                    <option value="ambas" {{ ($config->recargo_divisas_aplica ?? 'ambas') === 'ambas' ? 'selected' : '' }}>Tienda Web y POS (Ambas)</option>
+                                                    <option value="web" {{ ($config->recargo_divisas_aplica ?? '') === 'web' ? 'selected' : '' }}>Solo Tienda Digital (Web)</option>
+                                                    <option value="pos" {{ ($config->recargo_divisas_aplica ?? '') === 'pos' ? 'selected' : '' }}>Solo Tienda Física (POS)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3 pt-2.5 border-t border-emerald-100 flex items-center justify-between text-[11px]">
+                                        <span class="text-slate-500 font-medium">Ejemplo $10.00:</span>
+                                        <strong class="text-emerald-800 font-black" id="simulador_divisas_badge">$10.00 USD</strong>
+                                    </div>
+                                </div>
+
+                                {{-- 2. MODALIDAD BOLÍVARES --}}
+                                <div class="bg-gradient-to-b from-blue-50/40 to-white rounded-2xl border border-blue-200/80 p-4.5 flex flex-col justify-between shadow-2xs">
+                                    <div>
+                                        <div class="flex items-center justify-between gap-2 mb-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="size-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                    <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="text-xs font-black text-slate-800 leading-tight">Bolívares (VES)</h5>
+                                                    <span class="text-[10px] text-blue-700 font-bold">Pago Móvil, Punto, Transferencias</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label class="block text-[10px] font-black text-slate-600 uppercase tracking-wider mb-1">
+                                                    Recargo % sobre PVP
+                                                </label>
+                                                <div class="relative">
+                                                    <span class="absolute left-3.5 top-2.5 text-xs font-black text-blue-700">%</span>
+                                                    <input type="number" 
+                                                           step="0.01" 
+                                                           min="0" 
+                                                           max="100" 
+                                                           name="recargo_bolivares_pct" 
+                                                           id="recargo_bolivares_pct" 
+                                                           value="{{ old('recargo_bolivares_pct', $config->recargo_bolivares_pct ?? 0.00) }}" 
+                                                           oninput="actualizarSimuladorPrecios()"
+                                                           required 
+                                                           class="limit-decimals w-full h-10 pl-8 pr-3 rounded-xl bg-white border border-blue-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 font-black text-blue-800 text-sm outline-none transition-all">
+                                                </div>
+                                                <p class="text-[10px] text-slate-600 font-medium mt-1">
+                                                    Ej: 20% más costoso al pagar en Bs.
+                                                </p>
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-[10px] font-black text-slate-600 uppercase tracking-wider mb-1">
+                                                    Ámbito de Aplicación
+                                                </label>
+                                                <select name="recargo_bolivares_aplica" class="w-full h-9 px-3 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 outline-none cursor-pointer focus:border-blue-500">
+                                                    <option value="ambas" {{ ($config->recargo_bolivares_aplica ?? 'ambas') === 'ambas' ? 'selected' : '' }}>Tienda Web y POS (Ambas)</option>
+                                                    <option value="web" {{ ($config->recargo_bolivares_aplica ?? '') === 'web' ? 'selected' : '' }}>Solo Tienda Digital (Web)</option>
+                                                    <option value="pos" {{ ($config->recargo_bolivares_aplica ?? '') === 'pos' ? 'selected' : '' }}>Solo Tienda Física (POS)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3 pt-2.5 border-t border-blue-100 flex items-center justify-between text-[11px]">
+                                        <span class="text-slate-500 font-medium">Ejemplo $10.00:</span>
+                                        <strong class="text-blue-800 font-black" id="simulador_bolivares_badge">$12.00 ref.</strong>
+                                    </div>
+                                </div>
+
+                                {{-- 3. MODALIDAD CASHEA --}}
+                                <div class="bg-gradient-to-b from-purple-50/40 to-white rounded-2xl border border-purple-200/80 p-4.5 flex flex-col justify-between shadow-2xs">
+                                    <div>
+                                        <div class="flex items-center justify-between gap-2 mb-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="size-8 rounded-lg bg-[#5800FD] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                    <span class="material-symbols-outlined text-[18px]">credit_score</span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="text-xs font-black text-slate-800 leading-tight">Cashea (Cuotas)</h5>
+                                                    <span class="text-[10px] text-purple-700 font-bold">Financiamiento y Cuotas</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label class="block text-[10px] font-black text-slate-600 uppercase tracking-wider mb-1">
+                                                    Recargo % sobre PVP
+                                                </label>
+                                                <div class="relative">
+                                                    <span class="absolute left-3.5 top-2.5 text-xs font-black text-purple-700">%</span>
+                                                    <input type="number" 
+                                                           step="0.01" 
+                                                           min="0" 
+                                                           max="100" 
+                                                           name="recargo_cashea_pct" 
+                                                           id="recargo_cashea_pct" 
+                                                           value="{{ old('recargo_cashea_pct', $config->recargo_cashea_pct ?? 0.00) }}" 
+                                                           oninput="actualizarSimuladorPrecios()"
+                                                           required 
+                                                           class="limit-decimals w-full h-10 pl-8 pr-3 rounded-xl bg-white border border-purple-300 focus:border-purple-600 focus:ring-2 focus:ring-purple-500/20 font-black text-purple-900 text-sm outline-none transition-all">
+                                                </div>
+                                                <p class="text-[10px] text-slate-600 font-medium mt-1">
+                                                    Ej: 15% más por compras en Cashea.
+                                                </p>
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-[10px] font-black text-slate-600 uppercase tracking-wider mb-1">
+                                                    Ámbito de Aplicación
+                                                </label>
+                                                <select name="recargo_cashea_aplica" class="w-full h-9 px-3 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 outline-none cursor-pointer focus:border-purple-500">
+                                                    <option value="ambas" {{ ($config->recargo_cashea_aplica ?? 'ambas') === 'ambas' ? 'selected' : '' }}>Tienda Web y POS (Ambas)</option>
+                                                    <option value="web" {{ ($config->recargo_cashea_aplica ?? '') === 'web' ? 'selected' : '' }}>Solo Tienda Digital (Web)</option>
+                                                    <option value="pos" {{ ($config->recargo_cashea_aplica ?? '') === 'pos' ? 'selected' : '' }}>Solo Tienda Física (POS)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3 pt-2.5 border-t border-purple-100 flex items-center justify-between text-[11px]">
+                                        <span class="text-slate-500 font-medium">Ejemplo $10.00:</span>
+                                        <strong class="text-purple-900 font-black" id="simulador_cashea_badge">$11.50 USD</strong>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {{-- SIMULADOR EN VIVO EXPLICATIVO --}}
+                            <div class="mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="size-9 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center shrink-0">
+                                        <span class="material-symbols-outlined text-[20px]">calculate</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-black text-slate-800 block">Comportamiento en Catálogo y Tienda:</span>
+                                        <span class="text-slate-500 text-[11px]">
+                                            En las tarjetas del inicio y catálogo siempre se exhibe el precio en <strong>Dólares</strong> con su recargo de Divisas.
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 text-[11px] font-bold">
+                                    <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300" id="badge_resumen_divisas">Divisas: $10.00 (+0%)</span>
+                                    <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 border border-blue-300" id="badge_resumen_bs">Bolívares: $12.00 (+20%)</span>
+                                    <span class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-800 border border-purple-300" id="badge_resumen_cashea">Cashea: $11.50 (+15%)</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -248,18 +461,35 @@
         });
     }
 
-    // 4. Limitar decimales a 2 (usamos el mismo código seguro de los productos)
-    document.querySelectorAll('.limit-decimals').forEach(input => {
-        input.addEventListener('input', function(e) {
-            let val = e.target.value;
-            if (val.includes('.')) {
-                let parts = val.split('.');
-                if (parts[1].length > 2) {
-                    e.target.value = parts[0] + '.' + parts[1].substring(0, 2);
-                }
-            }
-        });
-    });
+    // 5. Simulador interactivo de modalidades de precio (Divisas, Bolívares, Cashea)
+    function actualizarSimuladorPrecios() {
+        const base = 10.00;
+        const pctDiv = parseFloat(document.getElementById('recargo_divisas_pct')?.value || 0) || 0;
+        const pctBs = parseFloat(document.getElementById('recargo_bolivares_pct')?.value || 0) || 0;
+        const pctCash = parseFloat(document.getElementById('recargo_cashea_pct')?.value || 0) || 0;
+
+        const valDiv = base * (1 + (pctDiv / 100));
+        const valBs = base * (1 + (pctBs / 100));
+        const valCash = base * (1 + (pctCash / 100));
+
+        const badgeDiv = document.getElementById('simulador_divisas_badge');
+        const badgeBs = document.getElementById('simulador_bolivares_badge');
+        const badgeCash = document.getElementById('simulador_cashea_badge');
+
+        const resDiv = document.getElementById('badge_resumen_divisas');
+        const resBs = document.getElementById('badge_resumen_bs');
+        const resCash = document.getElementById('badge_resumen_cashea');
+
+        if (badgeDiv) badgeDiv.textContent = '$' + valDiv.toFixed(2) + ' USD';
+        if (badgeBs) badgeBs.textContent = '$' + valBs.toFixed(2) + ' ref.';
+        if (badgeCash) badgeCash.textContent = '$' + valCash.toFixed(2) + ' USD';
+
+        if (resDiv) resDiv.textContent = `Divisas: $${valDiv.toFixed(2)} (${pctDiv >= 0 ? '+' : ''}${pctDiv.toFixed(1)}%)`;
+        if (resBs) resBs.textContent = `Bolívares: $${valBs.toFixed(2)} (${pctBs >= 0 ? '+' : ''}${pctBs.toFixed(1)}%)`;
+        if (resCash) resCash.textContent = `Cashea: $${valCash.toFixed(2)} (${pctCash >= 0 ? '+' : ''}${pctCash.toFixed(1)}%)`;
+    }
+
+    document.addEventListener('DOMContentLoaded', actualizarSimuladorPrecios);
 </script>
 @endpush
 @endsection

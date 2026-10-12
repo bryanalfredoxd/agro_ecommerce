@@ -17,8 +17,10 @@ class Pedido extends Model
 
 protected $fillable = [
     'canal_venta', 'sesion_caja_id', 'usuario_id', 'zona_delivery_id', 'tasa_cambio_id', 
-    'subtotal_usd', 'costo_delivery_usd', 'descuento_usd', 'total_usd', 
-    'total_ves_calculado', 'estado', 'direccion_texto', 'geo_latitud', 
+    'modalidad_pago',
+    'subtotal_usd', 'costo_delivery_usd', 'descuento_usd', 
+    'recargo_porcentaje', 'recargo_usd',
+    'total_usd', 'total_ves_calculado', 'estado', 'direccion_texto', 'geo_latitud', 
     'geo_longitud', 'instrucciones_entrega'
 ];
 

@@ -67,8 +67,9 @@ class PosController extends Controller
                                       ->get();
 
         $categorias = \App\Models\Categoria::whereNull('eliminado_at')->get();
+        $recargosPos = ConfiguracionTienda::recargos('pos');
 
-        return view('admin.pos.terminal', compact('sesionActiva', 'valorTasa', 'porcentajeIva', 'productosIniciales', 'categorias'));
+        return view('admin.pos.terminal', compact('sesionActiva', 'valorTasa', 'porcentajeIva', 'productosIniciales', 'categorias', 'recargosPos'));
     }
 
     public function abrirCaja(Request $request)
@@ -131,7 +132,7 @@ class PosController extends Controller
                   ->orWhere('sku', $busqueda);
             })->whereNull('eliminado_at')->first();
 
-            if ($exactMatch && $request->has('exact')) {
+            if ($exactMatch && $request->boolean('exact')) {
                 return response()->json(['exact' => true, 'producto' => $exactMatch]);
             }
         }
@@ -351,7 +352,7 @@ class PosController extends Controller
             'carrito.*.id' => 'required|exists:productos,id',
             'carrito.*.cantidad' => 'required|numeric|min:0.01',
             'tipo_pago' => 'nullable|in:unico,mixto',
-            'metodo_pago' => 'nullable|in:efectivo_usd,efectivo_bs,punto_venta,pago_movil,zelle,binance,transferencia',
+            'metodo_pago' => 'nullable|in:efectivo_usd,efectivo_bs,punto_venta,pago_movil,zelle,binance,transferencia,cashea',
             'referencia_pago' => 'nullable|string|max:100',
             'pagos' => 'nullable|array',
             'cliente_documento' => 'nullable|string|max:30',
@@ -385,9 +386,27 @@ class PosController extends Controller
                 $subtotal_usd += ($precio * $item['cantidad']);
             }
 
-            // 2. Calcular IVA y Totales
+            // 2. Calcular IVA, Recargo por Modalidad y Totales
             $iva_usd = $subtotal_usd * ($porcentajeIva / 100);
-            $gran_total_usd = $subtotal_usd + $iva_usd;
+            $base_con_iva = $subtotal_usd + $iva_usd;
+
+            $tipoPago = $request->input('tipo_pago', 'unico');
+            $metodoPrincipal = $request->input('metodo_pago', 'efectivo_usd');
+            $modalidad = 'divisas';
+            $recargoPct = 0.00;
+            $recargoUsd = 0.00;
+
+            if ($tipoPago !== 'mixto') {
+                $modalidad = match($metodoPrincipal) {
+                    'cashea' => 'cashea',
+                    'efectivo_usd', 'zelle', 'binance' => 'divisas',
+                    default => 'bolivares',
+                };
+                $recargoPct = ConfiguracionTienda::recargoPorcentaje($modalidad, 'pos');
+                $recargoUsd = round($base_con_iva * ($recargoPct / 100), 2);
+            }
+
+            $gran_total_usd = $base_con_iva + $recargoUsd;
             $gran_total_ves = $gran_total_usd * $tasa;
 
             // Normalizar datos del cliente
@@ -487,6 +506,9 @@ class PosController extends Controller
                 'subtotal_usd' => $subtotal_usd,
                 'costo_delivery_usd' => 0,
                 'descuento_usd' => 0,
+                'modalidad_pago' => $modalidad,
+                'recargo_porcentaje' => $recargoPct,
+                'recargo_usd' => $recargoUsd,
                 'total_usd' => $gran_total_usd,
                 'total_ves_calculado' => $gran_total_ves,
                 'direccion_texto' => $clienteDir,

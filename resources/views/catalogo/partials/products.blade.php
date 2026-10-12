@@ -213,10 +213,12 @@
                         {{-- Precios y Call to Action --}}
                         <div class="mt-auto pt-3.5 border-t border-slate-100 flex items-end justify-between gap-2 relative z-20">
                             
-                            {{-- Precios USD y Bs (PVP Final al Público) --}}
+                            {{-- Precios USD y Bs (PVP Final con recargos de modalidad) --}}
                             @php
                                 $precioFinalPvp = $producto->precio_final_pvp;
                                 $precioRegularPvp = $producto->precio_regular_pvp;
+                                $precioBolivaresUsd = $producto->getPrecioModalidad('bolivares', 'web');
+                                $precioBs = round($precioBolivaresUsd * $tasaDolar, 2);
                             @endphp
                             <div class="flex flex-col min-w-0">
                                 @if($producto->precio_oferta_usd)
@@ -239,7 +241,7 @@
                                 
                                 <div class="flex items-center gap-1.5 mt-0.5">
                                     <span class="text-[11px] text-slate-500 font-bold tracking-wide truncate">
-                                        Bs. {{ number_format($precioFinalPvp * $tasaDolar, 2, ',', '.') }}
+                                        Bs. {{ number_format($precioBs, 2, ',', '.') }}
                                     </span>
                                     <span class="text-[9px] font-bold px-1.5 py-0.2 rounded shrink-0 {{ $producto->precio_incluye_iva ? 'bg-teal-50 text-teal-700' : 'bg-slate-100 text-slate-600' }}" title="{{ $producto->precio_incluye_iva ? 'Precio con IVA incluido' : 'PVP con IVA al 16% (Base $' . number_format($producto->precio_venta_usd, 2) . ')' }}">
                                         {{ $producto->precio_incluye_iva ? 'IVA inc.' : 'PVP' }}

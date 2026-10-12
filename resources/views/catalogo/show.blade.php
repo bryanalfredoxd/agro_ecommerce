@@ -224,20 +224,22 @@
                             @endif
                         </div>
 
-                        {{-- CAJA DE PRECIOS CONVERSORES (PVP FINAL AL PÚBLICO) --}}
+                        {{-- CAJA DE PRECIOS CONVERSORES (PVP FINAL CON MODALIDADES) --}}
                         @php
-                            $precioFinalPvp = $producto->precio_final_pvp;
+                            $tasaActual = $tasaDolar ?? ($tasaCambio->valor_tasa ?? \App\Models\TasaCambio::obtenerValorUSD() ?? 1);
+                            $modalidades = $producto->getPreciosModalidades('web', $tasaActual);
+                            $precioFinalPvp = $modalidades['divisas']['usd'];
                             $precioRegularPvp = $producto->precio_regular_pvp;
                             $precioOfertaPvp = $producto->precio_oferta_pvp;
-                            
-                            $precioBs = round($precioFinalPvp * $tasaDolar, 2);
+                            $precioBs = $modalidades['bolivares']['ves'];
+                            $precioCashea = $modalidades['cashea']['usd'];
                             $ahorroUsd = $precioOfertaPvp ? ($precioRegularPvp - $precioOfertaPvp) : 0;
                         @endphp
 
                         <div class="bg-gradient-to-br from-slate-50 to-blue-50/40 rounded-3xl border border-slate-200/90 p-5 sm:p-6 mb-6">
                             <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
                                 <div>
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Precio Final al Público</span>
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Precio en Dólares (Divisas)</span>
                                     <div class="flex items-baseline gap-3">
                                         @if($producto->precio_oferta_usd)
                                             <span class="text-3xl sm:text-4xl font-black text-rose-600">${{ number_format($precioFinalPvp, 2) }}</span>
@@ -252,20 +254,80 @@
                                     </div>
                                 </div>
 
-                                {{-- Precio en Bolívares Oficial --}}
+                                {{-- Precio en Bolívares Oficial con su recargo --}}
                                 <div class="sm:text-right mt-2 sm:mt-0">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Tasa Oficial BCV</span>
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Precio en Bolívares Oficial</span>
                                     <div class="text-xl sm:text-2xl font-black text-slate-800">
                                         Bs. {{ number_format($precioBs, 2, ',', '.') }}
                                     </div>
                                     <span class="text-[10px] font-bold text-slate-500">
-                                        1 USD = Bs. {{ number_format($tasaDolar, 2, ',', '.') }}
+                                        1 USD = Bs. {{ number_format($tasaActual, 2, ',', '.') }}
                                     </span>
                                 </div>
                             </div>
 
+                            {{-- DESGLOSE DE LAS 3 MODALIDADES DE PAGO --}}
+                            <div class="mt-4 pt-3.5 border-t border-slate-200/70 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                {{-- 1. Divisas --}}
+                                <div class="p-2.5 bg-white/90 rounded-2xl border border-emerald-200/70 shadow-2xs flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="size-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-xs">
+                                            $
+                                        </div>
+                                        <div>
+                                            <span class="text-[10px] font-black text-slate-700 block leading-tight">Divisas</span>
+                                            <span class="text-[9px] text-slate-400 font-bold">Zelle, Binance, Efectivo</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs font-black text-emerald-800">${{ number_format($precioFinalPvp, 2) }}</span>
+                                        @if($modalidades['divisas']['recargo_pct'] > 0)
+                                            <span class="block text-[8px] font-bold text-emerald-700">+{{ $modalidades['divisas']['recargo_pct'] }}%</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- 2. Bolívares --}}
+                                <div class="p-2.5 bg-white/90 rounded-2xl border border-blue-200/70 shadow-2xs flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="size-6 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-black text-xs">
+                                            Bs
+                                        </div>
+                                        <div>
+                                            <span class="text-[10px] font-black text-slate-700 block leading-tight">Bolívares</span>
+                                            <span class="text-[9px] text-slate-400 font-bold">Pago Móvil, Punto</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs font-black text-blue-800">Bs. {{ number_format($precioBs, 2, ',', '.') }}</span>
+                                        @if($modalidades['bolivares']['recargo_pct'] > 0)
+                                            <span class="block text-[8px] font-bold text-blue-700">+{{ $modalidades['bolivares']['recargo_pct'] }}% (${{ number_format($modalidades['bolivares']['usd_ref'], 2) }})</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- 3. Cashea --}}
+                                <div class="p-2.5 bg-white/90 rounded-2xl border border-purple-200/70 shadow-2xs flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="size-6 rounded-lg bg-purple-100 text-purple-900 flex items-center justify-center font-black text-xs">
+                                            C
+                                        </div>
+                                        <div>
+                                            <span class="text-[10px] font-black text-purple-950 block leading-tight">Cashea</span>
+                                            <span class="text-[9px] text-purple-700 font-bold">Cuotas / Financiado</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs font-black text-purple-900">${{ number_format($precioCashea, 2) }}</span>
+                                        @if($modalidades['cashea']['recargo_pct'] > 0)
+                                            <span class="block text-[8px] font-bold text-purple-700">+{{ $modalidades['cashea']['recargo_pct'] }}%</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
                             {{-- Estado del Impuesto / IVA --}}
-                            <div class="mt-4 pt-3.5 border-t border-slate-200/70 flex flex-wrap items-center justify-between gap-2">
+                            <div class="mt-3 pt-3 border-t border-slate-200/70 flex flex-wrap items-center justify-between gap-2">
                                 @if($producto->precio_incluye_iva)
                                     <span class="inline-flex items-center gap-1.5 text-xs font-bold text-teal-800 bg-teal-50 border border-teal-200/80 px-2.5 py-1 rounded-xl">
                                         <span class="material-symbols-outlined text-[16px]">check_circle</span>
@@ -274,7 +336,7 @@
                                 @else
                                     <span class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-white border border-slate-200 px-2.5 py-1 rounded-xl">
                                         <span class="material-symbols-outlined text-[16px] text-slate-400">info</span>
-                                        PVP final (Base imponible: ${{ number_format($producto->precio_venta_usd, 2) }} + {{ (float)$ivaPorcentaje }}% IVA)
+                                        PVP final (Base imponible: ${{ number_format($producto->precio_venta_usd, 2) }} + {{ (float)($ivaPorcentaje ?? \App\Models\ConfiguracionTienda::iva()) }}% IVA)
                                     </span>
                                 @endif
 
@@ -519,7 +581,7 @@
                                 <div class="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between">
                                     <div>
                                         <span class="text-base font-black text-[#1e549e]">${{ number_format($relPrecio, 2) }}</span>
-                                        <span class="text-[10px] text-slate-400 block">Bs. {{ number_format($relPrecio * $tasaDolar, 2, ',', '.') }}</span>
+                                        <span class="text-[10px] text-slate-400 block">Bs. {{ number_format($relPrecio * $tasaActual, 2, ',', '.') }}</span>
                                     </div>
                                     <a href="{{ route('catalogo.show', $rel->id) }}" class="size-8 rounded-xl bg-slate-100 hover:bg-[#1e549e] hover:text-white text-slate-600 flex items-center justify-center transition-colors" title="Ver producto">
                                         <span class="material-symbols-outlined text-[18px]">visibility</span>

@@ -20,7 +20,8 @@ class CuentaBancaria extends Model
         'telefono',
         'identificacion',
         'email',
-        'tipo_metodo', // El ENUM (pago_movil, zelle, etc)
+        'tipo_metodo', // El ENUM/STRING (pago_movil, zelle, cashea, etc)
+        'modalidad_pago', // divisas, bolivares, cashea
         'instrucciones_adicionales',
         'activo'
     ];
@@ -45,8 +46,30 @@ class CuentaBancaria extends Model
             'punto_venta' => 'Punto de Venta',
             'binance' => 'Binance Pay',
             'biopago' => 'Biopago',
+            'cashea' => 'Cashea (Cuotas)',
             default => ucfirst(str_replace('_', ' ', $this->tipo_metodo)),
         };
+    }
+
+    /**
+     * Retorna el texto legible de la modalidad de precio ('divisas', 'bolivares', 'cashea').
+     */
+    public function getModalidadTextoAttribute(): string
+    {
+        return match($this->modalidad_pago) {
+            'divisas' => 'Divisas (USD / USDT)',
+            'cashea' => 'Cashea (Cuotas)',
+            default => 'Bolívares (VES)',
+        };
+    }
+
+    /**
+     * Retorna el recargo vigente para esta cuenta según el canal ('web' o 'pos').
+     */
+    public function getRecargoPorcentaje(string $canal = 'web'): float
+    {
+        $modalidad = $this->modalidad_pago ?: 'bolivares';
+        return ConfiguracionTienda::recargoPorcentaje($modalidad, $canal);
     }
 
     /**

@@ -97,18 +97,30 @@
     #kpi-grid[data-size="mini"] .kpi-footer { display: none; }
 </style>
 {{-- CONTROLES DEL DASHBOARD --}}
-<div class="flex justify-between items-end mb-4 animate-fade-in-up">
-    <h2 class="text-xl font-black text-agro-dark">Indicadores de Rendimiento</h2>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-4 animate-fade-in-up">
+    <div>
+        <h2 class="text-xl font-black text-agro-dark">Indicadores de Rendimiento</h2>
+        <p class="text-xs text-gray-500 font-medium mt-0.5">Métricas operativas del día e ingresos</p>
+    </div>
     
-    {{-- Selector de Tamaño de KPIs --}}
-    <div class="flex flex-col items-end gap-1">
-        <label for="kpiSize" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Tamaño de Tarjetas</label>
-        <select id="kpiSize" onchange="window.DashboardConfig.changeKpiSize(this.value)" class="bg-white border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-primary focus:border-primary px-3 py-1.5 shadow-sm font-medium cursor-pointer transition-all hover:bg-gray-50 outline-none">
-            <option value="original">Original (100%)</option>
-            <option value="compacto">Compacto (-20%)</option>
-            <option value="pequeno">Pequeño (-40%)</option>
-            <option value="mini">Mini (-60%)</option>
-        </select>
+    <div class="flex items-center gap-3">
+        @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_dashboard') || Auth::user()->tienePermiso('ver_kpis_financieros') || Auth::user()->tienePermiso('ver_pedidos'))
+        <a href="{{ route('admin.estadisticas.index') }}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#0b1d38] to-[#1e549e] hover:from-[#1e549e] hover:to-[#3492cf] text-white text-xs font-bold shadow-xs hover:shadow-md transition-all">
+            <span class="material-symbols-outlined text-[17px] text-[#aad6f3]">query_stats</span>
+            <span>Ver Analítica y Gráficos</span>
+        </a>
+        @endif
+
+        {{-- Selector de Tamaño de KPIs --}}
+        <div class="flex flex-col items-end gap-1">
+            <label for="kpiSize" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Tamaño de Tarjetas</label>
+            <select id="kpiSize" onchange="window.DashboardConfig.changeKpiSize(this.value)" class="bg-white border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-primary focus:border-primary px-3 py-1.5 shadow-sm font-medium cursor-pointer transition-all hover:bg-gray-50 outline-none">
+                <option value="original">Original (100%)</option>
+                <option value="compacto">Compacto (-20%)</option>
+                <option value="pequeno">Pequeño (-40%)</option>
+                <option value="mini">Mini (-60%)</option>
+            </select>
+        </div>
     </div>
 </div>
 

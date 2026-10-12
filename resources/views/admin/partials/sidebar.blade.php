@@ -27,12 +27,22 @@
                 <span class="material-symbols-outlined text-[20px] text-[#aad6f3]">dashboard</span> 
                 <span>Resumen General</span>
             </a>
-            <div class="h-px bg-white/10 my-3 mx-2"></div>
             @endif
+
+            @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_dashboard') || Auth::user()->tienePermiso('ver_kpis_financieros') || Auth::user()->tienePermiso('ver_pedidos'))
+            <a href="{{ route('admin.estadisticas.index') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl {{ request()->routeIs('admin.estadisticas.*') ? 'bg-[#3492cf] text-white font-bold shadow-md shadow-[#3492cf]/20' : 'text-slate-300 hover:bg-white/5 hover:text-white' }} text-sm font-semibold transition-all group">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[20px] text-[#aad6f3] group-hover:scale-110 transition-transform">query_stats</span> 
+                    <span>Analítica y Reportes</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Nuevo</span>
+            </a>
+            @endif
+            <div class="h-px bg-white/10 my-3 mx-2"></div>
 
             {{-- MÓDULO: Ventas y Pedidos --}}
             @if(Auth::user()->tienePermiso('ver_pedidos') || Auth::user()->tienePermiso('gestionar_pagos') || Auth::user()->tienePermiso('crear_venta_manual') || Auth::user()->tienePermiso('procesar_devoluciones') || Auth::user()->tienePermiso('gestionar_zonas_delivery') || Auth::user()->tienePermiso('ver_logistica'))
-            <details class="group/menu" {{ request()->routeIs('admin.pedidos.*', 'admin.pagos.*', 'admin.pos.*', 'admin.zonas_delivery.*', 'admin.cotizaciones.*') ? 'open' : '' }}>
+            <details class="group/menu" {{ request()->routeIs('admin.pedidos.*', 'admin.pagos.*', 'admin.pos.*', 'admin.zonas_delivery.*', 'admin.cotizaciones.*', 'admin.estadisticas.*') ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer select-none font-semibold text-sm">
                     <div class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-[20px] text-[#3492cf]">shopping_cart</span>
@@ -60,6 +70,10 @@
                     @if(Auth::user()->tienePermiso('gestionar_zonas_delivery') || Auth::user()->tienePermiso('ver_logistica') || Auth::user()->esAdmin())
                         <a href="{{ route('admin.zonas_delivery.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.zonas_delivery.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Zonas de Delivery (Mapa)</a>
                     @endif
+                    <a href="{{ route('admin.estadisticas.index') }}" class="flex items-center justify-between py-1.5 text-xs font-medium {{ request()->routeIs('admin.estadisticas.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">
+                        <span>Estadísticas y Top Ventas</span>
+                        <span class="material-symbols-outlined text-[15px] text-[#aad6f3]">monitoring</span>
+                    </a>
                 </div>
             </details>
             @endif

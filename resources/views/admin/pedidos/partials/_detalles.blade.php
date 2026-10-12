@@ -397,6 +397,12 @@
                         <span class="font-bold">-${{ number_format($pedido->descuento_usd, 2) }}</span>
                     </div>
                 @endif
+                @if($pedido->recargo_usd > 0)
+                    <div class="flex justify-between text-amber-400">
+                        <span>Recargo ({{ ucfirst($pedido->modalidad_pago ?? 'Método') }} {{ (float)$pedido->recargo_porcentaje }}%):</span>
+                        <span class="font-bold">+${{ number_format($pedido->recargo_usd, 2) }}</span>
+                    </div>
+                @endif
             </div>
 
             <div class="pt-3 border-t border-white/10 flex items-baseline justify-between">

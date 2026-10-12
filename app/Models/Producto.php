@@ -41,15 +41,31 @@ class Producto extends Model
         'paso_venta' => 'decimal:3',    
     ];
 
+    protected $appends = [
+        'precio_base_pvp',
+        'precio_final_pvp',
+        'precio_regular_pvp',
+    ];
+
     /**
-     * Calcula el precio de venta final al público (PVP) sumando el IVA configurado.
-     * Toma en cuenta si hay precio de oferta vigente.
+     * Calcula el PVP base de venta al público (con IVA) antes de aplicar recargos de modalidad.
      */
-    public function getPrecioFinalPvpAttribute(): float
+    public function getPrecioBasePvpAttribute(): float
     {
         $iva = \App\Models\ConfiguracionTienda::iva();
         $precioBase = $this->precio_oferta_usd ?: $this->precio_venta_usd;
         return round($precioBase * (1 + ($iva / 100)), 2);
+    }
+
+    /**
+     * Calcula el precio de venta en Dólares (Divisas).
+     * Siempre muestra el precio correspondiente a Dólares (con su % de recargo si está configurado).
+     */
+    public function getPrecioFinalPvpAttribute(): float
+    {
+        $base = $this->getPrecioBasePvpAttribute();
+        $recargoDivisasPct = \App\Models\ConfiguracionTienda::recargoPorcentaje('divisas', 'web');
+        return round($base * (1 + ($recargoDivisasPct / 100)), 2);
     }
 
     /**
@@ -61,22 +77,78 @@ class Producto extends Model
     }
 
     /**
-     * Calcula el PVP del precio regular (antes de oferta) con IVA incluido.
+     * Calcula el PVP del precio regular (antes de oferta) en Dólares con recargo de Divisas si aplica.
      */
     public function getPrecioRegularPvpAttribute(): float
     {
         $iva = \App\Models\ConfiguracionTienda::iva();
-        return round($this->precio_venta_usd * (1 + ($iva / 100)), 2);
+        $baseRegular = round($this->precio_venta_usd * (1 + ($iva / 100)), 2);
+        $recargoDivisasPct = \App\Models\ConfiguracionTienda::recargoPorcentaje('divisas', 'web');
+        return round($baseRegular * (1 + ($recargoDivisasPct / 100)), 2);
     }
 
     /**
-     * Retorna el PVP de la oferta con IVA incluido si existe.
+     * Retorna el PVP de la oferta con IVA y recargo de Divisas si existe.
      */
     public function getPrecioOfertaPvpAttribute(): ?float
     {
         if (!$this->precio_oferta_usd) return null;
         $iva = \App\Models\ConfiguracionTienda::iva();
-        return round($this->precio_oferta_usd * (1 + ($iva / 100)), 2);
+        $baseOferta = round($this->precio_oferta_usd * (1 + ($iva / 100)), 2);
+        $recargoDivisasPct = \App\Models\ConfiguracionTienda::recargoPorcentaje('divisas', 'web');
+        return round($baseOferta * (1 + ($recargoDivisasPct / 100)), 2);
+    }
+
+    /**
+     * Retorna el precio según la modalidad solicitada ('divisas', 'bolivares', 'cashea').
+     */
+    public function getPrecioModalidad(string $modalidad = 'divisas', string $canal = 'web'): float
+    {
+        $base = $this->getPrecioBasePvpAttribute();
+        $pct = \App\Models\ConfiguracionTienda::recargoPorcentaje($modalidad, $canal);
+        return round($base * (1 + ($pct / 100)), 2);
+    }
+
+    /**
+     * Retorna los 3 precios (Divisas, Bolívares y Cashea) con sus recargos y equivalencias.
+     */
+    public function getPreciosModalidades(string $canal = 'web', ?float $tasaBcv = null): array
+    {
+        if ($tasaBcv === null) {
+            $tasaBcv = (float) \App\Models\TasaCambio::obtenerValorUSD();
+        }
+        $base = $this->getPrecioBasePvpAttribute();
+
+        $pctDivisas = \App\Models\ConfiguracionTienda::recargoPorcentaje('divisas', $canal);
+        $pctBolivares = \App\Models\ConfiguracionTienda::recargoPorcentaje('bolivares', $canal);
+        $pctCashea = \App\Models\ConfiguracionTienda::recargoPorcentaje('cashea', $canal);
+
+        $precioDivisas = round($base * (1 + ($pctDivisas / 100)), 2);
+        $precioBolivaresUsd = round($base * (1 + ($pctBolivares / 100)), 2);
+        $precioBolivaresVes = round($precioBolivaresUsd * $tasaBcv, 2);
+        $precioCashea = round($base * (1 + ($pctCashea / 100)), 2);
+
+        return [
+            'base_pvp' => $base,
+            'divisas' => [
+                'usd' => $precioDivisas,
+                'recargo_pct' => $pctDivisas,
+                'tiene_recargo' => $pctDivisas > 0,
+            ],
+            'bolivares' => [
+                'usd_ref' => $precioBolivaresUsd,
+                'ves' => $precioBolivaresVes,
+                'recargo_pct' => $pctBolivares,
+                'tiene_recargo' => $pctBolivares > 0,
+            ],
+            'cashea' => [
+                'usd' => $precioCashea,
+                'cuota_inicial_usd' => round($precioCashea / 2, 2),
+                'cuota_restante_usd' => round($precioCashea / 6, 2),
+                'recargo_pct' => $pctCashea,
+                'tiene_recargo' => $pctCashea > 0,
+            ],
+        ];
     }
 
     // ==========================================

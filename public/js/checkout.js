@@ -13,6 +13,43 @@ function escapeHtmlCheckout(str) {
 
 window.CheckoutConfig = {
 
+    // --- Recalcular Totales con Recargo por Método/Modalidad y Delivery ---
+    recalcularTotales: function () {
+        const vars = window.CheckoutVars || { subtotalBase: 0, tasaCambio: 1, precioDelivery: 0, recargoMetodoPct: 0, recargoMetodoUsd: 0 };
+        const totalUsdDisplay = document.getElementById('total-usd-display');
+        const totalVesDisplay = document.getElementById('total-ves-display');
+        const filaRecargo = document.getElementById('fila-recargo-metodo');
+        const labelRecargo = document.getElementById('label-recargo-metodo');
+        const montoRecargo = document.getElementById('monto-recargo-metodo');
+        const formatterVES = new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        const pct = parseFloat(vars.recargoMetodoPct || 0);
+        const recargoUsd = Math.round((vars.subtotalBase * (pct / 100)) * 100) / 100;
+        vars.recargoMetodoUsd = recargoUsd;
+
+        if (filaRecargo) {
+            if (Math.abs(pct) > 0.001) {
+                filaRecargo.classList.remove('hidden');
+                const modalidadNombres = {
+                    'divisas': 'Divisas',
+                    'bolivares': 'Bolívares',
+                    'cashea': 'Cashea'
+                };
+                const modKey = vars.currentModalidad || 'metodo';
+                const modTxt = modalidadNombres[modKey] || (modKey.charAt(0).toUpperCase() + modKey.slice(1));
+                const signo = pct > 0 ? '+' : '';
+                if (labelRecargo) labelRecargo.innerText = `Ajuste (${modTxt} ${signo}${pct.toFixed(1)}%)`;
+                if (montoRecargo) montoRecargo.innerText = `${signo}$${recargoUsd.toFixed(2)}`;
+            } else {
+                filaRecargo.classList.add('hidden');
+            }
+        }
+
+        const totalUsd = vars.subtotalBase + (vars.precioDelivery || 0) + recargoUsd;
+        if (totalUsdDisplay) totalUsdDisplay.innerText = '$' + totalUsd.toFixed(2);
+        if (totalVesDisplay) totalVesDisplay.innerText = 'Bs. ' + formatterVES.format(totalUsd * vars.tasaCambio);
+    },
+
     // --- Lógica de Selección de Entrega ---
     toggleDirecciones: function (mostrar) {
         const div = document.getElementById('seccion-direcciones');
@@ -83,9 +120,7 @@ window.CheckoutConfig = {
                     filaDelivery.innerHTML = `<span>Delivery (${escapeHtmlCheckout(zonaNombre)})</span><span class="font-bold text-[#1e549e]">+ $${flete.toFixed(2)}</span>`;
                 }
 
-                let nuevoTotalUsd = vars.subtotalBase + flete;
-                if (totalUsdDisplay) totalUsdDisplay.innerText = '$' + nuevoTotalUsd.toFixed(2);
-                if (totalVesDisplay) totalVesDisplay.innerText = 'Bs. ' + formatterVES.format(nuevoTotalUsd * vars.tasaCambio);
+                this.recalcularTotales();
             }
         } else {
             if (div) div.classList.add('opacity-40', 'pointer-events-none', 'grayscale');
@@ -95,9 +130,7 @@ window.CheckoutConfig = {
                 filaDelivery.classList.remove('hidden');
                 filaDelivery.innerHTML = `<span>Retiro en Sede</span><span class="text-emerald-600 font-bold">Gratis</span>`;
             }
-            let nuevoTotalUsd = vars.subtotalBase;
-            if (totalUsdDisplay) totalUsdDisplay.innerText = '$' + nuevoTotalUsd.toFixed(2);
-            if (totalVesDisplay) totalVesDisplay.innerText = 'Bs. ' + formatterVES.format(nuevoTotalUsd * vars.tasaCambio);
+            this.recalcularTotales();
         }
 
         // Ajustar disponibilidad de métodos de pago físicos según el tipo de entrega
@@ -201,7 +234,7 @@ window.CheckoutConfig = {
                     input.classList.remove('border-rose-400', 'bg-rose-50/20');
                 }
             }
-        } else if (tipo === 'zelle' || tipo === 'binance') {
+        } else if (tipo === 'zelle' || tipo === 'binance' || tipo === 'cashea') {
             if (errorMsg) {
                 if (input.value.trim().length > 0 && input.value.trim().length < 3) {
                     errorMsg.innerHTML = '<span class="material-symbols-outlined text-[14px]">warning</span> Ingrese al menos 3 caracteres identificadores del pago.';
@@ -328,7 +361,20 @@ window.CheckoutConfig = {
                 console.error("Error al parsear cuenta:", e);
             }
         }
+        if (!cuenta && input.dataset.modalidad) {
+            cuenta = {
+                tipo: input.dataset.tipo,
+                modalidad: input.dataset.modalidad,
+                recargo_pct: parseFloat(input.dataset.recargoPct || 0)
+            };
+        }
         if (cuenta) {
+            const vars = window.CheckoutVars;
+            if (vars) {
+                vars.recargoMetodoPct = parseFloat(cuenta.recargo_pct || 0);
+                vars.currentModalidad = cuenta.modalidad || 'divisas';
+            }
+            this.recalcularTotales();
             this.renderDatosPago(cuenta);
         }
     },
@@ -368,7 +414,9 @@ window.CheckoutConfig = {
         // 2. Encabezado e Ícono
         if (titulo) titulo.innerText = `Datos para ${cuenta.nombre || 'Pago'}`;
         if (subtitulo) {
-            if (cuenta.banco) {
+            if (cuenta.tipo === 'cashea') {
+                subtitulo.innerText = 'Compra financiada en cuotas sin intereses a través de Cashea';
+            } else if (cuenta.banco) {
                 subtitulo.innerText = `Cuenta oficial en ${cuenta.banco}`;
             } else if (['efectivo_usd', 'efectivo_bs'].includes(cuenta.tipo)) {
                 subtitulo.innerText = 'Pago en efectivo directo sin transferencia bancaria previa';
@@ -451,6 +499,22 @@ window.CheckoutConfig = {
             if (grid) {
                 grid.classList.remove('hidden');
                 let cardsHtml = '';
+
+                // Tarjeta informativa especial si es Cashea
+                if (cuenta.tipo === 'cashea') {
+                    cardsHtml += `
+                    <div class="col-span-1 sm:col-span-2 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl border border-amber-200/90 shadow-2xs">
+                        <div class="flex items-start gap-3">
+                            <div class="size-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 font-black text-xs shadow-xs">
+                                CSH
+                            </div>
+                            <div class="flex-1 text-xs text-amber-950 leading-relaxed">
+                                <span class="font-black text-sm text-amber-900 block mb-0.5">Financiamiento Cashea</span>
+                                Paga tu cuota inicial al confirmar tu orden y completa las cuotas restantes cada 14 días sin intereses en tu app de Cashea.
+                            </div>
+                        </div>
+                    </div>`;
+                }
 
                 // Banco / Entidad
                 if (cuenta.banco) {
@@ -602,6 +666,15 @@ window.CheckoutConfig = {
                     inputRef.pattern = '.*';
                     if (helperRef) {
                         helperRef.innerText = '';
+                        helperRef.classList.remove('hidden');
+                    }
+                } else if (cuenta.tipo === 'cashea') {
+                    labelRef.innerHTML = `Código / ID Solicitud Cashea <span class="text-rose-500">*</span>`;
+                    inputRef.placeholder = 'Ej: CSH-849204 o Código de la app';
+                    inputRef.inputMode = 'text';
+                    inputRef.pattern = '.*';
+                    if (helperRef) {
+                        helperRef.innerText = 'Código generado en tu app Cashea';
                         helperRef.classList.remove('hidden');
                     }
                 } else {
@@ -756,6 +829,14 @@ window.CheckoutConfig = {
             hiddenInput.value = id;
             if (cuenta) {
                 hiddenInput.dataset.tipo = cuenta.tipo;
+                hiddenInput.dataset.modalidad = cuenta.modalidad || 'divisas';
+                hiddenInput.dataset.recargoPct = cuenta.recargo_pct || 0;
+                const vars = window.CheckoutVars;
+                if (vars) {
+                    vars.recargoMetodoPct = parseFloat(cuenta.recargo_pct || 0);
+                    vars.currentModalidad = cuenta.modalidad || 'divisas';
+                }
+                this.recalcularTotales();
                 this.renderDatosPago(cuenta);
             }
         }
@@ -883,14 +964,16 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                         return;
                     }
-                } else if (tipoMetodo === 'zelle' || tipoMetodo === 'binance') {
+                } else if (tipoMetodo === 'zelle' || tipoMetodo === 'binance' || tipoMetodo === 'cashea') {
                     if (val.length < 3) {
                         e.preventDefault();
                         if (inputRef) {
                             inputRef.focus();
                             inputRef.classList.add('border-rose-400', 'bg-rose-50/20');
                         }
-                        const msg = 'Por favor ingresa al menos 3 caracteres identificadores del pago.';
+                        const msg = tipoMetodo === 'cashea'
+                            ? 'Por favor ingresa el código o ID de la solicitud en tu app de Cashea.'
+                            : 'Por favor ingresa al menos 3 caracteres identificadores del pago.';
                         if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 icon: 'warning',

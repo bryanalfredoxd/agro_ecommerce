@@ -94,12 +94,14 @@ class CheckoutController extends Controller
         
         // Cuentas bancarias activas
         $metodosPago = CuentaBancaria::where('activo', 1)->get();
+        $recargosConfig = ConfiguracionTienda::recargos('web');
 
         $zonas = ZonaDelivery::where('activa', 1)->get();
         
         return view('checkout.index', compact(
             'carrito', 'subtotal', 'montoIva', 'totalUsd', 'totalVes', 
-            'tasaValor', 'direcciones', 'metodosPago', 'zonas', 'deliveryActivo', 'ivaPorcentaje'
+            'tasaValor', 'direcciones', 'metodosPago', 'zonas', 'deliveryActivo', 'ivaPorcentaje',
+            'recargosConfig'
         ));
     }
 
@@ -162,7 +164,7 @@ class CheckoutController extends Controller
             return back()->with('error', 'El servicio de delivery se encuentra actualmente pausado por la administración. Por favor selecciona "Retiro en Sede".');
         }
         
-        return DB::transaction(function () use ($request, $usuario, $tipoMetodoEnum) {
+        return DB::transaction(function () use ($request, $usuario, $tipoMetodoEnum, $cuentaBancaria) {
             
             // 4. Validar Stock
             $carrito = Carrito::where('usuario_id', $usuario->id)->lockForUpdate()->get();
@@ -216,7 +218,13 @@ class CheckoutController extends Controller
                 $costoDelivery = (float) $zona->precio_delivery_usd;
             }
 
-            $totalUsd = $subtotal + ($subtotal * ($ivaPct / 100)) + $costoDelivery;
+            // Calcular recargo según la modalidad de pago seleccionada (Divisas, Bolívares o Cashea)
+            $modalidad = $cuentaBancaria->modalidad_pago ?: 'bolivares';
+            $recargoPct = ConfiguracionTienda::recargoPorcentaje($modalidad, 'web');
+            $baseConIva = $subtotal + ($subtotal * ($ivaPct / 100));
+            $recargoUsd = round($baseConIva * ($recargoPct / 100), 2);
+
+            $totalUsd = $baseConIva + $recargoUsd + $costoDelivery;
             
             $tasa = TasaCambio::obtenerTasaUSD();
             $tasaValor = $tasa ? (float) $tasa->valor_tasa : 60.00;
@@ -230,9 +238,12 @@ class CheckoutController extends Controller
                 'usuario_id' => $usuario->id,
                 'zona_delivery_id' => $zonaId,
                 'tasa_cambio_id' => $tasaId,
+                'modalidad_pago' => $modalidad,
                 'subtotal_usd' => $subtotal,
                 'costo_delivery_usd' => $costoDelivery,
                 'descuento_usd' => 0,
+                'recargo_porcentaje' => $recargoPct,
+                'recargo_usd' => $recargoUsd,
                 'total_usd' => $totalUsd,
                 'total_ves_calculado' => $totalVes,
                 'estado' => 'pendiente',

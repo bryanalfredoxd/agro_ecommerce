@@ -246,6 +246,7 @@
                                         'efectivo_usd', 'efectivo_bs' => 'attach_money', 
                                         'binance' => 'binance_svg', 
                                         'punto_venta', 'biopago' => 'point_of_sale',
+                                        'cashea' => 'shopping_bag',
                                         default => 'payments'
                                     };
                                     $iconColor = match($metodo->tipo_metodo) {
@@ -253,8 +254,11 @@
                                         'zelle' => 'text-[#5800FD] bg-[#5800FD]/10',
                                         'efectivo_usd', 'efectivo_bs' => 'text-emerald-700 bg-emerald-50', 
                                         'binance' => 'text-[#F3BA2F] bg-[#F3BA2F]/10',
+                                        'cashea' => 'text-amber-800 bg-amber-100',
                                         default => 'text-slate-600 bg-slate-100'
                                     };
+                                    $modalidad = $metodo->modalidad_pago ?? 'divisas';
+                                    $recargoPct = $metodo->getRecargoPorcentaje('web');
                                 @endphp
 
                                 <label class="relative cursor-pointer group payment-card-radio h-full" id="payment-card-label-{{ $metodo->id }}">
@@ -264,9 +268,13 @@
                                            required 
                                            class="peer sr-only"
                                            data-tipo="{{ $metodo->tipo_metodo }}"
+                                           data-modalidad="{{ $modalidad }}"
+                                           data-recargo-pct="{{ $recargoPct }}"
                                            data-cuenta="{{ json_encode([
                                                'id' => $metodo->id,
                                                'tipo' => $metodo->tipo_metodo,
+                                               'modalidad' => $modalidad,
+                                               'recargo_pct' => (float)$recargoPct,
                                                'nombre' => $metodo->nombre,
                                                'banco' => $metodo->banco_entidad,
                                                'cuenta' => $metodo->numero_cuenta,
@@ -299,11 +307,23 @@
                                         
                                         <span class="text-xs font-bold text-slate-800 leading-tight">{{ $metodo->nombre }}</span>
                                         
-                                        @if(in_array($metodo->tipo_metodo, ['punto_venta', 'biopago']))
-                                            <span class="badge-solo-sede hidden text-[9px] font-black uppercase text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-0.5">
-                                                Solo en Sede
-                                            </span>
-                                        @endif
+                                        <div class="flex items-center gap-1 flex-wrap justify-center mt-0.5">
+                                            @if($recargoPct > 0)
+                                                <span class="inline-flex items-center gap-0.5 text-[9.5px] font-black text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-200">
+                                                    +{{ number_format($recargoPct, 1) }}%
+                                                </span>
+                                            @elseif($recargoPct < 0)
+                                                <span class="inline-flex items-center gap-0.5 text-[9.5px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                                                    {{ number_format($recargoPct, 1) }}%
+                                                </span>
+                                            @endif
+
+                                            @if(in_array($metodo->tipo_metodo, ['punto_venta', 'biopago']))
+                                                <span class="badge-solo-sede hidden text-[9px] font-black uppercase text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-0.5">
+                                                    Solo en Sede
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </label>
                             @endforeach
@@ -521,6 +541,15 @@
                                     <span class="text-slate-800 font-bold">${{ number_format($montoIva, 2) }}</span>
                                 </div>
 
+                                {{-- Fila Recargo por Método / Modalidad --}}
+                                <div id="fila-recargo-metodo" class="flex justify-between items-center text-xs sm:text-sm font-bold text-amber-800 bg-amber-50/70 p-2.5 rounded-xl border border-amber-200/80 hidden transition-all">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px] text-amber-600">price_change</span>
+                                        <span id="label-recargo-metodo">Recargo por forma de pago</span>
+                                    </div>
+                                    <span id="monto-recargo-metodo" class="font-black text-amber-900">+$0.00</span>
+                                </div>
+
                                 <div id="fila-delivery" class="flex justify-between text-xs sm:text-sm font-bold text-[#1e549e] transition-all">
                                     <span>Retiro en Tienda</span>
                                     <span class="text-emerald-600">Gratis</span>
@@ -659,6 +688,7 @@
                                     'efectivo_usd', 'efectivo_bs' => 'attach_money', 
                                     'binance' => 'binance_svg', 
                                     'punto_venta', 'biopago' => 'point_of_sale',
+                                    'cashea' => 'shopping_bag',
                                     default => 'payments'
                                 };
                                 $iconColor = match($metodo->tipo_metodo) {
@@ -666,8 +696,11 @@
                                     'zelle' => 'text-[#5800FD] bg-[#5800FD]/10',
                                     'efectivo_usd', 'efectivo_bs' => 'text-emerald-700 bg-emerald-50', 
                                     'binance' => 'text-[#F3BA2F] bg-[#F3BA2F]/10',
+                                    'cashea' => 'text-amber-800 bg-amber-100',
                                     default => 'text-slate-600 bg-slate-100'
                                 };
+                                $modalidad = $metodo->modalidad_pago ?? 'divisas';
+                                $recargoPct = $metodo->getRecargoPorcentaje('web');
                             @endphp
                              <label class="relative cursor-pointer payment-card-radio block">
                                 <input type="radio" 
@@ -675,9 +708,13 @@
                                        value="{{ $metodo->id }}" 
                                        class="peer sr-only"
                                        data-tipo="{{ $metodo->tipo_metodo }}"
+                                       data-modalidad="{{ $modalidad }}"
+                                       data-recargo-pct="{{ $recargoPct }}"
                                        data-cuenta="{{ json_encode([
                                            'id' => $metodo->id,
                                            'tipo' => $metodo->tipo_metodo,
+                                           'modalidad' => $modalidad,
+                                           'recargo_pct' => (float)$recargoPct,
                                            'nombre' => $metodo->nombre,
                                            'banco' => $metodo->banco_entidad,
                                            'cuenta' => $metodo->numero_cuenta,
@@ -706,11 +743,24 @@
                                         @endif
                                     </div>
                                     <span class="text-xs font-bold text-slate-800 leading-tight">{{ $metodo->nombre }}</span>
-                                    @if(in_array($metodo->tipo_metodo, ['punto_venta', 'biopago']))
-                                        <span class="badge-solo-sede hidden text-[9px] font-black uppercase text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-0.5">
-                                            Solo en Sede
-                                        </span>
-                                    @endif
+
+                                    <div class="flex items-center gap-1 flex-wrap justify-center mt-0.5">
+                                        @if($recargoPct > 0)
+                                            <span class="inline-flex items-center gap-0.5 text-[9.5px] font-black text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-200">
+                                                +{{ number_format($recargoPct, 1) }}%
+                                            </span>
+                                        @elseif($recargoPct < 0)
+                                            <span class="inline-flex items-center gap-0.5 text-[9.5px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                                                {{ number_format($recargoPct, 1) }}%
+                                            </span>
+                                        @endif
+
+                                        @if(in_array($metodo->tipo_metodo, ['punto_venta', 'biopago']))
+                                            <span class="badge-solo-sede hidden text-[9px] font-black uppercase text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-0.5">
+                                                Solo en Sede
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </label>
                         @endforeach
@@ -728,7 +778,10 @@
         subtotalBase: {{ (float) ($subtotal + $montoIva) }},
         tasaCambio: {{ (float) $tasaValor }},
         precioDelivery: 0,
-        deliveryActivo: {{ $deliveryActivo ? 'true' : 'false' }}
+        recargoMetodoPct: 0,
+        recargoMetodoUsd: 0,
+        deliveryActivo: {{ $deliveryActivo ? 'true' : 'false' }},
+        recargosConfig: @json($recargosConfig ?? [])
     };
 </script>
 <script src="{{ asset('js/checkout.js') }}"></script>
