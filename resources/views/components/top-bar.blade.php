@@ -46,26 +46,27 @@
     <div class="layout-container">
         <div class="flex justify-between items-center h-[36px] sm:h-[38px]">
             
-            <div class="flex items-center justify-between w-full sm:w-auto sm:justify-start gap-4">
+            <div class="flex items-center justify-between w-full sm:w-auto sm:justify-start gap-2 sm:gap-4 overflow-hidden">
                 
-                <div class="flex items-center gap-1.5 group cursor-help" title="Tasa oficial BCV actualizada">
-                    <span class="material-symbols-outlined text-[16px] text-[#aad6f3]">
+                <div class="flex items-center gap-1 sm:gap-1.5 group cursor-help shrink-0" title="Tasa oficial BCV actualizada">
+                    <span class="material-symbols-outlined text-[15px] sm:text-[16px] text-[#aad6f3]">
                         currency_exchange
                     </span>
-                    <span class="font-medium whitespace-nowrap flex items-center gap-1">
-                        <span class="text-[#aad6f3] font-bold">Tasa BCV:</span> 
-                        <span class="text-white/80">1 USD =</span>
+                    <span class="font-medium whitespace-nowrap flex items-center gap-1 text-[10px] sm:text-xs">
+                        <span class="text-[#aad6f3] font-bold">BCV:</span> 
+                        <span class="text-white/80 hidden xs:inline">1 USD =</span>
                         <span class="font-bold text-white bg-white/10 px-1.5 py-0.5 rounded-md">{{ $tasaDolar }}</span> 
-                        <span class="text-white/80">VES</span>
+                        <span class="text-white/80 hidden xs:inline">VES</span>
+                        <span class="text-white/80 xs:hidden">Bs</span>
                     </span>
                 </div>
                 
-                <div class="h-3 w-px bg-white/20 sm:hidden"></div>
+                <div class="h-3 w-px bg-white/20 sm:hidden shrink-0"></div>
                 
                 <!-- Para móvil: muestra el horario -->
-                <div class="flex items-center gap-1.5 sm:hidden {{ $claseHorario }}">
-                    <span class="material-symbols-outlined text-[15px]">{{ $iconoHorario }}</span>
-                    <span class="font-medium whitespace-nowrap">{{ $textoHorario }}</span>
+                <div class="flex items-center gap-1 sm:hidden {{ $claseHorario }} min-w-0 truncate text-[10px] sm:text-xs">
+                    <span class="material-symbols-outlined text-[14px] shrink-0">{{ $iconoHorario }}</span>
+                    <span class="font-medium truncate">{{ $textoHorario }}</span>
                 </div>
             </div>
             

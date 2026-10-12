@@ -59,22 +59,22 @@
     <div class="fixed inset-0 z-10 flex justify-center items-center p-3 sm:p-4">
         <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-md max-h-[92vh] flex flex-col opacity-0 scale-95" id="facturaPanel">
             
-            <div class="px-5 py-3.5 border-b border-slate-100 flex justify-between items-center bg-slate-50/90 sticky top-0 z-20">
-                <div class="flex items-center gap-2.5">
+            <div class="px-4 sm:px-5 py-3 border-b border-slate-100 flex flex-wrap sm:flex-nowrap justify-between items-center gap-2 bg-slate-50/90 sticky top-0 z-20">
+                <div class="flex items-center gap-2 sm:gap-2.5">
                     <span class="material-symbols-outlined text-[#1e549e] text-2xl">receipt_long</span>
                     <div>
                         <h3 class="text-sm font-black text-slate-800 leading-tight">Ticket de Venta</h3>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Vista Previa 80mm</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <button id="btnTicket" onclick="imprimirTicket()" class="text-white bg-[#1e549e] hover:bg-[#164079] px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 font-bold text-xs shadow-xs hover:scale-105 active:scale-95" title="Imprimir Ticket Térmico 80mm">
-                        <span class="material-symbols-outlined text-[16px]">receipt</span>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button id="btnTicket" onclick="imprimirTicket()" class="text-white bg-[#1e549e] hover:bg-[#164079] px-2.5 sm:px-3 py-1.5 rounded-xl transition-all flex items-center gap-1 font-bold text-xs shadow-xs hover:scale-105 active:scale-95" title="Imprimir Ticket Térmico 80mm">
+                        <span class="material-symbols-outlined text-[15px]">receipt</span>
                         <span>Ticket</span>
                     </button>
-                    <button id="btnA4" onclick="imprimirA4()" class="text-slate-700 hover:text-[#1e549e] bg-white border border-slate-200 hover:border-[#1e549e] px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 font-bold text-xs shadow-2xs hover:scale-105 active:scale-95" title="Imprimir Factura en Formato A4">
-                        <span class="material-symbols-outlined text-[16px]">print</span>
-                        <span>Formato A4</span>
+                    <button id="btnA4" onclick="imprimirA4()" class="text-slate-700 hover:text-[#1e549e] bg-white border border-slate-200 hover:border-[#1e549e] px-2 sm:px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1 font-bold text-xs shadow-2xs hover:scale-105 active:scale-95" title="Imprimir Factura en Formato A4">
+                        <span class="material-symbols-outlined text-[15px]">print</span>
+                        <span class="hidden xs:inline">Formato</span> <span>A4</span>
                     </button>
                     <button type="button" onclick="closeFacturaModal()" class="text-slate-400 hover:text-rose-500 p-1.5 rounded-xl hover:bg-slate-100 transition-colors" title="Cerrar">
                         <span class="material-symbols-outlined text-[20px]">close</span>

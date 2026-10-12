@@ -16,68 +16,8 @@
         
         <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
 
-            {{-- ASIDE: Menú Lateral --}}
-            <aside class="w-full lg:w-80 xl:w-80 flex-shrink-0">
-                <div class="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 overflow-hidden lg:sticky lg:top-24 transition-all">
-                    
-                    {{-- Perfil Header --}}
-                    <div class="p-6 lg:p-8 text-center bg-white relative">
-                        <div class="absolute top-0 left-0 w-full h-16 bg-gray-50/50 rounded-t-3xl"></div>
-                        
-                        <div class="relative w-24 h-24 lg:w-28 lg:h-28 mx-auto bg-primary/10 text-primary rounded-full flex items-center justify-center text-3xl lg:text-4xl font-black mb-4 border-4 border-white shadow-sm">
-                            {{ substr(auth()->user()->nombre, 0, 1) }}{{ substr(auth()->user()->apellido, 0, 1) }}
-                        </div>
-                        
-                        <h2 class="text-xl lg:text-2xl font-black text-agro-dark mb-1 truncate leading-tight">
-                            {{ auth()->user()->nombre }} {{ auth()->user()->apellido }}
-                        </h2>
-                        <p class="text-sm text-gray-500 font-medium mb-4 truncate">{{ auth()->user()->email }}</p>
-                        
-                        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-100 text-gray-600 text-[11px] font-bold uppercase tracking-wider shadow-sm">
-                            @if(auth()->user()->tipo_cliente === 'juridico')
-                                <span class="material-symbols-outlined text-[16px] text-primary">domain</span> Empresa
-                            @elseif(auth()->user()->tipo_cliente === 'finca_productor')
-                                <span class="material-symbols-outlined text-[16px] text-primary">agriculture</span> Productor
-                            @else
-                                <span class="material-symbols-outlined text-[16px] text-primary">person</span> Particular
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Menú de Navegación --}}
-                    <div class="border-t border-gray-100 bg-white p-3">
-                        <nav class="flex flex-col space-y-1">
-                            <a href="{{ route('perfil') }}#datos-personales" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">person</span>
-                                Información Personal
-                            </a>
-                            
-                            <a href="{{ route('perfil') }}#direcciones" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">location_on</span>
-                                Direcciones de Envío
-                            </a>
-
-                            <a href="{{ route('perfil') }}#seguridad" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">lock</span>
-                                Seguridad y Contraseña
-                            </a>
-
-                            <div class="h-px bg-gray-100 my-2 mx-4"></div>
-                            
-                            <a href="{{ route('perfil.pedidos') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-agro-dark font-medium transition-all group">
-                                <span class="material-symbols-outlined text-[22px] text-gray-700 group-hover:text-agro-dark transition-colors">receipt_long</span>
-                                Historial de Pedidos
-                            </a>
-
-                            {{-- Elemento Activo: Favoritos --}}
-                            <a href="{{ route('perfil.favoritos') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/5 text-primary font-bold transition-all group">
-                                <span class="material-symbols-outlined text-[22px] fill-1 text-red-500">favorite</span>
-                                Mis Favoritos
-                            </a>
-                        </nav>
-                    </div>
-                </div>
-            </aside>
+            {{-- ASIDE: Menú Lateral Corporativo --}}
+            @include('perfil.partials.sidebar', ['active' => 'favoritos'])
 
             {{-- MAIN: Grid de Favoritos --}}
             <main class="flex-1 min-w-0 animate-fade-in-up">

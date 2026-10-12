@@ -22,7 +22,7 @@
             </button>
 
             {{-- Panel Desplegable de Notificaciones --}}
-            <div id="panelNotificaciones" class="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-100 hidden opacity-0 translate-y-3 transition-all duration-200 z-50 overflow-hidden">
+            <div id="panelNotificaciones" class="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-sm sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-100 hidden opacity-0 translate-y-3 transition-all duration-200 z-50 overflow-hidden">
                 
                 <div class="px-5 py-3.5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h3 class="font-bold text-[#1e549e] text-sm">Notificaciones del Sistema</h3>

@@ -336,7 +336,7 @@
              style="height: 86vh; max-height: 86vh; display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
             
             {{-- Header --}}
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
+            <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="size-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-xs">
                         <span class="material-symbols-outlined text-[20px]">inventory_2</span>

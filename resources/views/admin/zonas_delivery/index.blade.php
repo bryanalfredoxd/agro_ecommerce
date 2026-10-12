@@ -146,7 +146,7 @@
                     <span class="material-symbols-outlined text-[#1e549e] text-[22px]">explore</span>
                     <h3 class="font-black text-slate-800 text-sm sm:text-base">Mapa de Cobertura en Tiempo Real</h3>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
                     <div id="indicadorCentroTienda" class="flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200/90 rounded-xl text-xs font-bold text-slate-700 shadow-2xs">
                         <span class="inline-block size-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span id="textoCentroTienda">Centro: Sede Tienda</span>
@@ -159,13 +159,13 @@
             </div>
 
             {{-- CONTENEDOR DEL MAPA --}}
-            <div class="relative w-full h-[450px] sm:h-[520px] bg-slate-100">
+            <div class="relative w-full h-[400px] sm:h-[520px] bg-slate-100">
                 <div id="leafletMap" class="w-full h-full z-10"></div>
                 
                 {{-- Controles flotantes en el mapa --}}
-                <div id="mapFloatingHint" class="absolute bottom-4 left-4 z-20 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 shadow-md text-xs font-bold text-slate-700 flex items-center gap-2 max-w-[90%]">
-                    <span class="material-symbols-outlined text-[18px] text-[#1e549e]">touch_app</span>
-                    <span id="mapHintText">Haz clic en el mapa para añadir una zona o pulsa "Nueva Zona de Envío"</span>
+                <div id="mapFloatingHint" class="absolute bottom-4 left-3 right-3 sm:right-auto sm:left-4 z-20 bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-200 shadow-md text-[11px] sm:text-xs font-bold text-slate-700 flex items-center gap-2 max-w-full sm:max-w-md">
+                    <span class="material-symbols-outlined text-[18px] text-[#1e549e] shrink-0">touch_app</span>
+                    <span id="mapHintText" class="truncate">Haz clic en el mapa para añadir una zona o pulsa "Nueva Zona de Envío"</span>
                 </div>
             </div>
 

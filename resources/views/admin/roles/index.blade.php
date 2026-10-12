@@ -228,13 +228,13 @@
                     </div>
 
                     {{-- Footer / Botones --}}
-                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-between gap-3 flex-shrink-0">
+                    <div class="bg-gray-50 px-4 sm:px-6 py-3.5 sm:py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
                         <span class="text-xs text-gray-500 font-medium hidden sm:inline">
                             Asegúrate de revisar los permisos de acciones sensibles antes de guardar.
                         </span>
-                        <div class="flex items-center gap-2 ml-auto">
-                            <button type="button" onclick="closeRoleModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 transition-colors text-sm">Cancelar</button>
-                            <button type="submit" id="btnSubmitModal" class="px-6 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm text-sm flex items-center gap-2">
+                        <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto sm:ml-auto">
+                            <button type="button" onclick="closeRoleModal()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 transition-colors text-sm text-center">Cancelar</button>
+                            <button type="submit" id="btnSubmitModal" class="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm text-sm flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined text-[18px]">save</span> Guardar Configuración
                             </button>
                         </div>

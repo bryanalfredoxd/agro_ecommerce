@@ -35,7 +35,7 @@
                     {{-- Formulario y Selectores de Filtro --}}
                     <form method="GET" action="{{ route('admin.estadisticas.index') }}" id="formFiltros" class="flex flex-wrap items-center gap-2.5 sm:gap-3">
                         {{-- Selector de Período --}}
-                        <div class="relative min-w-[170px]">
+                        <div class="relative w-full sm:w-auto sm:min-w-[170px]">
                             <select name="periodo" id="filtroPeriodo" onchange="cambiarPeriodoFiltro(this.value)" class="w-full bg-gray-50 hover:bg-gray-100/80 text-agro-dark text-xs font-bold rounded-2xl border border-gray-200/80 px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
                                 <option value="hoy" {{ $periodo === 'hoy' ? 'selected' : '' }}>📅 Hoy</option>
                                 <option value="semana" {{ $periodo === 'semana' ? 'selected' : '' }}>📊 Esta Semana</option>
@@ -49,7 +49,7 @@
                         </div>
 
                         {{-- Selector de Canal --}}
-                        <div class="relative min-w-[160px]">
+                        <div class="relative w-full sm:w-auto sm:min-w-[160px]">
                             <select name="canal" id="filtroCanal" onchange="document.getElementById('formFiltros').submit()" class="w-full bg-gray-50 hover:bg-gray-100/80 text-agro-dark text-xs font-bold rounded-2xl border border-gray-200/80 px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
                                 <option value="todos" {{ $canal === 'todos' ? 'selected' : '' }}>🏪 Todos los Canales</option>
                                 <option value="web" {{ $canal === 'web' ? 'selected' : '' }}>🌐 Solo Tienda Web</option>

@@ -209,7 +209,7 @@
                                 </div>
 
                                 {{-- 4. Botón Eliminar --}}
-                                <div class="col-span-1 absolute top-4 right-4 sm:relative sm:top-0 sm:right-0 flex justify-end w-full sm:w-auto">
+                                <div class="col-span-1 absolute top-4 right-4 sm:relative sm:top-0 sm:right-0 flex justify-end w-auto">
                                     <button onclick="openDeleteModal({{ $item->id }})" 
                                             type="button"
                                             class="flex items-center justify-center size-9 text-rose-500 bg-rose-50 hover:bg-rose-100 hover:text-rose-700 rounded-xl transition-all duration-200 border border-rose-100 shadow-2xs" 

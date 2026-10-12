@@ -2,10 +2,10 @@
 @section('title', 'Terminal POS - Agrosuministros Rodríguez')
 
 @section('content')
-<div class="bg-gray-100 flex h-screen w-screen font-sans overflow-hidden select-none">
+<div class="bg-gray-100 flex flex-col md:flex-row h-screen w-screen font-sans overflow-hidden select-none">
     
-    {{-- BARRA LATERAL FIJA --}}
-    <aside class="w-16 bg-[#0b1d38] flex flex-col items-center py-4 border-r border-slate-800 shrink-0 z-30 justify-between">
+    {{-- BARRA LATERAL FIJA EN DESKTOP --}}
+    <aside class="hidden md:flex w-16 bg-[#0b1d38] flex-col items-center py-4 border-r border-slate-800 shrink-0 z-30 justify-between">
         <a href="{{ route('admin.dashboard') }}" class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center hover:bg-[#1e549e] transition-colors" title="Volver al Dashboard">
             <span class="material-symbols-outlined text-[22px]">dashboard</span>
         </a>
@@ -14,11 +14,51 @@
         </button>
     </aside>
 
-    {{-- CONTENEDOR PRINCIPAL: SIEMPRE EN FILA (2 COLUMNAS) --}}
+    {{-- BARRA SUPERIOR EXCLUSIVA MÓVIL --}}
+    <header class="md:hidden bg-[#0b1d38] text-white px-3 py-2 border-b border-slate-700 flex items-center justify-between shrink-0 z-30 shadow-md">
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.dashboard') }}" class="w-8 h-8 rounded-lg bg-white/10 text-white flex items-center justify-center hover:bg-[#1e549e] transition-colors" title="Volver al Dashboard">
+                <span class="material-symbols-outlined text-[19px]">dashboard</span>
+            </a>
+            <div>
+                <h1 class="text-xs font-black leading-tight text-white flex items-center gap-1">
+                    <span class="material-symbols-outlined text-teal-400 text-[15px]">point_of_sale</span> POS
+                </h1>
+                <p class="text-[9px] text-[#aad6f3] font-mono leading-none">BCV: Bs. {{ number_format($valorTasa, 2) }}</p>
+            </div>
+        </div>
+
+        {{-- Switcher Móvil: Catálogo vs Ticket --}}
+        <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10">
+            <button type="button" id="btn_vista_catalogo_m" onclick="cambiarVistaPos('catalogo')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 bg-primary text-white shadow-xs">
+                <span class="material-symbols-outlined text-[14px]">inventory_2</span>
+                <span>Catálogo</span>
+            </button>
+            <button type="button" id="btn_vista_ticket_m" onclick="cambiarVistaPos('ticket')" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 text-slate-300 hover:text-white relative">
+                <span class="material-symbols-outlined text-[14px]">receipt_long</span>
+                <span>Ticket</span>
+                <span id="badge_pos_ticket_count" class="hidden size-4 rounded-full bg-emerald-500 text-white text-[9px] font-black flex items-center justify-center">0</span>
+            </button>
+        </div>
+
+        <button onclick="abrirModalCierre()" class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white flex items-center justify-center transition-colors shadow-xs" title="Cerrar Turno / Arqueo">
+            <span class="material-symbols-outlined text-[18px]">lock</span>
+        </button>
+    </header>
+
+    {{-- CONTENEDOR PRINCIPAL: FILA EN DESKTOP, ADAPTABLE EN MÓVIL --}}
     <main class="flex-1 flex flex-row min-w-0 h-full overflow-hidden relative">
         
-        {{-- COLUMNA IZQUIERDA: CARRITO / TICKET (ANCHO FIJO) --}}
-        <section class="bg-white flex flex-col h-full border-r border-gray-200 shadow-md shrink-0 z-20" style="width: 380px; min-width: 340px; max-width: 420px; flex-shrink: 0;">
+        {{-- COLUMNA IZQUIERDA: CARRITO / TICKET (ADAPTABLE) --}}
+        <section id="pos_col_ticket" class="bg-white flex-col h-full border-r border-gray-200 shadow-md z-20 w-full lg:w-[380px] lg:min-w-[340px] lg:max-w-[420px] lg:shrink-0 hidden lg:flex">
+            
+            {{-- Enlace móvil para regresar al catálogo --}}
+            <div class="lg:hidden px-3.5 py-2 bg-[#0b1d38] text-white flex items-center justify-between shrink-0 border-b border-slate-700">
+                <button type="button" onclick="cambiarVistaPos('catalogo')" class="text-xs font-bold text-teal-300 hover:text-white flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">arrow_back</span> Seguir agregando productos
+                </button>
+                <span class="text-[10px] text-slate-400 font-bold uppercase">Ticket Actual</span>
+            </div>
             
             {{-- Encabezado del Ticket y Tasa BCV --}}
             <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/80 shrink-0">
@@ -144,25 +184,25 @@
         </section>
 
         {{-- COLUMNA DERECHA: BÚSQUEDA Y CATÁLOGO DE PRODUCTOS (FLEX-1) --}}
-        <section class="flex-1 min-w-0 flex flex-col h-full bg-slate-100/70 overflow-hidden" style="flex: 1; min-width: 0;">
+        <section id="pos_col_catalogo" class="flex-1 min-w-0 flex flex-col h-full bg-slate-100/70 overflow-hidden relative">
             
             {{-- Barra de Modalidad de Pago y Divisa en Vivo --}}
             <div class="px-3.5 py-2 bg-gradient-to-r from-[#0b1d38] via-[#12315e] to-[#1e549e] border-b border-[#3492cf]/30 shrink-0 flex flex-wrap items-center justify-between gap-2 text-white shadow-2xs">
                 <div class="flex items-center gap-2 flex-wrap">
                     <span class="text-[10px] font-black uppercase tracking-wider text-[#aad6f3] flex items-center gap-1 shrink-0">
                         <span class="material-symbols-outlined text-[16px] text-teal-300">price_change</span>
-                        Modalidad de Pago:
+                        Modalidad:
                     </span>
-                    <div class="inline-flex p-0.5 bg-black/30 backdrop-blur-xs rounded-xl border border-white/10 shrink-0 shadow-inner" id="pos_modalidad_group">
-                        <button type="button" onclick="cambiarModalidadPos('divisas')" id="btn_mod_pos_divisas" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-emerald-500 text-white shadow-sm" title="Precios en Divisas / Dólares (Alt+1)">
-                            <span>💵 Divisas (USD)</span>
+                    <div class="inline-flex p-0.5 bg-black/30 backdrop-blur-xs rounded-xl border border-white/10 shrink-0 shadow-inner max-w-full overflow-x-auto custom-scrollbar" id="pos_modalidad_group">
+                        <button type="button" onclick="cambiarModalidadPos('divisas')" id="btn_mod_pos_divisas" class="px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 bg-emerald-500 text-white shadow-sm shrink-0" title="Precios en Divisas / Dólares (Alt+1)">
+                            <span>💵 Divisas</span>
                             <span class="text-[9.5px] opacity-90 font-mono font-black">({{ (!empty($recargosPos['divisas']['porcentaje']) && $recargosPos['divisas']['porcentaje'] > 0) ? '+' . $recargosPos['divisas']['porcentaje'] . '%' : '0%' }})</span>
                         </button>
-                        <button type="button" onclick="cambiarModalidadPos('bolivares')" id="btn_mod_pos_bolivares" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10" title="Precios en Bolívares / Pago Móvil / Punto de Venta (Alt+2)">
-                            <span>🇻🇪 Bolívares (VES)</span>
+                        <button type="button" onclick="cambiarModalidadPos('bolivares')" id="btn_mod_pos_bolivares" class="px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 text-slate-300 hover:text-white hover:bg-white/10 shrink-0" title="Precios en Bolívares / Pago Móvil / Punto de Venta (Alt+2)">
+                            <span>🇻🇪 Bolívares</span>
                             <span class="text-[9.5px] font-mono font-black {{ (!empty($recargosPos['bolivares']['porcentaje']) && $recargosPos['bolivares']['porcentaje'] > 0) ? 'text-amber-300' : 'opacity-90' }}">({{ (!empty($recargosPos['bolivares']['porcentaje']) && $recargosPos['bolivares']['porcentaje'] > 0) ? '+' . $recargosPos['bolivares']['porcentaje'] . '%' : '0%' }})</span>
                         </button>
-                        <button type="button" onclick="cambiarModalidadPos('cashea')" id="btn_mod_pos_cashea" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10" title="Precios Cashea Financiado (Alt+3)">
+                        <button type="button" onclick="cambiarModalidadPos('cashea')" id="btn_mod_pos_cashea" class="px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 text-slate-300 hover:text-white hover:bg-white/10 shrink-0" title="Precios Cashea Financiado (Alt+3)">
                             <span>🛍️ Cashea</span>
                             <span class="text-[9.5px] font-mono font-black {{ (!empty($recargosPos['cashea']['porcentaje']) && $recargosPos['cashea']['porcentaje'] > 0) ? 'text-amber-300' : 'opacity-90' }}">({{ (!empty($recargosPos['cashea']['porcentaje']) && $recargosPos['cashea']['porcentaje'] > 0) ? '+' . $recargosPos['cashea']['porcentaje'] . '%' : '0%' }})</span>
                         </button>
@@ -313,6 +353,21 @@
                         @endforeach
                     @endif
                 </div>
+            {{-- Barra inferior en móvil para ver ticket y cobrar rápido --}}
+            <div id="pos_mobile_cart_bar" class="lg:hidden p-2.5 bg-white border-t border-gray-200 shadow-lg flex items-center justify-between gap-2 shrink-0 z-20">
+                <button type="button" onclick="cambiarVistaPos('ticket')" class="flex-1 flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200 text-left active:bg-slate-100">
+                    <div class="size-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center font-bold text-xs shrink-0 relative">
+                        <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                        <span id="badge_cart_bar_count" class="hidden absolute -top-1 -right-1 size-4 rounded-full bg-primary text-white text-[9px] font-black flex items-center justify-center">0</span>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[10px] text-gray-500 font-bold uppercase leading-none">Ver Ticket</p>
+                        <p class="text-sm font-black text-primary leading-tight truncate" id="bar_total_usd_ui">$0.00</p>
+                    </div>
+                </button>
+                <button type="button" onclick="abrirModalCobro()" id="btnCobrarMobile" disabled class="px-5 h-11 rounded-xl font-black text-white bg-primary hover:bg-secondary disabled:bg-gray-300 disabled:cursor-not-allowed shadow-md shadow-primary/20 transition-all flex items-center justify-center gap-1.5 text-xs active:scale-95 shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">payments</span> COBRAR
+                </button>
             </div>
         </section>
 
@@ -1468,6 +1523,79 @@
         
         document.getElementById('checkout_total_usd').innerText = `$${totalUsd.toFixed(2)}`;
         document.getElementById('checkout_total_ves').innerText = `Bs. ${totalVes.toFixed(2)}`;
+
+        // Actualizar barra y badges móviles
+        const barTotalUsd = document.getElementById('bar_total_usd_ui');
+        const badgeTicketCount = document.getElementById('badge_pos_ticket_count');
+        const badgeCartBarCount = document.getElementById('badge_cart_bar_count');
+        const btnCobrarMobile = document.getElementById('btnCobrarMobile');
+
+        let itemsCountText = carrito.length.toString();
+
+        if (barTotalUsd) barTotalUsd.innerText = `$${totalUsd.toFixed(2)}`;
+        if (btnCobrarMobile) btnCobrarMobile.disabled = (carrito.length === 0);
+
+        if (badgeTicketCount) {
+            badgeTicketCount.innerText = itemsCountText;
+            if (carrito.length > 0) {
+                badgeTicketCount.classList.remove('hidden');
+                badgeTicketCount.classList.add('flex');
+            } else {
+                badgeTicketCount.classList.add('hidden');
+                badgeTicketCount.classList.remove('flex');
+            }
+        }
+
+        if (badgeCartBarCount) {
+            badgeCartBarCount.innerText = itemsCountText;
+            if (carrito.length > 0) {
+                badgeCartBarCount.classList.remove('hidden');
+                badgeCartBarCount.classList.add('flex');
+            } else {
+                badgeCartBarCount.classList.add('hidden');
+                badgeCartBarCount.classList.remove('flex');
+            }
+        }
+    }
+
+    // Cambiar vista activa en dispositivos móviles (Catálogo vs Ticket)
+    function cambiarVistaPos(vista) {
+        const colTicket = document.getElementById('pos_col_ticket');
+        const colCatalogo = document.getElementById('pos_col_catalogo');
+        const btnCat = document.getElementById('btn_vista_catalogo_m');
+        const btnTick = document.getElementById('btn_vista_ticket_m');
+
+        if (vista === 'ticket') {
+            if (colTicket) {
+                colTicket.classList.remove('hidden');
+                colTicket.classList.add('flex');
+            }
+            if (colCatalogo) {
+                colCatalogo.classList.add('hidden');
+                colCatalogo.classList.remove('flex');
+            }
+            if (btnCat && btnTick) {
+                btnTick.classList.add('bg-primary', 'text-white', 'shadow-xs');
+                btnTick.classList.remove('text-slate-300');
+                btnCat.classList.remove('bg-primary', 'text-white', 'shadow-xs');
+                btnCat.classList.add('text-slate-300');
+            }
+        } else {
+            if (colCatalogo) {
+                colCatalogo.classList.remove('hidden');
+                colCatalogo.classList.add('flex');
+            }
+            if (colTicket) {
+                colTicket.classList.add('hidden');
+                colTicket.classList.remove('flex');
+            }
+            if (btnCat && btnTick) {
+                btnCat.classList.add('bg-primary', 'text-white', 'shadow-xs');
+                btnCat.classList.remove('text-slate-300');
+                btnTick.classList.remove('bg-primary', 'text-white', 'shadow-xs');
+                btnTick.classList.add('text-slate-300');
+            }
+        }
     }
 
     // ==========================================

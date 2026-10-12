@@ -13,28 +13,28 @@
         <div class="p-4 sm:p-8 animate-fade-in-up pb-12">
             
             {{-- ENCABEZADO --}}
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div class="flex items-start sm:items-center gap-3 sm:gap-4">
                     <a href="{{ route('admin.cotizaciones.index') }}" class="w-10 h-10 flex-shrink-0 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-[#1e549e] hover:border-blue-200 transition-colors shadow-sm">
                         <span class="material-symbols-outlined">arrow_back</span>
                     </a>
                     <div>
-                        <div class="flex items-center gap-3">
-                            <h2 class="text-2xl font-black text-slate-900">Nueva Cotización de Productos</h2>
-                            <span class="px-3 py-1 bg-blue-100 text-[#1e549e] rounded-full text-xs font-mono font-black">
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                            <h2 class="text-xl sm:text-2xl font-black text-slate-900 leading-tight">Nueva Cotización</h2>
+                            <span class="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-blue-100 text-[#1e549e] rounded-full text-xs font-mono font-black">
                                 {{ $siguienteNumero }}
                             </span>
                         </div>
-                        <p class="text-sm text-gray-500 mt-0.5">Selecciona o busca los insumos para calcular el presupuesto en Dólares y Bolívares.</p>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Selecciona o busca los insumos para calcular el presupuesto en Dólares y Bolívares.</p>
                     </div>
                 </div>
 
                 {{-- TASA BCV BADGE --}}
-                <div class="hidden sm:flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex sm:flex items-center gap-2.5 sm:gap-3 bg-white px-3.5 py-2 rounded-2xl border border-gray-200 shadow-sm shrink-0 self-start sm:self-auto">
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <div class="text-right">
+                    <div class="text-left sm:text-right">
                         <div class="text-[10px] uppercase font-bold text-gray-400">Tasa Oficial BCV</div>
-                        <div class="text-sm font-black text-slate-800 font-mono">Bs. {{ number_format($valorTasaBcv, 4) }} / USD</div>
+                        <div class="text-xs sm:text-sm font-black text-slate-800 font-mono">Bs. {{ number_format($valorTasaBcv, 4) }} / USD</div>
                     </div>
                 </div>
             </div>

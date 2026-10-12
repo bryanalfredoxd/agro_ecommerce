@@ -44,7 +44,7 @@
                         <span class="material-symbols-outlined">arrow_back</span>
                     </a>
                     <div>
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                             <h2 class="text-2xl font-black text-slate-900 font-mono">{{ $cotizacion->numero_cotizacion }}</h2>
                             @php $badge = $cotizacion->estado_badge; @endphp
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border {{ $badge['bg'] }}">

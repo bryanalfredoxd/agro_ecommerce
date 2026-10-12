@@ -250,11 +250,11 @@
                 </div>
             </div>
 
-            <div class="px-6 py-4 bg-gray-50/80 border-t border-gray-100 flex items-center justify-end gap-3">
-                <button type="button" onclick="cerrarModalBCV()" class="px-4 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-xs transition-colors cursor-pointer">
+            <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-gray-50/80 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-end gap-2 sm:gap-3">
+                <button type="button" onclick="cerrarModalBCV()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-xs text-center transition-colors cursor-pointer">
                     Cancelar
                 </button>
-                <button type="button" id="btnEjecutarSyncBCV" onclick="ejecutarSincronizacionBCV()" class="px-5 py-2.5 rounded-xl font-black text-white bg-teal-600 hover:bg-teal-700 shadow-sm text-xs flex items-center gap-2 transition-all cursor-pointer">
+                <button type="button" id="btnEjecutarSyncBCV" onclick="ejecutarSincronizacionBCV()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl font-black text-white bg-teal-600 hover:bg-teal-700 shadow-sm text-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
                     <span class="material-symbols-outlined text-[16px]" id="iconEjecutarSync">sync</span>
                     <span id="btnEjecutarSyncBCVText">Sincronizar Ahora</span>
                 </button>

@@ -35,10 +35,10 @@
                                 </span>
                             @endif
                         </div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mt-1 flex items-center gap-2">
+                        <h2 class="text-lg sm:text-2xl font-bold text-gray-900 mt-1 flex flex-wrap items-center gap-1.5 sm:gap-2">
                             <span>{{ $sesion->caja ? $sesion->caja->nombre : 'Caja Principal' }}</span>
                             <span class="text-gray-300 font-normal">|</span>
-                            <span class="text-gray-600 font-medium text-base sm:text-lg">Cajero: {{ $sesion->cajero ? trim($sesion->cajero->nombre . ' ' . $sesion->cajero->apellido) : 'No asignado' }}</span>
+                            <span class="text-gray-600 font-medium text-sm sm:text-lg">Cajero: {{ $sesion->cajero ? trim($sesion->cajero->nombre . ' ' . $sesion->cajero->apellido) : 'No asignado' }}</span>
                         </h2>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                 $duracion = $cierre ? $apertura->diffForHumans($cierre, true) : $apertura->diffForHumans(now(), true);
             @endphp
             <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-2xs flex flex-wrap items-center justify-between gap-4 text-xs">
-                <div class="flex items-center gap-6">
+                <div class="flex flex-wrap items-center gap-4 sm:gap-6">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-gray-400 text-[18px]">login</span>
                         <div>

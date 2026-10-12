@@ -446,10 +446,10 @@
                 <div class="h-28 w-full"></div>
 
                 {{-- Barra Fija Abajo para Guardar --}}
-                <div class="fixed bottom-0 left-0 lg:left-72 right-0 bg-white/80 backdrop-blur-md border-t border-gray-200 p-4 sm:px-8 flex justify-end gap-4 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-                    <a href="{{ route('admin.productos.index') }}" class="px-6 py-3 rounded-xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors">Cancelar</a>
-                    <button type="submit" id="btnSubmitForm" class="btn-primary px-8 py-3 rounded-xl text-sm font-bold shadow-lg shadow-primary/25">
-                        <span class="material-symbols-outlined">save</span>
+                <div class="fixed bottom-0 left-0 lg:left-72 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 p-3 sm:p-4 sm:px-8 flex items-center justify-end gap-2.5 sm:gap-4 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+                    <a href="{{ route('admin.productos.index') }}" class="flex-1 sm:flex-initial text-center px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors text-xs sm:text-sm">Cancelar</a>
+                    <button type="submit" id="btnSubmitForm" class="btn-primary flex-1 sm:flex-initial px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-primary/25 flex items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-[18px]">save</span>
                         <span>{{ isset($producto) ? 'Guardar Cambios' : 'Crear Producto' }}</span>
                     </button>
                 </div>

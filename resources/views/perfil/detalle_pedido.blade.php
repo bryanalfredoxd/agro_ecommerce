@@ -6,34 +6,35 @@
 <div class="bg-slate-50 min-h-screen font-sans pb-24 relative">
 
     {{-- CABECERA STICKY SUPERIOR --}}
+    {{-- CABECERA STICKY SUPERIOR --}}
     <div class="bg-white/95 backdrop-blur-md shadow-2xs border-b border-slate-200/80 sticky top-0 z-30">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-            <a href="{{ route('perfil.pedidos') }}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-[#1e549e] transition-colors group">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-0 min-h-14 sm:h-16 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 sm:gap-4">
+            <a href="{{ route('perfil.pedidos') }}" class="inline-flex items-center gap-1.5 sm:gap-2 text-xs font-bold text-slate-600 hover:text-[#1e549e] transition-colors group">
                 <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
                 <span class="hidden sm:inline">Volver a mis pedidos</span>
                 <span class="sm:hidden">Volver</span>
             </a>
 
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-50 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-slate-200">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Orden</span>
-                    <span class="font-mono text-sm font-black text-slate-900">#{{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }}</span>
+                    <span class="font-mono text-xs sm:text-sm font-black text-slate-900">#{{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }}</span>
                 </div>
 
                 @if(in_array($pedido->estado, ['pagado', 'aprobado', 'completado_caja', 'en_ruta', 'entregado']))
                     <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" 
                        target="_blank" 
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#e5f2fb] hover:bg-[#1e549e] hover:text-white text-[#1e549e] font-bold text-xs transition-colors shadow-2xs"
+                       class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-[#e5f2fb] hover:bg-[#1e549e] hover:text-white text-[#1e549e] font-bold text-xs transition-colors shadow-2xs"
                        title="Ticket Térmico (80mm)">
-                        <span class="material-symbols-outlined text-[16px]">receipt_long</span>
-                        <span class="hidden sm:inline">Ticket 80mm</span>
+                        <span class="material-symbols-outlined text-[15px] sm:text-[16px]">receipt_long</span>
+                        <span class="hidden xs:inline">Ticket</span>
                     </a>
                     <a href="{{ route('perfil.pedido.factura', $pedido->id) }}" 
                        target="_blank" 
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-700 font-bold text-xs transition-colors shadow-2xs border border-emerald-200/60"
+                       class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-700 font-bold text-xs transition-colors shadow-2xs border border-emerald-200/60"
                        title="Factura Fiscal A4 / PDF">
-                        <span class="material-symbols-outlined text-[16px]">description</span>
-                        <span class="hidden sm:inline">Factura A4</span>
+                        <span class="material-symbols-outlined text-[15px] sm:text-[16px]">description</span>
+                        <span class="hidden xs:inline">Factura</span>
                     </a>
                 @endif
             </div>

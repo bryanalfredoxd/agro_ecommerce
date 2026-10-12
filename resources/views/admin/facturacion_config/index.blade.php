@@ -65,7 +65,7 @@
                 
                 <div class="p-6 space-y-5">
                     
-                    <div class="grid grid-cols-2 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                         <div>
                             <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-2 ml-1">Prefijo / Serie <span class="text-red-500">*</span></label>
                             <input type="text" id="serie" name="serie" placeholder="Ej: F, NE, A" required maxlength="10" class="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all font-black text-agro-dark outline-none uppercase tracking-widest">
@@ -93,9 +93,9 @@
 
                 </div>
 
-                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-                    <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-sm">Cancelar</button>
-                    <button type="submit" id="btnSave" class="px-6 py-2.5 rounded-xl font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm text-sm flex items-center gap-2 transition-all">
+                <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+                    <button type="button" onclick="closeModal()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-sm text-center">Cancelar</button>
+                    <button type="submit" id="btnSave" class="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm text-sm flex items-center justify-center gap-2 transition-all">
                         <span class="material-symbols-outlined text-[18px]">save</span> Guardar
                     </button>
                 </div>

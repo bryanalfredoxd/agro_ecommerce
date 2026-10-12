@@ -24,7 +24,7 @@
                     </p>
                 </div>
                 
-                <div class="flex items-center gap-2.5">
+                <div class="flex flex-wrap items-center gap-2">
                     @if(Auth::user()->tienePermiso('gestionar_caja_diaria'))
                     <button type="button" onclick="abrirModalCrearCaja()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 shadow-2xs transition-all active:scale-95">
                         <span class="material-symbols-outlined text-[17px] text-[#1e549e]">add_circle</span>
@@ -115,8 +115,8 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
                 
                 {{-- Cabecera con Tabs --}}
-                <div class="flex items-center justify-between border-b border-gray-100 px-5 pt-3 bg-white">
-                    <div class="flex gap-4 sm:gap-6">
+                <div class="flex items-center justify-between border-b border-gray-100 px-4 sm:px-5 pt-3 bg-white overflow-x-auto custom-scrollbar">
+                    <div class="flex gap-3 sm:gap-6 shrink-0">
                         <button type="button" onclick="cambiarPestanaPrincipal('turnos')" id="tab_btn_turnos" class="pb-3 px-1 text-xs sm:text-sm font-bold border-b-2 border-[#1e549e] text-[#1e549e] whitespace-nowrap flex items-center gap-2 transition-colors">
                             <span class="material-symbols-outlined text-[18px]">receipt_long</span>
                             <span>Historial y Turnos</span>

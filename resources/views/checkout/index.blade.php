@@ -289,23 +289,23 @@
                                            onchange="window.CheckoutConfig.manejarCambioPago(this)"
                                            onclick="window.CheckoutConfig.manejarCambioPago(this)">
                                     
-                                    <div class="rounded-2xl border-2 border-slate-200 bg-white p-3.5 sm:p-4 flex flex-col items-center justify-center gap-2 text-center h-full hover:border-slate-300 transition-all relative overflow-hidden peer-checked:border-[#3492cf] peer-checked:bg-[#e5f2fb]/40 shadow-2xs payment-card-box">
+                                    <div class="rounded-2xl border-2 border-slate-200 bg-white p-2.5 sm:p-4 flex flex-col items-center justify-center gap-1.5 sm:gap-2 text-center h-full hover:border-slate-300 transition-all relative overflow-hidden peer-checked:border-[#3492cf] peer-checked:bg-[#e5f2fb]/40 shadow-2xs payment-card-box">
                                         
                                         <div class="absolute top-2 right-2 text-white bg-[#1e549e] rounded-full size-4 flex items-center justify-center opacity-0 scale-50 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100">
                                             <span class="material-symbols-outlined text-[12px] font-bold">check</span>
                                         </div>
 
-                                        <div class="size-11 rounded-2xl flex items-center justify-center {{ $iconColor }} mb-0.5 overflow-hidden transition-transform group-hover:scale-105">
+                                        <div class="size-10 sm:size-11 rounded-2xl flex items-center justify-center {{ $iconColor }} mb-0.5 overflow-hidden transition-transform group-hover:scale-105">
                                             @if($icon === 'zelle_svg')
                                                 <img src="{{ asset('img/pagos/zelle.png') }}" alt="Zelle" class="w-full h-full object-contain p-2">
                                             @elseif($icon === 'binance_svg')
                                                 <img src="{{ asset('img/pagos/binance.png') }}" alt="Binance" class="w-full h-full object-contain p-2">
                                             @else
-                                                <span class="material-symbols-outlined text-[24px]">{{ $icon }}</span>
+                                                <span class="material-symbols-outlined text-[22px] sm:text-[24px]">{{ $icon }}</span>
                                             @endif
                                         </div>
                                         
-                                        <span class="text-xs font-bold text-slate-800 leading-tight">{{ $metodo->nombre }}</span>
+                                        <span class="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight">{{ $metodo->nombre }}</span>
                                         
                                         <div class="flex items-center gap-1 flex-wrap justify-center mt-0.5">
                                             @if($recargoPct > 0)

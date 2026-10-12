@@ -156,9 +156,9 @@
 
                 </div>
 
-                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3 sticky bottom-0">
-                    <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-sm">Cancelar</button>
-                    <button type="submit" id="btnSave" class="px-6 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-sm flex items-center gap-2 transition-all">
+                <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 sticky bottom-0">
+                    <button type="button" onclick="closeModal()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-sm text-center">Cancelar</button>
+                    <button type="submit" id="btnSave" class="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-sm flex items-center justify-center gap-2 transition-all">
                         <span class="material-symbols-outlined text-[18px]">save</span> Guardar
                     </button>
                 </div>

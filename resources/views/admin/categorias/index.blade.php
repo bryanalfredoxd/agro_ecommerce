@@ -263,9 +263,9 @@
 
                 </div>
 
-                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/80 flex justify-end gap-3">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-xs">Cancelar</button>
-                    <button type="submit" id="btnSave" class="px-5 py-2 rounded-xl font-black text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-xs flex items-center gap-1.5 transition-all">
+                <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-gray-100 bg-gray-50/80 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+                    <button type="button" onclick="closeModal()" class="w-full sm:w-auto px-4 py-2 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 text-xs text-center">Cancelar</button>
+                    <button type="submit" id="btnSave" class="w-full sm:w-auto px-5 py-2 rounded-xl font-black text-white bg-blue-600 hover:bg-blue-700 shadow-sm text-xs flex items-center justify-center gap-1.5 transition-all">
                         <span class="material-symbols-outlined text-[16px]">save</span>
                         <span id="btnSaveText">Guardar Categoría</span>
                     </button>

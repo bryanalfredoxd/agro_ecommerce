@@ -5,7 +5,7 @@
     $pagoRechazado = $pago && $pago->estado === 'rechazado';
 @endphp
 
-<div class="space-y-6 p-6">
+<div class="space-y-6 p-4 sm:p-6">
 
     {{-- CABECERA RESUMEN DEL PEDIDO --}}
     <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -366,7 +366,7 @@
                 </div>
             @endif
 
-            <div class="pt-2 grid grid-cols-2 gap-2">
+            <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <a href="{{ route('admin.pedidos.ticket', $pedido->id) }}" target="_blank" class="py-2.5 px-3 bg-white hover:bg-blue-50 text-gray-700 hover:text-[#1e549e] font-bold text-xs rounded-xl border border-gray-200 hover:border-blue-200 flex items-center justify-center gap-1.5 transition-all shadow-2xs" title="Imprimir Ticket Térmico 80mm">
                     <span class="material-symbols-outlined text-[17px] text-[#1e549e]">receipt_long</span>
                     <span>Ticket (80mm)</span>
