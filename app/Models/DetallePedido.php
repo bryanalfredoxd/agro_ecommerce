@@ -34,6 +34,11 @@ class DetallePedido extends Model
         return $this->belongsTo(Producto::class, 'producto_id');
     }
 
+    public function lote()
+    {
+        return $this->belongsTo(InventarioLote::class, 'inventario_lote_id');
+    }
+
     /**
      * Accesor para compatibilidad con código antiguo
      * Si en alguna vista usaste $detalle->cantidad, esto lo redirige a cantidad_solicitada

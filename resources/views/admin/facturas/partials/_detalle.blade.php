@@ -6,6 +6,12 @@
                 ANULADA
             </div>
         </div>
+    @elseif($factura->estado === 'reembolsada')
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <div class="border-4 border-amber-600 text-amber-600 font-black text-2xl px-4 py-2 rotate-[-20deg] opacity-80 tracking-widest uppercase bg-white/90 rounded-lg shadow-sm">
+                REEMBOLSADA
+            </div>
+        </div>
     @endif
 
     {{-- Logo y Cabecera --}}
@@ -133,6 +139,28 @@
         @endif
         @endif
     </div>
+
+    @if($factura->devoluciones && $factura->devoluciones->count() > 0)
+    {{-- Registro de Devoluciones Procesadas --}}
+    <div class="border-t border-dashed border-black my-2"></div>
+    <div class="text-left bg-amber-50 p-2 border border-dashed border-amber-400 rounded text-[9.5px]" style="background-color: #fffbeb; border-color: #f59e0b;">
+        <div class="font-bold text-amber-950 uppercase tracking-wide flex items-center justify-between" style="color: #451a03;">
+            <span>DEVOLUCIONES ACREDITADAS:</span>
+            <span class="font-mono">{{ $factura->devoluciones->count() }}</span>
+        </div>
+        @foreach($factura->devoluciones as $dev)
+        <div class="mt-1 pt-1 border-t border-dashed border-amber-300 flex justify-between" style="border-color: #fcd34d;">
+            <div>
+                <span class="font-bold text-amber-950" style="color: #451a03;">{{ $dev->codigo_devolucion }}</span>
+                <span class="text-[8.5px] text-amber-900 block" style="color: #78350f;">{{ \Carbon\Carbon::parse($dev->fecha_devolucion)->format('d/m/Y') }} • {{ str_replace('_', ' ', $dev->metodo_reembolso) }}</span>
+            </div>
+            <div class="text-right font-black text-rose-700" style="color: #be123c;">
+                -${{ number_format($dev->monto_total_usd, 2) }}
+            </div>
+        </div>
+        @endforeach
+    </div>
+    @endif
 
     {{-- Separador discontinuo --}}
     <div class="border-t border-dashed border-black my-2.5"></div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Crear Cuenta - Agrosuministros Rodríguez')
+@section('title', 'Crear Cuenta - ' . ($configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre()))
 
 @section('content')
 <div class="min-h-[calc(100vh-80px)] flex items-center justify-center relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 bg-slate-900">
@@ -14,16 +14,16 @@
     </div>
 
     {{-- CONTENIDO PRINCIPAL --}}
-    <div class="w-full max-w-[700px] relative z-10 animate-fade-in-up">
+    <div class="w-full max-w-[650px] relative z-10 animate-fade-in-up">
 
         {{-- ALERTA DE ERRORES --}}
-        @if ($errors->any())
-            <div class="mb-6 bg-red-50/95 backdrop-blur-md border-l-4 border-red-500 p-4 rounded-r-2xl shadow-lg animate-shake">
+        @if (isset($errors) && $errors->any())
+            <div class="mb-6 bg-red-50/95 backdrop-blur-md border-l-4 border-red-500 p-4 rounded-r-2xl shadow-lg">
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-red-500 text-[24px]">error</span>
                     <div>
-                        <h3 class="text-sm font-black text-red-800 uppercase tracking-wider">Ups, algo salió mal</h3>
-                        <p class="text-xs text-red-700 font-medium">Por favor revisa los campos marcados en rojo abajo.</p>
+                        <h3 class="text-sm font-black text-red-800 uppercase tracking-wider">Por favor corrige los siguientes errores:</h3>
+                        <p class="text-xs text-red-700 font-medium">{{ $errors->first() }}</p>
                     </div>
                 </div>
             </div>
@@ -33,99 +33,104 @@
         <div class="bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(11,29,56,0.45)] border border-white/60 p-6 sm:p-10 relative overflow-hidden" id="mainCard">
             
             <div class="text-center mb-8">
-                <a href="{{ route('home') }}" class="inline-block group mb-4">
-                    <img src="{{ asset('img/logo.png') }}" alt="Agrosuministros Rodríguez" class="h-16 mx-auto object-contain transition-transform group-hover:scale-105 duration-300">
+                <a href="{{ route('home') }}" class="inline-block group mb-3">
+                    <img src="{{ asset('img/logo.png') }}" alt="{{ $configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre() }}" class="h-16 mx-auto object-contain transition-transform group-hover:scale-105 duration-300">
                 </a>
                 <h1 class="text-2xl sm:text-3xl font-black text-agro-dark tracking-tight">Crear Cuenta</h1>
-                <p class="text-sm text-gray-500 font-medium mt-1.5">Únete a la plataforma oficial de Agrosuministros Rodríguez.</p>
+                <p class="text-xs sm:text-sm text-gray-500 font-medium mt-1.5">
+                    Regístrate para comprar en línea y gestionar tus pedidos de manera ágil.
+                </p>
             </div>
 
             <form method="POST" action="{{ route('register') }}" id="registerForm" class="space-y-5" novalidate>
                 @csrf
 
-                {{-- TABS: TIPO DE CLIENTE --}}
-                <div class="relative bg-gray-100/80 p-1.5 rounded-2xl border border-gray-200/50 shadow-inner mb-6">
-                    <div id="tabGlider" class="absolute top-1.5 left-1.5 h-[calc(100%-12px)] w-[calc(33.33%-4px)] bg-white rounded-xl shadow-sm ring-1 ring-black/5 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0"></div>
-
-                    <div class="relative z-10 grid grid-cols-3 gap-1">
-                        <label class="cursor-pointer text-center group">
-                            <input type="radio" name="tipo_cliente" value="natural" class="peer sr-only" {{ old('tipo_cliente', 'natural') == 'natural' ? 'checked' : '' }} onclick="window.moveGlider(0, 'natural')">
-                            <div class="py-2.5 rounded-xl text-xs font-bold text-gray-500 transition-colors duration-300 peer-checked:text-primary flex flex-col items-center gap-1 group-hover:text-agro-dark">
-                                <span class="material-symbols-outlined text-[20px]">person</span> Natural
-                            </div>
-                        </label>
-                        <label class="cursor-pointer text-center group">
-                            <input type="radio" name="tipo_cliente" value="juridico" class="peer sr-only" {{ old('tipo_cliente') == 'juridico' ? 'checked' : '' }} onclick="window.moveGlider(1, 'juridico')">
-                            <div class="py-2.5 rounded-xl text-xs font-bold text-gray-500 transition-colors duration-300 peer-checked:text-primary flex flex-col items-center gap-1 group-hover:text-agro-dark">
-                                <span class="material-symbols-outlined text-[20px]">domain</span> Empresa
-                            </div>
-                        </label>
-                        <label class="cursor-pointer text-center group">
-                            <input type="radio" name="tipo_cliente" value="finca_productor" class="peer sr-only" {{ old('tipo_cliente') == 'finca_productor' ? 'checked' : '' }} onclick="window.moveGlider(2, 'finca')">
-                            <div class="py-2.5 rounded-xl text-xs font-bold text-gray-500 transition-colors duration-300 peer-checked:text-primary flex flex-col items-center gap-1 group-hover:text-agro-dark">
-                                <span class="material-symbols-outlined text-[20px]">agriculture</span> Productor
-                            </div>
-                        </label>
-                    </div>
-                </div>
-                
-                <input type="hidden" id="old_tipo_cliente" value="{{ old('tipo_cliente', 'natural') }}">
+                {{-- Tipo de cuenta: Persona Natural únicamente --}}
+                <input type="hidden" name="tipo_cliente" value="natural">
 
                 {{-- FILA 1: NOMBRE Y APELLIDO --}}
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-5" id="row_nombres">
-    {{-- Nombre --}}
-    <div class="group" id="field_nombre_container" style="width: 100%;">
-        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary" id="label_nombre">Nombre</label>
-        <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <span class="material-symbols-outlined text-gray-700 text-[18px] group-focus-within:text-primary transition-colors">badge</span>
-            </div>
-            <input type="text" name="nombre" id="input_nombre" value="{{ old('nombre') }}" 
-                   class="w-full h-12 rounded-xl bg-gray-50 border @error('nombre') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-700 shadow-inner" placeholder="Ej: Juan" style="width: 100%;">
-        </div>
-        @error('nombre') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
-    </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    {{-- Nombre --}}
+                    <div class="group">
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">
+                            Nombre <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-gray-400 text-[18px] group-focus-within:text-primary transition-colors">badge</span>
+                            </div>
+                            <input type="text" 
+                                   name="nombre" 
+                                   id="input_nombre" 
+                                   value="{{ old('nombre') }}" 
+                                   required
+                                   class="w-full h-12 rounded-xl bg-gray-50 border @error('nombre') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-400 shadow-inner" 
+                                   placeholder="Ej: Juan">
+                        </div>
+                        @error('nombre') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
+                    </div>
 
-    {{-- Apellido --}}
-    <div class="group" id="field_apellido_container" style="width: 100%;">
-        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Apellido</label>
-        <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <span class="material-symbols-outlined text-gray-700 text-[18px] group-focus-within:text-primary transition-colors">badge</span>
-            </div>
-            <input type="text" name="apellido" id="input_apellido" value="{{ old('apellido') }}" 
-                   class="w-full h-12 rounded-xl bg-gray-50 border @error('apellido') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-700 shadow-inner" placeholder="Ej: Pérez" style="width: 100%;">
-        </div>
-        @error('apellido') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
-    </div>
-</div>
+                    {{-- Apellido --}}
+                    <div class="group">
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">
+                            Apellido <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-gray-400 text-[18px] group-focus-within:text-primary transition-colors">badge</span>
+                            </div>
+                            <input type="text" 
+                                   name="apellido" 
+                                   id="input_apellido" 
+                                   value="{{ old('apellido') }}" 
+                                   required
+                                   class="w-full h-12 rounded-xl bg-gray-50 border @error('apellido') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-400 shadow-inner" 
+                                   placeholder="Ej: Pérez">
+                        </div>
+                        @error('apellido') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
 
                 {{-- FILA 2: CÉDULA Y TELÉFONO --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {{-- Cédula / Documento --}}
                     <div class="group">
-                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary" id="label_documento">Documento</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">
+                            Cédula / Documento <span class="text-rose-500">*</span>
+                        </label>
                         <div class="flex h-12 rounded-xl bg-gray-50 border @error('documento_identidad') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus-within:border-primary focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300 shadow-inner">
-                            <select name="tipo_doc" class="flex-none bg-transparent border-0 py-0 pl-4 pr-1 text-gray-500 font-bold focus:ring-0 text-sm cursor-pointer hover:text-agro-dark outline-none h-full">
-                                <option {{ old('tipo_doc') == 'V' ? 'selected' : '' }}>V</option>
-                                <option {{ old('tipo_doc') == 'E' ? 'selected' : '' }}>E</option>
-                                <option {{ old('tipo_doc') == 'J' ? 'selected' : '' }}>J</option>
-                                <option {{ old('tipo_doc') == 'G' ? 'selected' : '' }}>G</option>
+                            <select name="tipo_doc" class="flex-none bg-transparent border-0 py-0 pl-4 pr-1 text-gray-600 font-bold focus:ring-0 text-sm cursor-pointer hover:text-agro-dark outline-none h-full">
+                                <option value="V" {{ old('tipo_doc', 'V') == 'V' ? 'selected' : '' }}>V</option>
+                                <option value="E" {{ old('tipo_doc') == 'E' ? 'selected' : '' }}>E</option>
+                                <option value="J" {{ old('tipo_doc') == 'J' ? 'selected' : '' }}>J</option>
+                                <option value="G" {{ old('tipo_doc') == 'G' ? 'selected' : '' }}>G</option>
                             </select>
                             <div class="w-px bg-gray-200 my-2"></div>
-                            <input type="text" name="documento_identidad" id="input_documento" value="{{ old('documento_identidad') }}" 
-                                   class="w-full bg-transparent border-0 px-3 text-agro-dark font-bold focus:ring-0 text-sm placeholder:text-gray-700 outline-none h-full" placeholder="12345678" inputmode="numeric">
+                            <input type="text" 
+                                   name="documento_identidad" 
+                                   id="input_documento" 
+                                   value="{{ old('documento_identidad') }}" 
+                                   required
+                                   class="w-full bg-transparent border-0 px-3 text-agro-dark font-bold focus:ring-0 text-sm placeholder:text-gray-400 outline-none h-full" 
+                                   placeholder="12345678" 
+                                   inputmode="numeric">
                         </div>
                         @error('documento_identidad') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- Teléfono --}}
+                    {{-- Teléfono / WhatsApp --}}
                     <div class="group">
-                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">WhatsApp / Teléfono</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">
+                            WhatsApp / Teléfono <span class="text-rose-500">*</span>
+                        </label>
                         <div class="flex h-12 rounded-xl bg-gray-50 border @error('telefono') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus-within:border-primary focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300 shadow-inner relative">
-                            <input type="tel" id="phone" class="w-full bg-transparent border-0 px-3 text-agro-dark font-bold focus:ring-0 text-sm placeholder:text-gray-700 outline-none h-full rounded-xl" placeholder="412 1234567">
-                            <input type="hidden" name="telefono" id="hidden_telefono">
-                            <input type="hidden" name="codigo_pais" id="hidden_codigo_pais">
+                            <input type="tel" 
+                                   id="phone" 
+                                   class="w-full bg-transparent border-0 px-3 text-agro-dark font-bold focus:ring-0 text-sm placeholder:text-gray-400 outline-none h-full rounded-xl" 
+                                   placeholder="412 1234567"
+                                   required>
+                            <input type="hidden" name="telefono" id="hidden_telefono" value="{{ old('telefono') }}">
+                            <input type="hidden" name="codigo_pais" id="hidden_codigo_pais" value="{{ old('codigo_pais', '+58') }}">
                         </div>
                         @error('telefono') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
@@ -133,13 +138,19 @@
 
                 {{-- FILA 3: EMAIL (Ocupa todo el ancho) --}}
                 <div class="group">
-                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Correo Electrónico</label>
+                    <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">
+                        Correo Electrónico <span class="text-rose-500">*</span>
+                    </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                            <span class="material-symbols-outlined text-gray-700 text-[18px] group-focus-within:text-primary transition-colors">mail</span>
+                            <span class="material-symbols-outlined text-gray-400 text-[18px] group-focus-within:text-primary transition-colors">mail</span>
                         </div>
-                        <input type="email" name="email" value="{{ old('email') }}" 
-                               class="w-full h-12 rounded-xl bg-gray-50 border @error('email') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-700 shadow-inner" placeholder="usuario@correo.com">
+                        <input type="email" 
+                               name="email" 
+                               value="{{ old('email') }}" 
+                               required
+                               class="w-full h-12 rounded-xl bg-gray-50 border @error('email') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark placeholder:text-gray-400 shadow-inner" 
+                               placeholder="usuario@correo.com">
                     </div>
                     @error('email') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                 </div>
@@ -148,34 +159,44 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {{-- Contraseña --}}
                     <div class="group">
-                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Contraseña</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">
+                            Contraseña <span class="text-rose-500">*</span>
+                        </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                <span class="material-symbols-outlined text-gray-700 text-[18px] group-focus-within:text-primary transition-colors">key</span>
+                                <span class="material-symbols-outlined text-gray-400 text-[18px] group-focus-within:text-primary transition-colors">key</span>
                             </div>
-                            <input type="password" name="password" 
-                                   class="w-full h-12 rounded-xl bg-gray-50 border @error('password') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark tracking-widest placeholder:text-gray-700 shadow-inner" placeholder="••••••••">
+                            <input type="password" 
+                                   name="password" 
+                                   required
+                                   class="w-full h-12 rounded-xl bg-gray-50 border @error('password') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark tracking-widest placeholder:text-gray-400 shadow-inner" 
+                                   placeholder="••••••••">
                         </div>
                         @error('password') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Confirmar Contraseña --}}
                     <div class="group">
-                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">Confirmar Contraseña</label>
+                        <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">
+                            Confirmar Contraseña <span class="text-rose-500">*</span>
+                        </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                <span class="material-symbols-outlined text-gray-700 text-[18px] group-focus-within:text-primary transition-colors">password</span>
+                                <span class="material-symbols-outlined text-gray-400 text-[18px] group-focus-within:text-primary transition-colors">password</span>
                             </div>
-                            <input type="password" name="password_confirmation" 
-                                   class="w-full h-12 rounded-xl bg-gray-50 border border-gray-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark tracking-widest placeholder:text-gray-700 shadow-inner" placeholder="••••••••">
+                            <input type="password" 
+                                   name="password_confirmation" 
+                                   required
+                                   class="w-full h-12 rounded-xl bg-gray-50 border border-gray-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all duration-300 pl-10 pr-4 text-sm font-bold text-agro-dark tracking-widest placeholder:text-gray-400 shadow-inner" 
+                                   placeholder="••••••••">
                         </div>
                     </div>
                 </div>
 
                 {{-- Términos y Condiciones --}}
-                <div class="pt-4 flex flex-col items-center justify-center">
+                <div class="pt-2 flex flex-col items-center justify-center">
                     <div class="flex items-center">
-                        <input id="terms" name="terms" type="checkbox" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary focus:ring-offset-0 cursor-pointer shadow-sm" @error('terms') checked @enderror>
+                        <input id="terms" name="terms" type="checkbox" required class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary focus:ring-offset-0 cursor-pointer shadow-sm" {{ old('terms') ? 'checked' : '' }}>
                         <label for="terms" class="ml-2 block text-xs font-bold text-gray-500 cursor-pointer select-none">
                             Acepto los <a href="#" class="text-primary hover:text-agro-dark transition-colors">términos y condiciones</a>.
                         </label>
@@ -198,60 +219,32 @@
                 </div>
                 <div class="relative flex justify-center">
                     <span class="bg-white px-3 text-[10px] font-black text-gray-500 uppercase tracking-widest">
-                        ¿Ya eres parte de nosotros?
+                        ¿Ya tienes una cuenta?
                     </span>
                 </div>
             </div>
 
-            <a href="{{ route('login') }}" class="btn-outline w-full h-12 rounded-xl text-sm font-bold justify-center">
-                Iniciar Sesión
-            </a>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <a href="{{ route('login') }}" class="btn-outline w-full h-12 rounded-xl text-sm font-bold justify-center flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">login</span>
+                    <span>Iniciar Sesión</span>
+                </a>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{{ route('password.request') }}" class="text-xs font-bold text-[#1e549e] hover:text-[#3492cf] hover:underline transition-colors inline-flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px]">lock_reset</span>
+                    <span>¿Olvidaste tu contraseña? Recupérala aquí</span>
+                </a>
+            </div>
 
         </div>
         
         {{-- Footer --}}
         <p class="text-center mt-6 text-[11px] text-white/75 font-black uppercase tracking-[0.2em] drop-shadow-sm pb-6">
-            Agrosuministros Rodríguez &copy; {{ date('Y') }}
+            {{ $configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre() }} &copy; {{ date('Y') }}
         </p>
 
     </div>
 </div>
-
-<script>
-    // Lógica para el Slider de Tipo de Cliente y Ajuste de "Razón Social"
-    window.moveGlider = function(index, type) {
-        const glider = document.getElementById('tabGlider');
-        if(glider) {
-            glider.style.transform = `translateX(${index * 100}%)`;
-        }
-        
-        const rowNombres = document.getElementById('row_nombres');
-        const apellidoCont = document.getElementById('field_apellido_container');
-        const labelNombre = document.getElementById('label_nombre');
-        const labelDoc = document.getElementById('label_documento');
-        
-        if(type === 'juridico') {
-            // Ocultar Apellido
-            if(apellidoCont) {
-                apellidoCont.style.display = 'none';
-            }
-            if(labelNombre) labelNombre.innerText = 'Razón Social';
-            if(labelDoc) labelDoc.innerText = 'RIF';
-        } else {
-            // Mostrar Apellido
-            if(apellidoCont) {
-                apellidoCont.style.display = 'block';
-            }
-            if(labelNombre) labelNombre.innerText = 'Nombre';
-            if(labelDoc) labelDoc.innerText = 'Cédula / Documento';
-        }
-    };
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        const oldType = document.getElementById('old_tipo_cliente').value;
-        if(oldType === 'juridico') window.moveGlider(1, 'juridico');
-        else if(oldType === 'finca_productor') window.moveGlider(2, 'finca');
-        else window.moveGlider(0, 'natural');
-    });
-</script>
 @endsection

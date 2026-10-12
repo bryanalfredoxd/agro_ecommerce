@@ -29,6 +29,13 @@ return [
                 'badge_color' => 'bg-blue-50 text-blue-700 border-blue-200',
                 'descripcion' => 'Permite ver tarjetas de pedidos pendientes, alertas de stock y recetas por auditar.'
             ],
+            'ver_estadisticas_analitica' => [
+                'nombre' => 'Ver Analítica y Reportes Avanzados',
+                'tipo' => 'vista',
+                'badge' => 'Inteligencia de Negocio',
+                'badge_color' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                'descripcion' => 'Permite acceder a gráficos interactivos, métricas de ventas y reportes avanzados.'
+            ],
         ]
     ],
     [
@@ -39,18 +46,53 @@ return [
         'descripcion' => 'Gestión de órdenes web, mostrador POS, auditoría de pagos y devoluciones.',
         'permisos' => [
             'ver_pedidos' => [
-                'nombre' => 'Ver Pedidos',
+                'nombre' => 'Acceso a Módulo de Pedidos',
                 'tipo' => 'vista',
                 'badge' => 'Visualización',
                 'badge_color' => 'bg-sky-50 text-sky-700 border-sky-200',
-                'descripcion' => 'Permite visualizar el listado de pedidos web y consultar su detalle 360°.'
+                'descripcion' => 'Permite acceder a la pantalla de gestión de pedidos y consultar información autorizada.'
             ],
-            'crear_venta_manual' => [
-                'nombre' => 'Operar Terminal POS (Venta Mostrador)',
+            'ver_pedidos_todos' => [
+                'nombre' => 'Ver Todos los Pedidos (Vista Global)',
+                'tipo' => 'vista',
+                'badge' => 'Global',
+                'badge_color' => 'bg-blue-50 text-blue-700 border-blue-200',
+                'descripcion' => 'Permite ver la pestaña "Todos los Pedidos" y consultar órdenes sin restricciones de estado.'
+            ],
+            'ver_pedidos_por_verificar' => [
+                'nombre' => 'Ver Pedidos Por Verificar Pago',
+                'tipo' => 'sensible',
+                'badge' => 'Tesorería',
+                'badge_color' => 'bg-amber-50 text-amber-700 border-amber-200',
+                'descripcion' => 'Permite acceder a la pestaña de pedidos en espera de confirmación y auditoría de transferencias/pagos.'
+            ],
+            'ver_pedidos_despacho' => [
+                'nombre' => 'Ver Pedidos Por Despachar (Almacén)',
                 'tipo' => 'operativo',
-                'badge' => 'Punto de Venta',
+                'badge' => 'Almacén / Empaque',
                 'badge_color' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                'descripcion' => 'Permite abrir el terminal POS, facturar ventas en mostrador y emitir tickets.'
+                'descripcion' => 'Permite acceder a la pestaña de pedidos pagados y listos para preparación física en bodega.'
+            ],
+            'ver_pedidos_en_ruta' => [
+                'nombre' => 'Ver Pedidos En Ruta (Delivery)',
+                'tipo' => 'operativo',
+                'badge' => 'Reparto / Chofer',
+                'badge_color' => 'bg-orange-50 text-orange-700 border-orange-200',
+                'descripcion' => 'Permite acceder a la pestaña de pedidos en ruta con motorizado o transportista.'
+            ],
+            'ver_pedidos_completados' => [
+                'nombre' => 'Ver Pedidos Completados',
+                'tipo' => 'vista',
+                'badge' => 'Histórico',
+                'badge_color' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                'descripcion' => 'Permite consultar el historial de órdenes finalizadas y entregadas con éxito.'
+            ],
+            'ver_pedidos_cancelados' => [
+                'nombre' => 'Ver Pedidos Cancelados / Devueltos',
+                'tipo' => 'vista',
+                'badge' => 'Auditoría',
+                'badge_color' => 'bg-rose-50 text-rose-700 border-rose-200',
+                'descripcion' => 'Permite consultar el historial de órdenes canceladas, pagos rechazados o productos devueltos.'
             ],
             'actualizar_estado_pedido' => [
                 'nombre' => 'Actualizar Estado de Pedidos',
@@ -66,12 +108,33 @@ return [
                 'badge_color' => 'bg-amber-50 text-amber-700 border-amber-200',
                 'descripcion' => 'Permite ver comprobantes, aprobar o rechazar transferencias y pagos móviles.'
             ],
+            'crear_venta_manual' => [
+                'nombre' => 'Operar Terminal POS (Venta Mostrador)',
+                'tipo' => 'operativo',
+                'badge' => 'Punto de Venta',
+                'badge_color' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                'descripcion' => 'Permite abrir el terminal POS, facturar ventas en mostrador y emitir tickets.'
+            ],
             'procesar_devoluciones' => [
-                'nombre' => 'Procesar Devoluciones',
+                'nombre' => 'Procesar Devoluciones y Reembolsos',
                 'tipo' => 'sensible',
                 'badge' => 'Acción Sensible',
                 'badge_color' => 'bg-amber-50 text-amber-700 border-amber-200',
-                'descripcion' => 'Permite registrar y procesar devoluciones parciales o totales de pedidos.'
+                'descripcion' => 'Permite registrar y emitir reembolsos o notas de crédito por devoluciones.'
+            ],
+            'ver_cotizaciones' => [
+                'nombre' => 'Ver Cotizaciones y Presupuestos',
+                'tipo' => 'vista',
+                'badge' => 'Visualización',
+                'badge_color' => 'bg-sky-50 text-sky-700 border-sky-200',
+                'descripcion' => 'Permite consultar el listado de cotizaciones emitidas e imprimir presupuestos.'
+            ],
+            'gestionar_cotizaciones' => [
+                'nombre' => 'Crear y Gestionar Cotizaciones',
+                'tipo' => 'sensible',
+                'badge' => 'Ventas',
+                'badge_color' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                'descripcion' => 'Permite crear presupuestos, cambiar estados, enviar al cliente por correo y anular.'
             ],
         ]
     ],
@@ -139,6 +202,13 @@ return [
                 'badge' => 'Visualización',
                 'badge_color' => 'bg-sky-50 text-sky-700 border-sky-200',
                 'descripcion' => 'Permite consultar el listado de facturas emitidas e imprimir tickets/PDF.'
+            ],
+            'ver_devoluciones' => [
+                'nombre' => 'Ver Historial de Devoluciones',
+                'tipo' => 'vista',
+                'badge' => 'Auditoría',
+                'badge_color' => 'bg-teal-50 text-teal-700 border-teal-200',
+                'descripcion' => 'Permite consultar el listado e historial de devoluciones y reembolsos procesados.'
             ],
             'gestionar_caja_diaria' => [
                 'nombre' => 'Gestionar Caja Diaria / Arqueos',

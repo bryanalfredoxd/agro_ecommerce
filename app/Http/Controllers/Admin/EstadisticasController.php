@@ -145,6 +145,21 @@ class EstadisticasController extends Controller
         $ticketPromedioUsd = $totalPedidos > 0 ? round($totalIngresosUsd / $totalPedidos, 2) : 0.00;
         $ticketPromedioVes = $totalPedidos > 0 ? round($totalIngresosVes / $totalPedidos, 2) : 0.00;
 
+        // 4.1 Devoluciones y Reembolsos en el Período
+        $devolucionesQuery = \App\Models\Devolucion::where('estado', 'procesada');
+        if ($fechaDesde) $devolucionesQuery->where('fecha_devolucion', '>=', $fechaDesde);
+        if ($fechaHasta) $devolucionesQuery->where('fecha_devolucion', '<=', $fechaHasta);
+        if ($canal !== 'todos') {
+            $devolucionesQuery->whereHas('pedido', function($qp) use ($canal) {
+                $qp->where('canal_venta', $canal);
+            });
+        }
+        $totalDevolucionesUsd = (float)(clone $devolucionesQuery)->sum('monto_total_usd');
+        $totalDevolucionesVes = (float)(clone $devolucionesQuery)->sum('monto_total_ves');
+        $cantidadDevoluciones = (int)(clone $devolucionesQuery)->count();
+        $ingresosNetosUsd = max(0, $totalIngresosUsd - $totalDevolucionesUsd);
+        $ingresosNetosVes = max(0, $totalIngresosVes - $totalDevolucionesVes);
+
         // 5. Unidades Totales Vendidas en el Período
         $unidadesQuery = DetallePedido::join('pedidos', 'pedido_detalles.pedido_id', '=', 'pedidos.id')
             ->whereNotIn('pedidos.estado', ['cancelado', 'rechazado']);
@@ -475,6 +490,11 @@ class EstadisticasController extends Controller
             'kpis' => [
                 'total_ingresos_usd' => $totalIngresosUsd,
                 'total_ingresos_ves' => $totalIngresosVes,
+                'total_devoluciones_usd' => $totalDevolucionesUsd,
+                'total_devoluciones_ves' => $totalDevolucionesVes,
+                'cantidad_devoluciones' => $cantidadDevoluciones,
+                'ingresos_netos_usd' => $ingresosNetosUsd,
+                'ingresos_netos_ves' => $ingresosNetosVes,
                 'total_pedidos' => $totalPedidos,
                 'total_unidades' => $totalUnidadesVendidas,
                 'ticket_promedio_usd' => $ticketPromedioUsd,

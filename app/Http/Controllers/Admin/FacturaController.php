@@ -43,7 +43,8 @@ class FacturaController extends Controller
         $factura = Factura::with([
             'pedido.detalles.producto',
             'pedido.pago',
-            'pedido.usuario'
+            'pedido.usuario',
+            'devoluciones.detalles.producto'
         ])->findOrFail($id);
 
         $config = \App\Models\ConfiguracionTienda::first();
@@ -67,16 +68,23 @@ class FacturaController extends Controller
 
     /**
      * Vista de impresión en formato Ticket Térmico (80mm)
-    /**
-     * Vista de impresión en formato Ticket Térmico (80mm)
      */
     public function ticket($id)
     {
         $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])->findOrFail($id);
 
         $user = auth()->user();
-        if ($user && !$user->esAdmin() && !$user->esPersonal() && $factura->pedido && $factura->pedido->usuario_id !== $user->id) {
-            abort(403, 'No autorizado para visualizar este comprobante.');
+        if (!$user) {
+            abort(403, 'Debes iniciar sesión para consultar este comprobante.');
+        }
+
+        // Validación estricta de autorización (IDOR & RBAC)
+        if ($factura->pedido) {
+            if (!$factura->pedido->puedeSerVistoPor($user)) {
+                abort(403, 'No tienes autorización para visualizar este comprobante.');
+            }
+        } elseif (!$user->esAdmin() && !$user->tienePermiso('ver_facturas')) {
+            abort(403, 'No tienes autorización para visualizar este comprobante.');
         }
 
         $config = \App\Models\ConfiguracionTienda::first();
@@ -91,8 +99,17 @@ class FacturaController extends Controller
         $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])->findOrFail($id);
 
         $user = auth()->user();
-        if ($user && !$user->esAdmin() && !$user->esPersonal() && $factura->pedido && $factura->pedido->usuario_id !== $user->id) {
-            abort(403, 'No autorizado para visualizar este comprobante.');
+        if (!$user) {
+            abort(403, 'Debes iniciar sesión para consultar este comprobante.');
+        }
+
+        // Validación estricta de autorización (IDOR & RBAC)
+        if ($factura->pedido) {
+            if (!$factura->pedido->puedeSerVistoPor($user)) {
+                abort(403, 'No tienes autorización para visualizar esta factura.');
+            }
+        } elseif (!$user->esAdmin() && !$user->tienePermiso('ver_facturas')) {
+            abort(403, 'No tienes autorización para visualizar esta factura.');
         }
 
         $config = \App\Models\ConfiguracionTienda::first();
@@ -104,13 +121,24 @@ class FacturaController extends Controller
      */
     public function ticketPorPedido($pedidoId)
     {
+        $pedido = \App\Models\Pedido::findOrFail($pedidoId);
+        $user = auth()->user();
+
+        if (!$user) {
+            abort(403, 'Debes iniciar sesión para consultar este comprobante.');
+        }
+
+        // Validación estricta: el usuario debe tener permisos para ver este pedido
+        if (!$pedido->puedeSerVistoPor($user)) {
+            abort(403, 'No tienes autorización para acceder al comprobante de este pedido.');
+        }
+
         $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])
             ->where('pedido_id', $pedidoId)
             ->first();
 
         if (!$factura) {
             // Si el pedido aún no tiene factura pero está pagado o en proceso final, intentamos generarla
-            $pedido = \App\Models\Pedido::findOrFail($pedidoId);
             if (in_array($pedido->estado, ['pagado', 'en_ruta', 'en_camino', 'entregado', 'completado_caja', 'aprobado'])) {
                 \App\Models\Factura::emitirParaPedido($pedido);
                 $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])
@@ -121,11 +149,6 @@ class FacturaController extends Controller
 
         if (!$factura) {
             abort(404, 'No hay factura emitida para este pedido.');
-        }
-
-        $user = auth()->user();
-        if ($user && !$user->esAdmin() && !$user->esPersonal() && $factura->pedido && $factura->pedido->usuario_id !== $user->id) {
-            abort(403, 'No autorizado para visualizar este comprobante.');
         }
 
         $config = \App\Models\ConfiguracionTienda::first();
@@ -137,13 +160,24 @@ class FacturaController extends Controller
      */
     public function facturaPorPedido($pedidoId)
     {
+        $pedido = \App\Models\Pedido::findOrFail($pedidoId);
+        $user = auth()->user();
+
+        if (!$user) {
+            abort(403, 'Debes iniciar sesión para consultar este comprobante.');
+        }
+
+        // Validación estricta: el usuario debe tener permisos para ver este pedido
+        if (!$pedido->puedeSerVistoPor($user)) {
+            abort(403, 'No tienes autorización para acceder a la factura de este pedido.');
+        }
+
         $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])
             ->where('pedido_id', $pedidoId)
             ->first();
 
         if (!$factura) {
             // Si el pedido aún no tiene factura pero está pagado o en proceso final, intentamos generarla
-            $pedido = \App\Models\Pedido::findOrFail($pedidoId);
             if (in_array($pedido->estado, ['pagado', 'en_ruta', 'en_camino', 'entregado', 'completado_caja', 'aprobado'])) {
                 \App\Models\Factura::emitirParaPedido($pedido);
                 $factura = Factura::with(['pedido.detalles.producto', 'pedido.pago', 'pedido.pagos', 'pedido.usuario'])
@@ -154,11 +188,6 @@ class FacturaController extends Controller
 
         if (!$factura) {
             abort(404, 'No hay factura emitida para este pedido.');
-        }
-
-        $user = auth()->user();
-        if ($user && !$user->esAdmin() && !$user->esPersonal() && $factura->pedido && $factura->pedido->usuario_id !== $user->id) {
-            abort(403, 'No autorizado para visualizar este comprobante.');
         }
 
         $config = \App\Models\ConfiguracionTienda::first();

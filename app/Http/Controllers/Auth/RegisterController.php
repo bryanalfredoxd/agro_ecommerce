@@ -43,16 +43,27 @@ class RegisterController extends Controller
 
         $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
-            'apellido' => ['nullable', 'string', 'max:100'], 
+            'apellido' => ['required', 'string', 'max:100'], 
             'email' => $emailRule,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'codigo_pais' => ['required', 'string', 'max:10'], 
             'telefono' => ['required', 'string', 'max:20'],
-            'tipo_cliente' => ['required', 'in:natural,juridico,finca_productor'],
             'tipo_doc' => ['required', 'in:V,E,J,G'],
             'documento_identidad' => ['required', 'string', 'max:20'],
             'terms' => ['required', 'accepted'],
+        ], [
+            'nombre.required' => 'El nombre es obligatorio.',
+            'apellido.required' => 'El apellido es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.unique' => 'Este correo ya se encuentra registrado.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+            'telefono.required' => 'El número de teléfono es obligatorio.',
+            'documento_identidad.required' => 'El número de cédula o documento es obligatorio.',
+            'terms.accepted' => 'Debes aceptar los términos y condiciones para continuar.'
         ]);
+
+        $tipoCliente = 'natural';
 
         // 2. EVALUAR REGISTRO O ACTUALIZACIÓN DE USUARIO PARCIAL
         if ($usuarioExistente) {
@@ -79,12 +90,12 @@ class RegisterController extends Controller
             $usuarioExistente->update([
                 'rol_id' => 4, // ID 4 = Cliente
                 'nombre' => $request->nombre,
-                'apellido' => ($request->tipo_cliente === 'juridico') ? null : $request->apellido,
+                'apellido' => $request->apellido,
                 'email' => $request->email,
                 'password_hash' => Hash::make($request->password), 
                 'telefono' => $telefonoCompleto, 
                 'documento_identidad' => $documentoCompleto,
-                'tipo_cliente' => $request->tipo_cliente,
+                'tipo_cliente' => $tipoCliente,
                 'activo' => true,
             ]);
 
@@ -108,12 +119,12 @@ class RegisterController extends Controller
         $user = User::create([
             'rol_id' => $rolAsignado,
             'nombre' => $request->nombre,
-            'apellido' => ($request->tipo_cliente === 'juridico') ? null : $request->apellido,
+            'apellido' => $request->apellido,
             'email' => $request->email,
             'password_hash' => Hash::make($request->password), 
             'telefono' => $telefonoCompleto, 
             'documento_identidad' => $documentoCompleto,
-            'tipo_cliente' => $request->tipo_cliente,
+            'tipo_cliente' => $tipoCliente,
             'activo' => true,
         ]);
 

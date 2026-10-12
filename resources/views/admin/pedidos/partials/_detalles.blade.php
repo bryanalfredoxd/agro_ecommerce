@@ -348,12 +348,21 @@
                     Este pedido se encuentra en estado final: {{ strtoupper($pedido->estado) }}.
                 </div>
             @elseif(Auth::user()->tienePermiso('actualizar_estado_pedido'))
+                @php
+                    $userAuth = Auth::user();
+                    $esSoloRepartoAuth = !$userAuth->esAdmin() && $userAuth->tienePermiso('ver_pedidos_en_ruta') && !$userAuth->tienePermiso('ver_pedidos_despacho') && !$userAuth->tienePermiso('ver_pedidos_todos');
+                    $puedeCancelarAuth = $userAuth->esAdmin() || $userAuth->tienePermiso('ver_pedidos_cancelados');
+                @endphp
                 <div class="flex items-center gap-2">
                     <select id="modal_estado_select_{{ $pedido->id }}" class="flex-1 h-10 px-3 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none">
-                        <option value="preparacion" {{ $pedido->estado === 'preparacion' ? 'selected' : '' }}>En Preparación / Empaque</option>
+                        @if(!$esSoloRepartoAuth)
+                            <option value="preparacion" {{ $pedido->estado === 'preparacion' ? 'selected' : '' }}>En Preparación / Empaque</option>
+                        @endif
                         <option value="en_ruta" {{ $pedido->estado === 'en_ruta' ? 'selected' : '' }}>En Ruta (Repartidor)</option>
                         <option value="entregado" {{ $pedido->estado === 'entregado' ? 'selected' : '' }}>Entregado al Cliente ✅</option>
-                        <option value="cancelado" class="text-red-600">Cancelar Pedido</option>
+                        @if($puedeCancelarAuth)
+                            <option value="cancelado" class="text-red-600">Cancelar Pedido</option>
+                        @endif
                     </select>
                     <button type="button" onclick="guardarEstadoDesdeModal({{ $pedido->id }})" class="px-4 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black flex items-center gap-1 transition-colors">
                         Actualizar

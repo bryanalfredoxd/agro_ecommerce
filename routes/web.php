@@ -16,6 +16,8 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\SplashController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 // Controladores Admin
 use App\Http\Controllers\Admin\DashboardController;
@@ -39,6 +41,7 @@ use App\Http\Controllers\Admin\TasaCambioController as AdminTasaCambioController
 use App\Http\Controllers\Admin\CotizacionController;
 use App\Http\Controllers\Admin\SolicitudProductoController;
 use App\Http\Controllers\Admin\EstadisticasController;
+use App\Http\Controllers\Admin\DevolucionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +66,12 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
+
+    // Recuperación de Contraseña (Olvidó su contraseña)
+    Route::get('/olvido-contrasena', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/olvido-contrasena', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/restablecer-contrasena/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/restablecer-contrasena', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
 // --- 4. RUTAS AUTENTICADAS ---
@@ -133,8 +142,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Módulo: Estadísticas y Analítica Completa del Sistema
-    Route::get('/estadisticas', [EstadisticasController::class, 'index'])->name('estadisticas.index');
-    Route::get('/estadisticas/data', [EstadisticasController::class, 'data'])->name('estadisticas.data');
+    Route::get('/estadisticas', [EstadisticasController::class, 'index'])->name('estadisticas.index')->middleware('permiso:ver_estadisticas_analitica,ver_kpis_financieros,ver_dashboard');
+    Route::get('/estadisticas/data', [EstadisticasController::class, 'data'])->name('estadisticas.data')->middleware('permiso:ver_estadisticas_analitica,ver_kpis_financieros,ver_dashboard');
 
     // Módulo: Usuarios y Roles
     Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit'])->middleware('permiso:gestionar_roles_permisos');
@@ -148,6 +157,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/facturas/{id}/ticket', [FacturaController::class, 'ticket'])->name('facturas.ticket')->middleware('permiso:ver_facturas');
     Route::get('/facturas/{id}/imprimir', [FacturaController::class, 'imprimir'])->name('facturas.imprimir')->middleware('permiso:ver_facturas');
     Route::post('/facturas/{id}/anular', [FacturaController::class, 'anular'])->name('facturas.anular')->middleware('permiso:configurar_facturacion');
+
+    // Módulo: Devoluciones y Reembolsos
+    Route::get('/facturas/{id}/devolucion/datos', [DevolucionController::class, 'datosParaDevolucion'])->name('facturas.devolucion.datos')->middleware('permiso:procesar_devoluciones');
+    Route::post('/facturas/{id}/devolucion', [DevolucionController::class, 'procesarDevolucion'])->name('facturas.devolucion.store')->middleware('permiso:procesar_devoluciones');
+    Route::get('/devoluciones', [DevolucionController::class, 'index'])->name('devoluciones.index')->middleware('permiso:ver_devoluciones,procesar_devoluciones');
+    Route::get('/devoluciones/{id}', [DevolucionController::class, 'show'])->name('devoluciones.show')->middleware('permiso:ver_devoluciones,procesar_devoluciones');
+    Route::get('/devoluciones/{id}/comprobante', [DevolucionController::class, 'comprobante'])->name('devoluciones.comprobante')->middleware('permiso:ver_devoluciones,procesar_devoluciones');
 
     Route::middleware('permiso:gestionar_caja_diaria')->group(function () {
         Route::get('/caja-diaria', [CajaDiariaController::class, 'index'])->name('caja_diaria.index');
@@ -209,10 +225,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/solicitudes-insumos/{id}', [SolicitudProductoController::class, 'destroy'])->name('solicitudes_productos.destroy')->middleware('permiso:ver_productos,gestionar_productos,gestionar_solicitudes_productos');
 
     // Módulo: Ventas y Pedidos
-    Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index')->middleware('permiso:ver_pedidos,gestionar_pagos');
-    Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show')->middleware('permiso:ver_pedidos,gestionar_pagos');
-    Route::get('/pedidos/{id}/ticket', [FacturaController::class, 'ticketPorPedido'])->name('pedidos.ticket')->middleware('permiso:ver_pedidos,gestionar_pagos');
-    Route::get('/pedidos/{id}/factura', [FacturaController::class, 'facturaPorPedido'])->name('pedidos.factura')->middleware('permiso:ver_pedidos,gestionar_pagos');
+    Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index')->middleware('permiso:ver_pedidos,ver_pedidos_todos,ver_pedidos_por_verificar,ver_pedidos_despacho,ver_pedidos_en_ruta,ver_pedidos_completados,ver_pedidos_cancelados,gestionar_pagos');
+    Route::get('/pedidos/{id}', [PedidoController::class, 'show'])->name('pedidos.show')->middleware('permiso:ver_pedidos,ver_pedidos_todos,ver_pedidos_por_verificar,ver_pedidos_despacho,ver_pedidos_en_ruta,ver_pedidos_completados,ver_pedidos_cancelados,gestionar_pagos');
+    Route::get('/pedidos/{id}/ticket', [FacturaController::class, 'ticketPorPedido'])->name('pedidos.ticket')->middleware('permiso:ver_pedidos,ver_pedidos_todos,ver_pedidos_por_verificar,ver_pedidos_despacho,ver_pedidos_en_ruta,ver_pedidos_completados,ver_pedidos_cancelados,gestionar_pagos');
+    Route::get('/pedidos/{id}/factura', [FacturaController::class, 'facturaPorPedido'])->name('pedidos.factura')->middleware('permiso:ver_pedidos,ver_pedidos_todos,ver_pedidos_por_verificar,ver_pedidos_despacho,ver_pedidos_en_ruta,ver_pedidos_completados,ver_pedidos_cancelados,gestionar_pagos');
     Route::post('/pedidos/{id}/estado', [PedidoController::class, 'updateStatus'])->name('pedidos.updateStatus')->middleware('permiso:actualizar_estado_pedido');
     Route::post('/pedidos/{id}/aprobar-pago', [PedidoController::class, 'aprobarPago'])->name('pedidos.aprobarPago')->middleware('permiso:gestionar_pagos');
     Route::post('/pedidos/{id}/rechazar-pago', [PedidoController::class, 'rechazarPago'])->name('pedidos.rechazarPago')->middleware('permiso:gestionar_pagos');
@@ -238,17 +254,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     // Módulo: Cotizaciones y Presupuestos
-    Route::get('/cotizaciones', [CotizacionController::class, 'index'])->name('cotizaciones.index');
-    Route::get('/cotizaciones/crear', [CotizacionController::class, 'create'])->name('cotizaciones.create');
-    Route::post('/cotizaciones', [CotizacionController::class, 'store'])->name('cotizaciones.store');
-    Route::get('/cotizaciones/buscar-producto', [CotizacionController::class, 'buscarProducto'])->name('cotizaciones.buscar-producto');
-    Route::get('/cotizaciones/buscar-cliente', [CotizacionController::class, 'buscarCliente'])->name('cotizaciones.buscar-cliente');
-    Route::get('/cotizaciones/{id}', [CotizacionController::class, 'show'])->name('cotizaciones.show');
-    Route::get('/cotizaciones/{id}/imprimir', [CotizacionController::class, 'imprimir'])->name('cotizaciones.imprimir');
-    Route::get('/cotizaciones/{id}/pdf', [CotizacionController::class, 'descargarPdf'])->name('cotizaciones.pdf');
-    Route::post('/cotizaciones/{id}/enviar-correo', [CotizacionController::class, 'enviarCorreo'])->name('cotizaciones.enviar_correo');
-    Route::post('/cotizaciones/{id}/estado', [CotizacionController::class, 'cambiarEstado'])->name('cotizaciones.estado');
-    Route::delete('/cotizaciones/{id}', [CotizacionController::class, 'destroy'])->name('cotizaciones.destroy');
+    Route::get('/cotizaciones', [CotizacionController::class, 'index'])->name('cotizaciones.index')->middleware('permiso:ver_cotizaciones,gestionar_cotizaciones');
+    Route::middleware('permiso:gestionar_cotizaciones')->group(function () {
+        Route::get('/cotizaciones/crear', [CotizacionController::class, 'create'])->name('cotizaciones.create');
+        Route::post('/cotizaciones', [CotizacionController::class, 'store'])->name('cotizaciones.store');
+        Route::get('/cotizaciones/buscar-producto', [CotizacionController::class, 'buscarProducto'])->name('cotizaciones.buscar-producto');
+        Route::get('/cotizaciones/buscar-cliente', [CotizacionController::class, 'buscarCliente'])->name('cotizaciones.buscar-cliente');
+        Route::post('/cotizaciones/{id}/enviar-correo', [CotizacionController::class, 'enviarCorreo'])->name('cotizaciones.enviar_correo');
+        Route::post('/cotizaciones/{id}/estado', [CotizacionController::class, 'cambiarEstado'])->name('cotizaciones.estado');
+        Route::delete('/cotizaciones/{id}', [CotizacionController::class, 'destroy'])->name('cotizaciones.destroy');
+    });
+    Route::get('/cotizaciones/{id}', [CotizacionController::class, 'show'])->name('cotizaciones.show')->middleware('permiso:ver_cotizaciones,gestionar_cotizaciones');
+    Route::get('/cotizaciones/{id}/imprimir', [CotizacionController::class, 'imprimir'])->name('cotizaciones.imprimir')->middleware('permiso:ver_cotizaciones,gestionar_cotizaciones');
+    Route::get('/cotizaciones/{id}/pdf', [CotizacionController::class, 'descargarPdf'])->name('cotizaciones.pdf')->middleware('permiso:ver_cotizaciones,gestionar_cotizaciones');
 
     // Módulo: Sistema y Configuración
     Route::middleware('permiso:gestionar_horarios')->group(function () {

@@ -86,6 +86,29 @@
                     </div>
                 </div>
 
+                {{-- BANNER INFORMATIVO: POLÍTICA DE DEVOLUCIONES --}}
+                <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div class="flex items-start gap-3">
+                        <div class="size-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                            <span class="material-symbols-outlined text-[20px]">assignment_return</span>
+                        </div>
+                        <div>
+                            <h4 class="font-black text-amber-950 text-xs">Información sobre Cambios y Devoluciones</h4>
+                            <p class="text-amber-900/80 text-[11px] mt-0.5 leading-relaxed">
+                                Para compras web y pedidos con delivery: las devoluciones y reclamos de garantía se gestionan presencialmente en nuestra tienda física con tu comprobante y el producto para su verificación.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                        <a href="{{ \App\Models\ConfiguracionTienda::whatsappUrl('Hola, deseo consultar sobre una devolución o garantía de mi pedido.') }}" 
+                           target="_blank" 
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs transition-colors">
+                            <span class="material-symbols-outlined text-[15px]">chat</span>
+                            <span>WhatsApp Tienda</span>
+                        </a>
+                    </div>
+                </div>
+
                 {{-- ALERTA DE ÉXITO DE SESIÓN --}}
                 @if(session('success'))
                     <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200/90 text-emerald-800 shadow-2xs flex items-center gap-3 font-semibold text-xs sm:text-sm">

@@ -218,12 +218,12 @@ class User extends Authenticatable
             if ($this->tienePermiso('gestionar_zonas_delivery') || $this->tienePermiso('ver_logistica')) {
                 return route('admin.zonas_delivery.index');
             }
-            if ($this->tienePermiso('ver_pedidos')) {
+            if ($this->tieneAlgunPermiso(['ver_pedidos', 'ver_pedidos_despacho', 'ver_pedidos_en_ruta', 'ver_pedidos_todos'])) {
                 return route('admin.pedidos.index');
             }
         }
 
-        if ($this->tienePermiso('ver_pedidos') || $this->tienePermiso('gestionar_pagos')) {
+        if ($this->tieneAlgunPermiso(['ver_pedidos', 'ver_pedidos_todos', 'ver_pedidos_por_verificar', 'ver_pedidos_despacho', 'ver_pedidos_en_ruta', 'ver_pedidos_completados', 'ver_pedidos_cancelados', 'gestionar_pagos'])) {
             return route('admin.pedidos.index');
         }
 

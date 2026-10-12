@@ -441,6 +441,38 @@
                             <span class="material-symbols-outlined text-[18px]">support_agent</span>
                             <span>¿Dudas con este pedido? WhatsApp</span>
                         </a>
+
+                        {{-- POLÍTICA Y GESTIÓN DE DEVOLUCIONES --}}
+                        <div class="mt-4 pt-4 border-t border-slate-100 bg-amber-50/60 -mx-5 -mb-5 p-5 border-b rounded-b-3xl">
+                            <div class="flex items-start gap-2.5">
+                                <div class="size-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                                    <span class="material-symbols-outlined text-[18px]">assignment_return</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="text-xs font-black text-slate-900 leading-tight">
+                                        Política de Cambios y Devoluciones
+                                    </h4>
+                                    <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                                        Para compras por la web o con servicio delivery: para procesar cualquier cambio, garantía o devolución, es indispensable <strong>acudir presencialmente al establecimiento físico</strong> con su factura/ticket y el producto en su empaque original para su respectiva verificación técnica.
+                                    </p>
+                                    <div class="mt-3 flex flex-wrap gap-2">
+                                        <a href="{{ \App\Models\ConfiguracionTienda::whatsappUrl('Hola, deseo consultar sobre la política de devolución del pedido #' . $pedido->id) }}" 
+                                           target="_blank" 
+                                           class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-2xs transition-colors">
+                                            <span class="material-symbols-outlined text-[15px]">chat</span>
+                                            <span>WhatsApp Tienda</span>
+                                        </a>
+                                        @if(\App\Models\ConfiguracionTienda::telefono())
+                                        <a href="tel:{{ \App\Models\ConfiguracionTienda::telefono() }}" 
+                                           class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] shadow-2xs transition-colors">
+                                            <span class="material-symbols-outlined text-[15px]">call</span>
+                                            <span>Llamar: {{ \App\Models\ConfiguracionTienda::telefono() }}</span>
+                                        </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

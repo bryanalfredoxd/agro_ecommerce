@@ -230,22 +230,25 @@
     </div>
     @endif
 
-    {{-- 7. KPI: Recetas Pendientes (Deshabilitado a solicitud del cliente - reactivable a futuro) --}}
-    {{-- @if(Auth::user()->tienePermiso('ver_kpis_operativos') || Auth::user()->tienePermiso('ver_recetas'))
+    {{-- 7. KPI: Devoluciones y Reembolsos del Mes --}}
+    @if(Auth::user()->tienePermiso('ver_kpis_financieros') || Auth::user()->tienePermiso('ver_facturas'))
     <div class="kpi-card bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
-        <div class="kpi-bg-circle absolute -right-4 -top-4 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
+        <div class="kpi-bg-circle absolute -right-4 -top-4 w-24 h-24 bg-amber-50 rounded-full group-hover:scale-[1.8] transition-transform duration-500 ease-out z-0"></div>
         <div class="relative z-10">
             <div class="flex items-center justify-between mb-4 kpi-header">
-                <span class="kpi-title text-[11px] font-black text-gray-700 uppercase tracking-wider">Récipes por Aprobar</span>
-                <div class="kpi-icon-box w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center"><span class="material-symbols-outlined">stethoscope</span></div>
+                <span class="kpi-title text-[11px] font-black text-gray-700 uppercase tracking-wider">Devoluciones Mes</span>
+                <div class="kpi-icon-box w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined">assignment_return</span>
+                </div>
             </div>
-            <h3 class="kpi-value text-3xl font-black text-agro-dark">{{ $recetasPendientes ?? 0 }}</h3>
-            <p class="kpi-footer text-xs font-bold text-purple-500 flex items-center gap-1 mt-2">
-                <span class="material-symbols-outlined text-[14px] kpi-icon-sm">verified_user</span> Requieren validación
+            <h3 class="kpi-value text-3xl font-black text-agro-dark">${{ number_format($devolucionesMesUsd ?? 0, 2) }}</h3>
+            <p class="kpi-footer text-[11px] font-bold text-amber-700 flex items-center gap-1 mt-2 bg-amber-50 w-fit px-2 py-1 rounded-md border border-amber-200/60">
+                <span class="material-symbols-outlined text-[14px] kpi-icon-sm">history</span> 
+                {{ $devolucionesMesCount ?? 0 }} devoluciones (Bs. {{ number_format($devolucionesMesVes ?? 0, 2) }})
             </p>
         </div>
     </div>
-    @endif --}}
+    @endif
 
     {{-- 8. KPI: Usuarios y Clientes --}}
     @if(Auth::user()->tienePermiso('ver_usuarios'))

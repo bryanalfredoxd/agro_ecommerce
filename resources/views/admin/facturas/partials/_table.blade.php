@@ -60,6 +60,13 @@
                             <span class="material-symbols-outlined text-[18px]">visibility</span>
                         </button>
 
+                        {{-- Botón Devolución / Reembolso (Disponible si no está anulada) --}}
+                        @if($factura->estado !== 'anulada')
+                        <button onclick="abrirModalDevolucion({{ $factura->id }})" class="w-8 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 hover:text-amber-700 hover:border-amber-300 hover:bg-amber-50 flex items-center justify-center transition-all shadow-2xs" title="Procesar Devolución / Reembolso">
+                            <span class="material-symbols-outlined text-[18px] text-amber-600">assignment_return</span>
+                        </button>
+                        @endif
+
                         {{-- Botón Anular (Solo si está emitida y cuenta con permiso fiscal) --}}
                         @if($factura->estado === 'emitida' && Auth::user()->tienePermiso('configurar_facturacion'))
                         <button onclick="anularFactura({{ $factura->id }}, '{{ $factura->numero_factura }}')" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50 flex items-center justify-center transition-all shadow-sm" title="Anular Factura">

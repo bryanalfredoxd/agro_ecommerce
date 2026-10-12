@@ -29,15 +29,16 @@ class PerfilController extends Controller
     }
 
     public function detallePedido($id)
-{
-    // BUSQUEDA SEGURA: Solo busca pedidos que pertenezcan al usuario actual
-    $pedido = Pedido::where('usuario_id', auth()->id())
-        ->where('id', $id)
-        ->with(['detalles.producto.imagenes', 'pago']) // Cargamos relaciones
-        ->firstOrFail(); // Si no es suyo o no existe, lanza error 404
+    {
+        $pedido = Pedido::with(['detalles.producto.imagenes', 'pago'])->findOrFail($id);
 
-    return view('perfil.detalle_pedido', compact('pedido'));
-}
+        // Protección contra IDOR: Verifica si el pedido pertenece al usuario autenticado
+        if (!$pedido->puedeSerVistoPor(auth()->user())) {
+            abort(403, 'No tienes autorización para consultar la información de este pedido.');
+        }
+
+        return view('perfil.detalle_pedido', compact('pedido'));
+    }
 
     public function updateDatos(Request $request)
     {

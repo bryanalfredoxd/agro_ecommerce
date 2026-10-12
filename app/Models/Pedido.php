@@ -44,6 +44,11 @@ protected $fillable = [
         return $this->belongsTo(User::class, 'usuario_id');
     }
 
+    public function devoluciones()
+    {
+        return $this->hasMany(Devolucion::class, 'pedido_id');
+    }
+
     public function factura()
     {
         return $this->hasOne(Factura::class, 'pedido_id');
@@ -100,5 +105,68 @@ protected $fillable = [
     public function getTipoEntregaTextoAttribute(): string
     {
         return $this->es_delivery ? 'Envío a Domicilio (Delivery)' : 'Retiro en Sede';
+    }
+
+    /**
+     * Valida de forma estricta si un usuario específico tiene autorización
+     * para consultar o interactuar con este pedido (protección contra IDOR y RBAC granular).
+     */
+    public function puedeSerVistoPor(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        // 1. Administrador principal: Acceso total e irrestricto
+        if ($user->esAdmin()) {
+            return true;
+        }
+
+        // 2. Clientes convencionales (Rol Cliente / Web):
+        // Únicamente tienen permiso para consultar pedidos propios
+        if (!$user->esPersonal()) {
+            return $this->usuario_id !== null && (int) $this->usuario_id === (int) $user->id;
+        }
+
+        // 3. Personal operativo / administrativo de la empresa:
+        // Si tiene permiso para ver todos los pedidos sin distinción de estado
+        if ($user->tienePermiso('ver_pedidos_todos')) {
+            return true;
+        }
+
+        // Si el pago está en revisión y el usuario tiene permisos de auditoría de pago
+        if ($this->pago && $this->pago->estado === 'revision' && ($user->tienePermiso('ver_pedidos_por_verificar') || $user->tienePermiso('gestionar_pagos'))) {
+            return true;
+        }
+
+        // Pedidos listos para preparación y despacho
+        if (in_array($this->estado, ['pagado', 'preparacion']) && $user->tienePermiso('ver_pedidos_despacho')) {
+            return true;
+        }
+
+        // Pedidos en ruta de reparto logístico
+        if ($this->estado === 'en_ruta' && $user->tienePermiso('ver_pedidos_en_ruta')) {
+            return true;
+        }
+
+        // Pedidos completados y entregados
+        if (in_array($this->estado, ['entregado', 'completado_caja']) && $user->tienePermiso('ver_pedidos_completados')) {
+            return true;
+        }
+
+        // Pedidos devueltos o cancelados
+        if (in_array($this->estado, ['devuelto', 'cancelado']) && $user->tienePermiso('ver_pedidos_cancelados')) {
+            return true;
+        }
+
+        // Si cuenta con el permiso general ver_pedidos y no tiene restricciones granulares
+        if ($user->tienePermiso('ver_pedidos') && 
+            !$user->tienePermiso('ver_pedidos_despacho') && 
+            !$user->tienePermiso('ver_pedidos_en_ruta') && 
+            !$user->tienePermiso('ver_pedidos_por_verificar')) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -26,6 +26,16 @@ class Factura extends Model
         return $this->belongsTo(Pedido::class, 'pedido_id');
     }
 
+    public function devoluciones()
+    {
+        return $this->hasMany(Devolucion::class, 'factura_id');
+    }
+
+    public function devolucion()
+    {
+        return $this->hasOne(Devolucion::class, 'factura_id')->latestOfMany('id');
+    }
+
     // ==========================================
     // MÉTODO GENERADOR DE FACTURAS
     // ==========================================

@@ -134,7 +134,7 @@
                             <div class="flex flex-col items-end shrink-0 sm:self-end">
                                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Permisos Asignados</span>
                                 <span id="rolePermissionsCounter" class="text-sm font-black text-indigo-600 font-mono bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 mt-1">
-                                    0 / 31 seleccionados
+                                    0 / {{ count($permisos) }} seleccionados
                                 </span>
                             </div>
                         </div>

@@ -83,7 +83,7 @@ class CheckPermiso
         if ($user->tienePermiso('crear_venta_manual')) {
             return route('admin.pos.index');
         }
-        if ($user->tienePermiso('ver_pedidos') || $user->tienePermiso('gestionar_pagos')) {
+        if ($user->tieneAlgunPermiso(['ver_pedidos', 'ver_pedidos_todos', 'ver_pedidos_por_verificar', 'ver_pedidos_despacho', 'ver_pedidos_en_ruta', 'ver_pedidos_completados', 'ver_pedidos_cancelados', 'gestionar_pagos'])) {
             return route('admin.pedidos.index');
         }
         if ($user->tienePermiso('ver_productos')) {

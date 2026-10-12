@@ -96,8 +96,8 @@
                 </div>
             </div>
 
-            {{-- 1. TARJETAS DE KPIS PRINCIPALES (4 COLUMNAS) --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            {{-- 1. TARJETAS DE KPIS PRINCIPALES (5 COLUMNAS) --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5">
                 
                 {{-- KPI 1: Total Facturación --}}
                 <div class="bg-white rounded-3xl p-5 sm:p-6 border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all flex flex-col justify-between">
@@ -113,10 +113,15 @@
                             ${{ number_format($kpis['total_ingresos_usd'], 2) }}
                         </h3>
                     </div>
-                    <div class="relative z-10 mt-3 pt-2.5 border-t border-gray-100">
-                        <p class="text-xs font-bold text-emerald-800 bg-emerald-50/80 px-2.5 py-1 rounded-lg border border-emerald-100 inline-block">
+                    <div class="relative z-10 mt-3 pt-2.5 border-t border-gray-100 flex flex-col gap-1">
+                        <p class="text-xs font-bold text-emerald-800 bg-emerald-50/80 px-2.5 py-0.5 rounded-lg border border-emerald-100 inline-block w-fit">
                             Bs. {{ number_format($kpis['total_ingresos_ves'], 2) }}
                         </p>
+                        @if(($kpis['total_devoluciones_usd'] ?? 0) > 0)
+                        <p class="text-[10px] font-bold text-gray-500">
+                            Neto Real: <strong class="text-emerald-700">${{ number_format($kpis['ingresos_netos_usd'] ?? $kpis['total_ingresos_usd'], 2) }}</strong>
+                        </p>
+                        @endif
                     </div>
                 </div>
 
@@ -196,6 +201,28 @@
                         @else
                             <span class="text-xs text-gray-400 font-medium">Registra ventas para calcular</span>
                         @endif
+                    </div>
+                </div>
+
+                {{-- KPI 5: Devoluciones y Reembolsos --}}
+                <div class="bg-white rounded-3xl p-5 sm:p-6 border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all flex flex-col justify-between">
+                    <div class="absolute -right-3 -top-3 w-20 h-20 bg-rose-50 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out z-0"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-black text-gray-500 uppercase tracking-wider">Devoluciones</span>
+                            <div class="w-9 h-9 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center shadow-xs">
+                                <span class="material-symbols-outlined text-[20px]">assignment_return</span>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black text-agro-dark tracking-tight break-words">
+                            ${{ number_format($kpis['total_devoluciones_usd'] ?? 0, 2) }}
+                        </h3>
+                    </div>
+                    <div class="relative z-10 mt-3 pt-2.5 border-t border-gray-100">
+                        <p class="text-xs font-bold text-rose-700 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[15px]">history</span>
+                            <span>{{ $kpis['cantidad_devoluciones'] ?? 0 }} reembolsos (Bs. {{ number_format($kpis['total_devoluciones_ves'] ?? 0, 2) }})</span>
+                        </p>
                     </div>
                 </div>
 
@@ -539,7 +566,8 @@
 
                             <div class="space-y-2.5">
                                 @php 
-                                    $maxPedidosZona = count($logistica['zonas']) > 0 ? max(array_column($logistica['zonas']->toArray(), 'pedidos')) : 1;
+                                    $zonasArray = is_array($logistica['zonas']) ? $logistica['zonas'] : (method_exists($logistica['zonas'], 'toArray') ? $logistica['zonas']->toArray() : (array)$logistica['zonas']);
+                                    $maxPedidosZona = count($zonasArray) > 0 ? max(array_column($zonasArray, 'pedidos')) : 1;
                                     if ($maxPedidosZona == 0) $maxPedidosZona = 1;
                                 @endphp
                                 @forelse($logistica['zonas'] as $z)

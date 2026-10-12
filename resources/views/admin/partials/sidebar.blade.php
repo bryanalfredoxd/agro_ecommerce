@@ -29,7 +29,7 @@
             </a>
             @endif
 
-            @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_dashboard') || Auth::user()->tienePermiso('ver_kpis_financieros') || Auth::user()->tienePermiso('ver_pedidos'))
+            @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_estadisticas_analitica') || Auth::user()->tienePermiso('ver_kpis_financieros'))
             <a href="{{ route('admin.estadisticas.index') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl {{ request()->routeIs('admin.estadisticas.*') ? 'bg-[#3492cf] text-white font-bold shadow-md shadow-[#3492cf]/20' : 'text-slate-300 hover:bg-white/5 hover:text-white' }} text-sm font-semibold transition-all group">
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-[20px] text-[#aad6f3] group-hover:scale-110 transition-transform">query_stats</span> 
@@ -41,7 +41,7 @@
             <div class="h-px bg-white/10 my-3 mx-2"></div>
 
             {{-- MÓDULO: Ventas y Pedidos --}}
-            @if(Auth::user()->tienePermiso('ver_pedidos') || Auth::user()->tienePermiso('gestionar_pagos') || Auth::user()->tienePermiso('crear_venta_manual') || Auth::user()->tienePermiso('procesar_devoluciones') || Auth::user()->tienePermiso('gestionar_zonas_delivery') || Auth::user()->tienePermiso('ver_logistica'))
+            @if(Auth::user()->esAdmin() || Auth::user()->tieneAlgunPermiso(['ver_pedidos', 'ver_pedidos_todos', 'ver_pedidos_por_verificar', 'ver_pedidos_despacho', 'ver_pedidos_en_ruta', 'ver_pedidos_completados', 'ver_pedidos_cancelados', 'gestionar_pagos', 'crear_venta_manual', 'ver_cotizaciones', 'gestionar_cotizaciones', 'procesar_devoluciones', 'gestionar_zonas_delivery', 'ver_logistica']))
             <details class="group/menu" {{ request()->routeIs('admin.pedidos.*', 'admin.pagos.*', 'admin.pos.*', 'admin.zonas_delivery.*', 'admin.cotizaciones.*', 'admin.estadisticas.*') ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer select-none font-semibold text-sm">
                     <div class="flex items-center gap-3">
@@ -51,35 +51,40 @@
                     <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-open/menu:rotate-180 text-slate-400">expand_more</span>
                 </summary>
                 <div class="mt-1 pl-10 pr-2 space-y-1">
-                    @if(Auth::user()->tienePermiso('ver_pedidos') || Auth::user()->tienePermiso('gestionar_pagos'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tieneAlgunPermiso(['ver_pedidos', 'ver_pedidos_todos', 'ver_pedidos_por_verificar', 'ver_pedidos_despacho', 'ver_pedidos_en_ruta', 'ver_pedidos_completados', 'ver_pedidos_cancelados', 'gestionar_pagos']))
                         @php
                             $pendientesPagoCount = \App\Models\Pago::where('estado', 'revision')->count();
+                            $puedeVerificarPagos = Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_pedidos_por_verificar') || Auth::user()->tienePermiso('gestionar_pagos');
                         @endphp
                         
-                        <a href="{{ route('admin.pedidos.index', ['filtro_estado' => 'por_verificar']) }}" class="flex items-center justify-between py-1.5 text-xs font-medium {{ request('filtro_estado') === 'por_verificar' ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">
+                        <a href="{{ route('admin.pedidos.index') }}" class="flex items-center justify-between py-1.5 text-xs font-medium {{ request()->routeIs('admin.pedidos.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">
                             <span>Gestión de Pedidos</span>
-                            @if($pendientesPagoCount > 0)
+                            @if($pendientesPagoCount > 0 && $puedeVerificarPagos)
                                 <span class="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-900 leading-none animate-pulse">{{ $pendientesPagoCount }}</span>
                             @endif
                         </a>
                     @endif
-                    @if(Auth::user()->tienePermiso('crear_venta_manual'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('crear_venta_manual'))
                         <a href="{{ route('admin.pos.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.pos.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Terminal POS (Venta)</a>
                     @endif
-                    <a href="{{ route('admin.cotizaciones.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.cotizaciones.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Cotizaciones / Presupuestos</a>
-                    @if(Auth::user()->tienePermiso('gestionar_zonas_delivery') || Auth::user()->tienePermiso('ver_logistica') || Auth::user()->esAdmin())
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_cotizaciones') || Auth::user()->tienePermiso('gestionar_cotizaciones'))
+                        <a href="{{ route('admin.cotizaciones.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.cotizaciones.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Cotizaciones / Presupuestos</a>
+                    @endif
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('gestionar_zonas_delivery') || Auth::user()->tienePermiso('ver_logistica'))
                         <a href="{{ route('admin.zonas_delivery.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.zonas_delivery.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Zonas de Delivery (Mapa)</a>
                     @endif
-                    <a href="{{ route('admin.estadisticas.index') }}" class="flex items-center justify-between py-1.5 text-xs font-medium {{ request()->routeIs('admin.estadisticas.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">
-                        <span>Estadísticas y Top Ventas</span>
-                        <span class="material-symbols-outlined text-[15px] text-[#aad6f3]">monitoring</span>
-                    </a>
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_estadisticas_analitica') || Auth::user()->tienePermiso('ver_kpis_financieros'))
+                        <a href="{{ route('admin.estadisticas.index') }}" class="flex items-center justify-between py-1.5 text-xs font-medium {{ request()->routeIs('admin.estadisticas.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">
+                            <span>Estadísticas y Top Ventas</span>
+                            <span class="material-symbols-outlined text-[15px] text-[#aad6f3]">monitoring</span>
+                        </a>
+                    @endif
                 </div>
             </details>
             @endif
 
             {{-- MÓDULO: Catálogo e Inventario --}}
-            @if(Auth::user()->tienePermiso('ver_productos') || Auth::user()->tienePermiso('gestionar_inventario_lotes') || Auth::user()->tienePermiso('gestionar_categorias_marcas') || Auth::user()->tienePermiso('ver_historico_precios') || Auth::user()->tienePermiso('gestionar_solicitudes_productos'))
+            @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_productos') || Auth::user()->tienePermiso('gestionar_inventario_lotes') || Auth::user()->tienePermiso('gestionar_categorias_marcas') || Auth::user()->tienePermiso('ver_historico_precios') || Auth::user()->tienePermiso('gestionar_solicitudes_productos'))
             <details class="group/menu" {{ request()->routeIs('admin.productos.*', 'admin.categorias.*', 'admin.marcas.*', 'admin.historico_precios.*', 'admin.solicitudes_productos.*') ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer select-none font-semibold text-sm">
                     <div class="flex items-center gap-3">
@@ -89,19 +94,19 @@
                     <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-open/menu:rotate-180 text-slate-400">expand_more</span>
                 </summary>
                 <div class="mt-1 pl-10 pr-2 space-y-1">
-                    @if(Auth::user()->tienePermiso('ver_productos'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_productos'))
                         <a href="{{ route('admin.productos.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.productos.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Catálogo de Productos</a>
                     @endif
-                    @if(Auth::user()->tienePermiso('gestionar_categorias_marcas'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('gestionar_categorias_marcas'))
                         <a href="{{ route('admin.categorias.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.categorias.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Categorías</a>
                     @endif
-                    @if(Auth::user()->tienePermiso('gestionar_categorias_marcas'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('gestionar_categorias_marcas'))
                         <a href="{{ route('admin.marcas.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.marcas.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Marcas</a>
                     @endif
-                    @if(Auth::user()->tienePermiso('ver_historico_precios'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_historico_precios'))
                         <a href="{{ route('admin.historico_precios.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.historico_precios.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Histórico de Precios</a>
                     @endif
-                    @if(Auth::user()->tienePermiso('ver_productos') || Auth::user()->tienePermiso('gestionar_solicitudes_productos'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_productos') || Auth::user()->tienePermiso('gestionar_solicitudes_productos'))
                         <a href="{{ route('admin.solicitudes_productos.index') }}" class="flex items-center justify-between py-1.5 text-xs font-medium {{ request()->routeIs('admin.solicitudes_productos.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">
                             <span>Solicitudes de Insumos</span>
                             @php
@@ -117,8 +122,8 @@
             @endif
 
             {{-- MÓDULO: Finanzas y Facturación --}}
-            @if(Auth::user()->tienePermiso('ver_facturas') || Auth::user()->tienePermiso('configurar_facturacion') || Auth::user()->tienePermiso('gestionar_caja_diaria') || Auth::user()->tienePermiso('gestionar_tasas_cambio'))
-            <details class="group/menu" {{ request()->routeIs('admin.facturas.*', 'admin.facturacion_config.*', 'admin.caja_diaria.*', 'admin.tasas-cambio.*') ? 'open' : '' }}>
+            @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_facturas') || Auth::user()->tienePermiso('ver_devoluciones') || Auth::user()->tienePermiso('procesar_devoluciones') || Auth::user()->tienePermiso('configurar_facturacion') || Auth::user()->tienePermiso('gestionar_caja_diaria') || Auth::user()->tienePermiso('gestionar_tasas_cambio'))
+            <details class="group/menu" {{ request()->routeIs('admin.facturas.*', 'admin.devoluciones.*', 'admin.facturacion_config.*', 'admin.caja_diaria.*', 'admin.tasas-cambio.*') ? 'open' : '' }}>
                 <summary class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer select-none font-semibold text-sm">
                     <div class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-[20px] text-[#3492cf]">receipt_long</span>
@@ -127,16 +132,19 @@
                     <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-open/menu:rotate-180 text-slate-400">expand_more</span>
                 </summary>
                 <div class="mt-1 pl-10 pr-2 space-y-1">
-                    @if(Auth::user()->tienePermiso('ver_facturas'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_facturas'))
                         <a href="{{ route('admin.facturas.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.facturas.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Facturas Emitidas</a>
                     @endif
-                    @if(Auth::user()->tienePermiso('configurar_facturacion'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_devoluciones') || Auth::user()->tienePermiso('procesar_devoluciones'))
+                        <a href="{{ route('admin.devoluciones.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.devoluciones.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Devoluciones y Reembolsos</a>
+                    @endif
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('configurar_facturacion'))
                         <a href="{{ route('admin.facturacion_config.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.facturacion_config.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Series y Correlativos</a>
                     @endif
-                    @if(Auth::user()->tienePermiso('gestionar_caja_diaria'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('gestionar_caja_diaria'))
                         <a href="{{ route('admin.caja_diaria.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.caja_diaria.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Arqueos de Caja</a>
                     @endif
-                    @if(Auth::user()->tienePermiso('gestionar_tasas_cambio'))
+                    @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('gestionar_tasas_cambio'))
                         <a href="{{ route('admin.tasas-cambio.index') }}" class="block py-1.5 text-xs font-medium {{ request()->routeIs('admin.tasas-cambio.*') ? 'text-[#aad6f3] font-bold' : 'text-slate-300 hover:text-white' }} transition-colors">Tasas de Cambio (BCV)</a>
                     @endif
                 </div>

@@ -26,7 +26,7 @@ class DashboardController extends Controller
             if ($user->tienePermiso('crear_venta_manual')) {
                 return redirect()->route('admin.pos.index');
             }
-            if ($user->tienePermiso('ver_pedidos') || $user->tienePermiso('gestionar_pagos')) {
+            if ($user->tieneAlgunPermiso(['ver_pedidos', 'ver_pedidos_todos', 'ver_pedidos_por_verificar', 'ver_pedidos_despacho', 'ver_pedidos_en_ruta', 'ver_pedidos_completados', 'ver_pedidos_cancelados', 'gestionar_pagos'])) {
                 return redirect()->route('admin.pedidos.index');
             }
             if ($user->tienePermiso('ver_productos')) {
@@ -80,7 +80,17 @@ class DashboardController extends Controller
                     ->whereBetween('fecha_vencimiento', [$hoy, $fechaLimite])
                     ->count();
 
-        // 7. Récipes por Aprobar (Deshabilitado a solicitud del cliente)
+        // 7. Devoluciones del Mes y de Hoy
+        $devolucionesMesQuery = \App\Models\Devolucion::where('estado', 'procesada')
+            ->where('fecha_devolucion', '>=', $inicioMes);
+        $devolucionesMesUsd = (float) (clone $devolucionesMesQuery)->sum('monto_total_usd');
+        $devolucionesMesVes = (float) (clone $devolucionesMesQuery)->sum('monto_total_ves');
+        $devolucionesMesCount = (int) (clone $devolucionesMesQuery)->count();
+
+        $devolucionesHoyCount = \App\Models\Devolucion::where('estado', 'procesada')
+            ->whereDate('fecha_devolucion', $hoy)
+            ->count();
+
         $recetasPendientes = 0;
 
         // 8. Nuevos Clientes en el Mes
@@ -97,6 +107,10 @@ class DashboardController extends Controller
             'alertasStock', 
             'lotesPorVencer',
             'recetasPendientes',
+            'devolucionesMesUsd',
+            'devolucionesMesVes',
+            'devolucionesMesCount',
+            'devolucionesHoyCount',
             'nuevosUsuariosMes'
         ));
     }

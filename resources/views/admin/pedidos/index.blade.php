@@ -39,9 +39,14 @@
             </div>
 
             {{-- KPI METRICS CARDS --}}
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            @php
+                $visibleKpisCount = count(array_intersect(['todos', 'por_verificar', 'por_despachar', 'en_ruta'], $allowedTabs));
+            @endphp
+            @if($visibleKpisCount > 0)
+            <div class="grid grid-cols-2 {{ $visibleKpisCount == 1 ? 'lg:grid-cols-1' : ($visibleKpisCount == 2 ? 'lg:grid-cols-2' : ($visibleKpisCount == 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4')) }} gap-3 sm:gap-4 mb-6">
                 
                 {{-- KPI 1: Total Pedidos --}}
+                @if(in_array('todos', $allowedTabs))
                 <div onclick="filtrarPorTab('todos')" class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all cursor-pointer group">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Pedidos</span>
@@ -54,8 +59,10 @@
                         <span class="text-[10px] text-gray-400 font-bold uppercase">Registrados</span>
                     </div>
                 </div>
+                @endif
 
                 {{-- KPI 2: Pagos por Verificar (PRIORITARIO) --}}
+                @if(in_array('por_verificar', $allowedTabs))
                 <div id="kpi_card_por_verificar" onclick="filtrarPorTab('por_verificar')" class="bg-white p-4 sm:p-5 rounded-2xl border {{ $stats['por_verificar'] > 0 ? 'border-amber-300 ring-2 ring-amber-400/20 bg-amber-50/20' : 'border-gray-100' }} shadow-2xs hover:shadow-md transition-all cursor-pointer group">
                     <div class="flex items-center justify-between">
                         <span id="kpi_label_por_verificar" class="text-[11px] font-bold {{ $stats['por_verificar'] > 0 ? 'text-amber-800' : 'text-gray-400' }} uppercase tracking-wider">
@@ -76,8 +83,10 @@
                         @endif
                     </div>
                 </div>
+                @endif
 
                 {{-- KPI 3: Por Despachar --}}
+                @if(in_array('por_despachar', $allowedTabs))
                 <div onclick="filtrarPorTab('por_despachar')" class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all cursor-pointer group">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Listos para Despacho</span>
@@ -90,8 +99,10 @@
                         <span class="text-[10px] text-indigo-600 font-bold uppercase">Pagados</span>
                     </div>
                 </div>
+                @endif
 
                 {{-- KPI 4: En Ruta --}}
+                @if(in_array('en_ruta', $allowedTabs))
                 <div onclick="filtrarPorTab('en_ruta')" class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all cursor-pointer group">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">En Ruta (Delivery)</span>
@@ -104,20 +115,25 @@
                         <span class="text-[10px] text-orange-600 font-bold uppercase">En entrega</span>
                     </div>
                 </div>
+                @endif
 
             </div>
+            @endif
 
             {{-- PANEL DE FILTROS Y CONTROLES --}}
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-2 mb-6">
                 
                 {{-- Tabs de Estados Inteligentes --}}
                 <div class="flex overflow-x-auto custom-scrollbar border-b border-gray-100 px-4 pt-2 gap-2 sm:gap-4">
-                    <button class="status-tab active pb-3 px-2 text-xs sm:text-sm font-black border-b-2 border-primary text-agro-dark whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="todos">
+                    @if(in_array('todos', $allowedTabs))
+                    <button class="status-tab {{ $filtroEstado === 'todos' ? 'active border-primary text-agro-dark font-black' : 'border-transparent text-gray-500 font-bold' }} pb-3 px-2 text-xs sm:text-sm border-b-2 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="todos">
                         <span>Todos los Pedidos</span>
                         <span id="tab_badge_todos" class="px-1.5 py-0.2 rounded-full text-[10px] bg-gray-100 text-gray-600">{{ $stats['total'] }}</span>
                     </button>
+                    @endif
                     
-                    <button class="status-tab pb-3 px-2 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="por_verificar">
+                    @if(in_array('por_verificar', $allowedTabs))
+                    <button class="status-tab {{ $filtroEstado === 'por_verificar' ? 'active border-primary text-agro-dark font-black' : 'border-transparent text-gray-500 font-bold' }} pb-3 px-2 text-xs sm:text-sm border-b-2 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="por_verificar">
                         <span class="material-symbols-outlined text-[16px] text-amber-500">pending_actions</span>
                         <span>Por Verificar Pago</span>
                         @if($stats['por_verificar'] > 0)
@@ -126,26 +142,35 @@
                             <span id="tab_badge_por_verificar" class="px-1.5 py-0.2 rounded-full text-[10px] bg-gray-100 text-gray-600">0</span>
                         @endif
                     </button>
+                    @endif
                     
-                    <button class="status-tab pb-3 px-2 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="por_despachar">
+                    @if(in_array('por_despachar', $allowedTabs))
+                    <button class="status-tab {{ $filtroEstado === 'por_despachar' ? 'active border-primary text-agro-dark font-black' : 'border-transparent text-gray-500 font-bold' }} pb-3 px-2 text-xs sm:text-sm border-b-2 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="por_despachar">
                         <span>Por Despachar</span>
                         <span id="tab_badge_por_despachar" class="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 text-blue-700 font-bold">{{ $stats['por_despachar'] }}</span>
                     </button>
+                    @endif
                     
-                    <button class="status-tab pb-3 px-2 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="en_ruta">
+                    @if(in_array('en_ruta', $allowedTabs))
+                    <button class="status-tab {{ $filtroEstado === 'en_ruta' ? 'active border-primary text-agro-dark font-black' : 'border-transparent text-gray-500 font-bold' }} pb-3 px-2 text-xs sm:text-sm border-b-2 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="en_ruta">
                         <span>En Ruta</span>
                         <span id="tab_badge_en_ruta" class="px-1.5 py-0.2 rounded-full text-[10px] bg-orange-100 text-orange-700 font-bold">{{ $stats['en_ruta'] }}</span>
                     </button>
+                    @endif
                     
-                    <button class="status-tab pb-3 px-2 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="completados">
+                    @if(in_array('completados', $allowedTabs))
+                    <button class="status-tab {{ $filtroEstado === 'completados' ? 'active border-primary text-agro-dark font-black' : 'border-transparent text-gray-500 font-bold' }} pb-3 px-2 text-xs sm:text-sm border-b-2 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="completados">
                         <span>Completados</span>
                         <span id="tab_badge_completados" class="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-700 font-bold">{{ $stats['completados'] }}</span>
                     </button>
+                    @endif
                     
-                    <button class="status-tab pb-3 px-2 text-xs sm:text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="cancelados">
+                    @if(in_array('cancelados', $allowedTabs))
+                    <button class="status-tab {{ $filtroEstado === 'cancelados' ? 'active border-primary text-agro-dark font-black' : 'border-transparent text-gray-500 font-bold' }} pb-3 px-2 text-xs sm:text-sm border-b-2 whitespace-nowrap flex items-center gap-1.5 transition-colors" data-estado="cancelados">
                         <span>Cancelados / Devueltos</span>
                         <span id="tab_badge_cancelados" class="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-100 text-rose-700 font-bold">{{ $stats['cancelados'] }}</span>
                     </button>
+                    @endif
                 </div>
 
                 {{-- Filtros secundarios: Buscador, Canal y Método de Pago --}}
@@ -381,9 +406,12 @@
     // PERMISOS DEL USUARIO
     const puedeGestionarPagos = {{ Auth::user()->tienePermiso('gestionar_pagos') ? 'true' : 'false' }};
     const puedeActualizarEstado = {{ Auth::user()->tienePermiso('actualizar_estado_pedido') ? 'true' : 'false' }};
+    const puedeCancelar = {{ (Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_pedidos_cancelados')) ? 'true' : 'false' }};
+    const esSoloReparto = {{ (!Auth::user()->esAdmin() && Auth::user()->tienePermiso('ver_pedidos_en_ruta') && !Auth::user()->tienePermiso('ver_pedidos_despacho') && !Auth::user()->tienePermiso('ver_pedidos_todos')) ? 'true' : 'false' }};
+    const allowedTabs = @json($allowedTabs);
 
     // ESTADO GLOBAL DE FILTROS AJAX
-    let currentFiltroEstado = '{{ request("filtro_estado", "todos") }}';
+    let currentFiltroEstado = '{{ $filtroEstado }}';
     let currentSearch = @json(request('buscar', ''));
     let currentCanal = @json(request('filtro_canal', 'todos'));
     let currentMetodo = @json(request('filtro_metodo', 'todos'));
@@ -416,7 +444,7 @@
 
     // Inicializar Tab Activa y Filtros UI al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
-        if (currentFiltroEstado && currentFiltroEstado !== 'todos') {
+        if (currentFiltroEstado) {
             const activeTab = document.querySelector(`.status-tab[data-estado="${currentFiltroEstado}"]`);
             if (activeTab) {
                 document.querySelectorAll('.status-tab').forEach(t => {
@@ -438,6 +466,10 @@
     });
 
     function filtrarPorTab(estado) {
+        if (!allowedTabs.includes(estado)) {
+            return;
+        }
+
         document.querySelectorAll('.status-tab').forEach(t => {
             t.classList.remove('border-primary', 'text-agro-dark', 'active');
             t.classList.add('border-transparent', 'text-gray-500');
@@ -1026,23 +1058,36 @@
         const iconEl = document.getElementById('statusModalIcon');
         const select = document.getElementById('estado_select');
 
-        if (esDelivery) {
-            if (titleEl) titleEl.innerText = 'Despacho Logístico (Delivery)';
+        if (esSoloReparto) {
+            if (titleEl) titleEl.innerText = 'Entrega Logística (Reparto)';
             if (iconEl) iconEl.innerText = 'local_shipping';
             select.innerHTML = `
+                <option value="en_ruta">En Ruta (Con Repartidor)</option>
+                <option value="entregado">Entregado al Cliente ✅</option>
+            `;
+        } else if (esDelivery) {
+            if (titleEl) titleEl.innerText = 'Despacho Logístico (Delivery)';
+            if (iconEl) iconEl.innerText = 'local_shipping';
+            let opts = `
                 <option value="preparacion">En Preparación / Empaque</option>
                 <option value="en_ruta">En Ruta (Con Repartidor)</option>
                 <option value="entregado">Entregado al Cliente ✅</option>
-                <option value="cancelado" class="text-red-600 font-bold">Cancelar Pedido</option>
             `;
+            if (puedeCancelar) {
+                opts += `<option value="cancelado" class="text-red-600 font-bold">Cancelar Pedido</option>`;
+            }
+            select.innerHTML = opts;
         } else {
             if (titleEl) titleEl.innerText = 'Entrega en Sede Física';
             if (iconEl) iconEl.innerText = 'storefront';
-            select.innerHTML = `
+            let opts = `
                 <option value="preparacion">En Preparación / Listo para Retiro</option>
                 <option value="entregado">Retirado / Entregado en Tienda ✅</option>
-                <option value="cancelado" class="text-red-600 font-bold">Cancelar Pedido</option>
             `;
+            if (puedeCancelar) {
+                opts += `<option value="cancelado" class="text-red-600 font-bold">Cancelar Pedido</option>`;
+            }
+            select.innerHTML = opts;
         }
 
         let optionExists = Array.from(select.options).some(opt => opt.value === estadoActual);

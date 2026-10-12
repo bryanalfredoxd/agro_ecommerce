@@ -27,6 +27,15 @@
                 <p class="text-sm text-gray-500 font-medium mt-1.5">Ingresa tus credenciales para continuar.</p>
             </div>
 
+            @if (session('success_reset'))
+                <div class="mb-5 bg-emerald-50 border-l-4 border-emerald-500 p-3.5 rounded-r-xl shadow-xs">
+                    <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-emerald-600 text-[20px]">check_circle</span>
+                        <p class="text-xs text-emerald-800 font-bold leading-relaxed">{{ session('success_reset') }}</p>
+                    </div>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('login') }}" class="space-y-5">
                 @csrf
 
