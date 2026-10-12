@@ -116,10 +116,11 @@
 
     <div class="ticket-container">
         <div class="header">
-            <img src="{{ asset('img/logo.png') }}" alt="Agrosuministros Rodríguez" class="logo">
-            <div class="company-name">Agrosuministros Rodríguez</div>
-            <div class="company-info">RIF: J-50493821-4</div>
-            <div class="company-info">Barinitas, Estado Barinas, Venezuela</div>
+            <img src="{{ asset('img/logo.png') }}" alt="{{ \App\Models\ConfiguracionTienda::nombre() }}" class="logo">
+            <div class="company-name">{{ \App\Models\ConfiguracionTienda::nombre() }}</div>
+            <div class="company-info">RIF: {{ \App\Models\ConfiguracionTienda::rif() }}</div>
+            <div class="company-info">{{ \App\Models\ConfiguracionTienda::direccion() }}</div>
+            <div class="company-info">Tel / WhatsApp: {{ \App\Models\ConfiguracionTienda::telefono() }}</div>
         </div>
 
         <div class="divider"></div>

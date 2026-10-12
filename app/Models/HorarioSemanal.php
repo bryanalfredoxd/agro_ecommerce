@@ -152,6 +152,79 @@ class HorarioSemanal extends Model
         $estado = self::obtenerEstadoHorarioHoy();
         return $estado['mostrar'];
     }
+
+    /**
+     * Retorna un resumen legible en español de los días y horas de atención configurados.
+     * Ejemplo: "Lun a Vie: 8:00 AM - 5:00 PM • Sáb: 8:00 AM - 1:00 PM"
+     */
+    public static function obtenerResumenSemanal(): string
+    {
+        $horarios = self::orderBy('dia_semana')->get();
+        if ($horarios->isEmpty()) {
+            return 'Horario no definido';
+        }
+
+        $diasCortos = [
+            1 => 'Lun',
+            2 => 'Mar',
+            3 => 'Mié',
+            4 => 'Jue',
+            5 => 'Vie',
+            6 => 'Sáb',
+            7 => 'Dom'
+        ];
+
+        $formato12h = function ($hora) {
+            if (!$hora) return '';
+            return date('g:i A', strtotime($hora));
+        };
+
+        $grupos = [];
+        $grupoActual = null;
+
+        foreach ($horarios as $h) {
+            $estado = $h->es_laborable 
+                ? $formato12h($h->hora_apertura) . ' - ' . $formato12h($h->hora_cierre)
+                : 'Cerrado';
+
+            if ($grupoActual === null) {
+                $grupoActual = [
+                    'inicio' => $h->dia_semana,
+                    'fin' => $h->dia_semana,
+                    'estado' => $estado,
+                    'laborable' => (bool)$h->es_laborable
+                ];
+            } elseif ($grupoActual['estado'] === $estado) {
+                $grupoActual['fin'] = $h->dia_semana;
+            } else {
+                $grupos[] = $grupoActual;
+                $grupoActual = [
+                    'inicio' => $h->dia_semana,
+                    'fin' => $h->dia_semana,
+                    'estado' => $estado,
+                    'laborable' => (bool)$h->es_laborable
+                ];
+            }
+        }
+        if ($grupoActual !== null) {
+            $grupos[] = $grupoActual;
+        }
+
+        $partes = [];
+        foreach ($grupos as $g) {
+            if (!$g['laborable']) continue;
+            $rango = ($g['inicio'] === $g['fin'])
+                ? $diasCortos[$g['inicio']]
+                : $diasCortos[$g['inicio']] . ' a ' . $diasCortos[$g['fin']];
+            $partes[] = $rango . ': ' . $g['estado'];
+        }
+
+        if (empty($partes)) {
+            return 'Temporalmente Cerrado';
+        }
+
+        return implode(' • ', $partes);
+    }
     
     // Verificar si está abierto en este momento (para otros usos)
     public static function estaAbiertoAhora()

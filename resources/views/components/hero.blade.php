@@ -33,7 +33,7 @@
             </h1>
             
             <p class="text-sm sm:text-base text-slate-200 mb-6 font-normal leading-relaxed max-w-lg">
-                Agrosuministros Rodríguez: Semillas certificadas, fertilizantes, medicina veterinaria y herramientas con despacho directo a todo el país.
+                {{ $configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre() }}: {{ $configTienda->slogan ?? 'Semillas certificadas, fertilizantes, medicina veterinaria y herramientas con despacho directo a todo el país.' }}
             </p>
             
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
@@ -44,7 +44,7 @@
                     </span>
                 </a>
                 
-                <a href="https://wa.me/584129614615" target="_blank" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm backdrop-blur-xs border border-white/20 transition-all">
+                <a href="{{ \App\Models\ConfiguracionTienda::whatsappUrl('Hola ' . ($configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre()) . ', deseo asesoría para mi compra en la tienda virtual') }}" target="_blank" class="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm backdrop-blur-xs border border-white/20 transition-all">
                     <span class="material-symbols-outlined text-[20px] text-emerald-400">chat</span>
                     <span>Asesoría por WhatsApp</span>
                 </a>

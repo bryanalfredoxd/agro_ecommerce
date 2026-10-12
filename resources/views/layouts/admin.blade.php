@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Panel Administrativo - Agrosuministros Rodríguez')</title>
+    <title>@yield('title', 'Panel Administrativo - ' . ($configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre()))</title>
 
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">

@@ -204,11 +204,11 @@
 
     <div class="ticket-container">
         <div class="header">
-            <img src="{{ asset('img/logo.png') }}" alt="Agrosuministros Rodríguez" class="logo">
-            <div class="company-name">Agrosuministros Rodríguez</div>
-            <div class="company-info">RIF: J-50493821-4</div>
-            <div class="company-info">Barinitas, Estado Barinas, Venezuela</div>
-            <div class="company-info">Tel / WhatsApp: +58 412-9614615</div>
+            <img src="{{ asset('img/logo.png') }}" alt="{{ $config->nombre_comercio ?? $config->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre() }}" class="logo">
+            <div class="company-name">{{ $config->nombre_comercio ?? $config->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre() }}</div>
+            <div class="company-info">RIF: {{ $config->rif ?? \App\Models\ConfiguracionTienda::rif() }}</div>
+            <div class="company-info">{{ $config->direccion_fisica ?? $config->direccion ?? \App\Models\ConfiguracionTienda::direccion() }}</div>
+            <div class="company-info">Tel / WhatsApp: {{ $config->telefono_contacto ?? $config->telefono ?? \App\Models\ConfiguracionTienda::telefono() }}</div>
         </div>
 
         <div class="divider"></div>

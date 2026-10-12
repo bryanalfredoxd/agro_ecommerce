@@ -12,7 +12,7 @@
         <meta name="success-message" content="{{ session('success_register') }}">
     @endif
     
-    <title>@yield('title', 'Agrosuministros Rodríguez - Soluciones Integrales para el Campo')</title>
+    <title>@yield('title', ($configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre()) . ' - ' . ($configTienda->slogan ?? \App\Models\ConfiguracionTienda::slogan()))</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     

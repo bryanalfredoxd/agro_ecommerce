@@ -19,6 +19,17 @@ class ConfiguracionTienda extends Model
     // 3. Campos que se pueden llenar masivamente
     protected $fillable = [
         'nombre_empresa',
+        'rif',
+        'slogan',
+        'descripcion_empresa',
+        'telefono',
+        'whatsapp',
+        'email',
+        'direccion',
+        'horario_atencion',
+        'red_facebook',
+        'red_instagram',
+        'red_tiktok',
         'iva_porcentaje',
         'recargo_divisas_pct',
         'recargo_divisas_aplica',
@@ -46,6 +57,35 @@ class ConfiguracionTienda extends Model
     ];
 
     // ==========================================
+    // ACCESORES DE COMPATIBILIDAD
+    // ==========================================
+
+    public function getNombreComercioAttribute(): string
+    {
+        return $this->nombre_empresa ?: 'Agrosuministros Rodríguez C.A.';
+    }
+
+    public function getDireccionFisicaAttribute(): string
+    {
+        return $this->direccion ?: 'Barinitas, Estado Barinas, Venezuela';
+    }
+
+    public function getTelefonoContactoAttribute(): string
+    {
+        return $this->telefono ?: '+58 412-9614615';
+    }
+
+    public function getEmailContactoAttribute(): string
+    {
+        return $this->email ?: 'fitnessbigworld@gmail.com';
+    }
+
+    public function getHorarioAtencionAttribute($value): string
+    {
+        return \App\Models\HorarioSemanal::obtenerResumenSemanal();
+    }
+
+    // ==========================================
     // RELACIONES
     // ==========================================
     
@@ -71,7 +111,97 @@ class ConfiguracionTienda extends Model
     public static function nombre(): string
     {
         $config = static::first();
-        return $config && !empty($config->nombre_empresa) ? $config->nombre_empresa : 'Agrosuministros Rodríguez';
+        return $config && !empty($config->nombre_empresa) ? $config->nombre_empresa : 'Agrosuministros Rodríguez C.A.';
+    }
+
+    public static function rif(): string
+    {
+        $config = static::first();
+        return $config && !empty($config->rif) ? $config->rif : 'J-50493821-4';
+    }
+
+    public static function slogan(): string
+    {
+        $config = static::first();
+        return $config && !empty($config->slogan) ? $config->slogan : 'Insumos & Soluciones para el Campo';
+    }
+
+    public static function descripcion(): string
+    {
+        $config = static::first();
+        return $config && !empty($config->descripcion_empresa) 
+            ? $config->descripcion_empresa 
+            : 'Tu aliado estratégico en el desarrollo agrícola y pecuario. Ofrecemos fertilizantes, semillas certificadas, implementos y farmacología veterinaria con entrega confiable a nivel regional y nacional.';
+    }
+
+    public static function telefono(): string
+    {
+        $config = static::first();
+        return $config && !empty($config->telefono) ? $config->telefono : '+58 412-9614615';
+    }
+
+    public static function whatsapp(): string
+    {
+        $config = static::first();
+        return $config && !empty($config->whatsapp) ? $config->whatsapp : '+58 412-9614615';
+    }
+
+    /**
+     * Retorna solo dígitos limpios con código de país para usar en URLs wa.me
+     * Ejemplo: "+58 412-9614615" o "0412-9614615" -> "584129614615"
+     */
+    public static function whatsappNumeroLimpio(): string
+    {
+        $numero = static::whatsapp();
+        $soloDigitos = preg_replace('/[^0-9]/', '', $numero);
+        if (str_starts_with($soloDigitos, '0')) {
+            $soloDigitos = '58' . substr($soloDigitos, 1);
+        }
+        return $soloDigitos ?: '584129614615';
+    }
+
+    public static function whatsappUrl(?string $mensaje = null): string
+    {
+        $numero = static::whatsappNumeroLimpio();
+        if ($mensaje) {
+            return "https://wa.me/{$numero}?text=" . urlencode($mensaje);
+        }
+        return "https://wa.me/{$numero}";
+    }
+
+    public static function email(): string
+    {
+        $config = static::first();
+        return $config && !empty($config->email) ? $config->email : 'fitnessbigworld@gmail.com';
+    }
+
+    public static function direccion(): string
+    {
+        $config = static::first();
+        return $config && !empty($config->direccion) ? $config->direccion : 'Barinitas, Estado Barinas, Venezuela';
+    }
+
+    public static function horario(): string
+    {
+        return \App\Models\HorarioSemanal::obtenerResumenSemanal();
+    }
+
+    public static function facebook(): ?string
+    {
+        $config = static::first();
+        return $config && !empty($config->red_facebook) ? $config->red_facebook : 'https://facebook.com';
+    }
+
+    public static function instagram(): ?string
+    {
+        $config = static::first();
+        return $config && !empty($config->red_instagram) ? $config->red_instagram : 'https://instagram.com';
+    }
+
+    public static function tiktok(): ?string
+    {
+        $config = static::first();
+        return $config && !empty($config->red_tiktok) ? $config->red_tiktok : null;
     }
 
     public static function deliveryHabilitado(): bool

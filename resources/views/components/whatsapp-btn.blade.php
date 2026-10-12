@@ -4,13 +4,16 @@
     {{-- Efecto de latido (Ping) para llamar la atención --}}
     <div class="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-60 group-hover:animate-none"></div>
 
-    {{-- Botón Principal --}}
-    {{-- Reemplaza '584121234567' por el número real de la empresa (Sin el '+') --}}
-    <a href="https://wa.me/584129614615?text=Hola%20Corpo%20Agrícola,%20vengo%20de%20la%20página%20web%20y%20necesito%20ayuda%20con..." 
+    {{-- Botón Principal Vinculado a la Base de Datos --}}
+    @php
+        $empresaNombreWa = $configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre();
+        $urlWhatsappFlotante = \App\Models\ConfiguracionTienda::whatsappUrl('Hola ' . $empresaNombreWa . ', vengo de la tienda virtual y requiero información y asesoría...');
+    @endphp
+    <a href="{{ $urlWhatsappFlotante }}" 
        target="_blank" 
        rel="noopener noreferrer"
        class="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-[#25D366] text-white rounded-full shadow-[0_8px_30px_rgba(37,211,102,0.4)] hover:shadow-[0_8px_30px_rgba(37,211,102,0.6)] hover:scale-110 transition-all duration-300 active:scale-95"
-       title="Chatea con nosotros">
+       title="Chatea con nosotros por WhatsApp">
         
         {{-- Icono SVG oficial de WhatsApp --}}
         <svg class="w-8 h-8 sm:w-9 sm:h-9 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

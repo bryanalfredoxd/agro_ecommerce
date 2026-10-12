@@ -35,4 +35,17 @@ class Categoria extends Model
     {
         return $this->hasMany(Categoria::class, 'categoria_padre_id');
     }
+
+    /**
+     * Obtiene las categorías principales con mayor cantidad de productos activos asociados.
+     */
+    public static function topConMasProductos(int $limite = 4)
+    {
+        return static::withCount(['productos' => function ($q) {
+                $q->whereNull('eliminado_at');
+            }])
+            ->orderByDesc('productos_count')
+            ->take($limite)
+            ->get();
+    }
 }

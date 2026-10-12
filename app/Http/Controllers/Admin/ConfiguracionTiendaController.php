@@ -32,6 +32,19 @@ class ConfiguracionTiendaController extends Controller
     {
         $request->validate([
             'nombre_empresa' => 'required|string|max:100',
+            'rif' => 'nullable|string|max:30',
+            'slogan' => 'nullable|string|max:200',
+            'descripcion_empresa' => 'nullable|string|max:1000',
+            'telefono' => 'nullable|string|max:50',
+            'whatsapp' => 'nullable|string|max:50',
+            'email' => 'nullable|string|email|max:100',
+            'direccion' => 'nullable|string|max:255',
+            'horario_atencion' => 'nullable|string|max:150',
+            'red_facebook' => 'nullable|string|max:255',
+            'red_instagram' => 'nullable|string|max:255',
+            'red_tiktok' => 'nullable|string|max:255',
+            'latitud' => 'nullable|numeric|between:-90,90',
+            'longitud' => 'nullable|numeric|between:-180,180',
             'iva_porcentaje' => 'required|numeric|min:0|max:100',
             'recargo_divisas_pct' => 'required|numeric|min:0|max:100',
             'recargo_divisas_aplica' => 'required|in:ambas,web,pos',
@@ -45,8 +58,30 @@ class ConfiguracionTiendaController extends Controller
 
         $config = ConfiguracionTienda::firstOrFail();
 
+        $formatearUrl = function (?string $url) {
+            $url = trim((string) $url);
+            if (empty($url)) return null;
+            if (!preg_match('/^https?:\/\//i', $url)) {
+                return 'https://' . ltrim($url, '/');
+            }
+            return $url;
+        };
+
         $datos = [
             'nombre_empresa' => $request->nombre_empresa,
+            'rif' => $request->rif,
+            'slogan' => $request->slogan,
+            'descripcion_empresa' => $request->descripcion_empresa,
+            'telefono' => $request->telefono,
+            'whatsapp' => $request->whatsapp,
+            'email' => $request->email,
+            'direccion' => $request->direccion,
+            'horario_atencion' => $request->filled('horario_atencion') ? $request->horario_atencion : \App\Models\HorarioSemanal::obtenerResumenSemanal(),
+            'red_facebook' => $formatearUrl($request->red_facebook),
+            'red_instagram' => $formatearUrl($request->red_instagram),
+            'red_tiktok' => $formatearUrl($request->red_tiktok),
+            'latitud' => $request->filled('latitud') ? (float)$request->latitud : $config->latitud,
+            'longitud' => $request->filled('longitud') ? (float)$request->longitud : $config->longitud,
             'iva_porcentaje' => $request->iva_porcentaje,
             'recargo_divisas_pct' => $request->recargo_divisas_pct,
             'recargo_divisas_aplica' => $request->recargo_divisas_aplica,

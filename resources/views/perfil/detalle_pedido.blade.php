@@ -435,7 +435,7 @@
                         @endif
 
                         {{-- Botón de Soporte WhatsApp --}}
-                        <a href="https://wa.me/584129614615?text={{ urlencode('Hola, Agrosuministros Rodríguez. Necesito asistencia con mi pedido #' . $pedido->id) }}" 
+                        <a href="{{ \App\Models\ConfiguracionTienda::whatsappUrl('Hola, ' . ($configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre()) . '. Necesito asistencia con mi pedido #' . $pedido->id) }}" 
                            target="_blank" 
                            class="w-full py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-xl border border-emerald-200 transition-colors flex items-center justify-center gap-2 shadow-2xs mt-2">
                             <span class="material-symbols-outlined text-[18px]">support_agent</span>

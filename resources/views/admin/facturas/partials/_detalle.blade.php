@@ -10,11 +10,11 @@
 
     {{-- Logo y Cabecera --}}
     <div class="text-center mb-2">
-        <img src="{{ asset('img/logo.png') }}" alt="Agrosuministros Rodríguez" class="w-24 h-auto mx-auto mb-2.5 block object-contain" style="filter: grayscale(100%) contrast(150%);">
-        <h2 class="font-black text-[13px] tracking-wide uppercase leading-tight">AGROSUMINISTROS RODRÍGUEZ</h2>
-        <p class="text-[10px] mt-0.5 font-bold">RIF: J-50493821-4</p>
-        <p class="text-[10px] text-gray-800">Barinitas, Estado Barinas, Venezuela</p>
-        <p class="text-[10px] text-gray-800">Tel / WhatsApp: +58 412-9614615</p>
+        <img src="{{ asset('img/logo.png') }}" alt="{{ $config->nombre_comercio ?? $config->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre() }}" class="w-24 h-auto mx-auto mb-2.5 block object-contain" style="filter: grayscale(100%) contrast(150%);">
+        <h2 class="font-black text-[13px] tracking-wide uppercase leading-tight">{{ strtoupper($config->nombre_comercio ?? $config->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre()) }}</h2>
+        <p class="text-[10px] mt-0.5 font-bold">RIF: {{ $config->rif ?? \App\Models\ConfiguracionTienda::rif() }}</p>
+        <p class="text-[10px] text-gray-800">{{ $config->direccion_fisica ?? $config->direccion ?? \App\Models\ConfiguracionTienda::direccion() }}</p>
+        <p class="text-[10px] text-gray-800">Tel / WhatsApp: {{ $config->telefono_contacto ?? $config->telefono ?? \App\Models\ConfiguracionTienda::telefono() }}</p>
     </div>
 
     {{-- Separador discontinuo --}}

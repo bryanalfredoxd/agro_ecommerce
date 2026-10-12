@@ -13,7 +13,7 @@
         {{-- CABECERA CON LOGO OFICIAL --}}
         <div class="flex items-center justify-between p-4 border-b border-slate-100 bg-white">
             <a href="{{ route('home') }}" class="flex items-center gap-2 flex-shrink-0 outline-hidden">
-                <img src="{{ asset('img/logo.png') }}" alt="Agrosuministros Rodríguez" class="h-9 w-auto object-contain">
+                <img src="{{ asset('img/logo.png') }}" alt="{{ $configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre() }}" class="h-9 w-auto object-contain">
             </a>
             <button type="button" class="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors" onclick="toggleMobileMenu()">
                 <span class="material-symbols-outlined text-[24px]">close</span>

@@ -69,11 +69,14 @@
                     <span class="font-medium truncate">{{ $textoHorario }}</span>
                 </div>
             </div>
-            
             <div class="hidden sm:flex items-center gap-5">
-                <a href="tel:+584129614615" class="flex items-center gap-1.5 hover:text-[#aad6f3] transition-colors group">
+                @php
+                    $telefonoTopBar = $configTienda->telefono ?? \App\Models\ConfiguracionTienda::telefono();
+                    $telefonoLimpioTopBar = preg_replace('/[^0-9+]/', '', $telefonoTopBar);
+                @endphp
+                <a href="tel:{{ $telefonoLimpioTopBar }}" class="flex items-center gap-1.5 hover:text-[#aad6f3] transition-colors group">
                     <span class="material-symbols-outlined text-[16px] text-[#aad6f3]">call</span>
-                    <span class="font-medium">+58 412-9614615</span>
+                    <span class="font-medium">{{ $telefonoTopBar }}</span>
                 </a>
                 
                 <div class="h-3 w-px bg-white/20"></div>

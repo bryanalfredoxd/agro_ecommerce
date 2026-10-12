@@ -11,16 +11,22 @@
         <div class="flex items-center justify-between py-2.5 lg:py-3 gap-4">
             
             {{-- 1. LOGO OFICIAL AGROSUMINISTROS RODRÍGUEZ --}}
+            @php
+                $nombreEmpresaHeader = $configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre();
+                $partesNombreHeader = explode(' ', trim($nombreEmpresaHeader), 2);
+                $marcaPrincipal = $partesNombreHeader[0] ?? 'Agrosuministros';
+                $marcaSecundaria = $partesNombreHeader[1] ?? 'Rodríguez';
+            @endphp
             <a href="{{ route('home') }}" class="flex items-center gap-2.5 sm:gap-3 flex-shrink-0 group outline-hidden select-none">
                 <img src="{{ asset('img/logo.png') }}" 
-                     alt="Agrosuministros Rodríguez" 
+                     alt="{{ $nombreEmpresaHeader }}" 
                      class="h-11 sm:h-12 lg:h-14 w-11 sm:w-12 lg:w-14 object-contain rounded-full shadow-xs transition-transform duration-200 group-hover:scale-105 shrink-0">
                 <div class="hidden sm:flex flex-col leading-none">
                     <span class="text-sm sm:text-base lg:text-lg font-black tracking-tight text-[#1e549e] group-hover:text-[#3492cf] transition-colors uppercase">
-                        Agrosuministros
+                        {{ $marcaPrincipal }}
                     </span>
-                    <span class="text-[10px] sm:text-xs font-black tracking-wider text-[#3492cf] uppercase mt-0.5">
-                        Rodríguez
+                    <span class="text-[10px] sm:text-xs font-black tracking-wider text-[#3492cf] uppercase mt-0.5 truncate max-w-[140px]">
+                        {{ $marcaSecundaria }}
                     </span>
                 </div>
             </a>
