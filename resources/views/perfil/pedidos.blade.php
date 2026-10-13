@@ -261,27 +261,12 @@
                                             </div>
 
                                             {{-- Botones de Acción --}}
-                                            <div class="flex items-center gap-2 pt-2">
+                                            <div class="pt-2">
                                                 <a href="{{ route('perfil.pedido.detalle', $pedido->id) }}" 
-                                                   class="flex-1 py-2.5 px-4 bg-[#1e549e] hover:bg-[#3492cf] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 group/btn">
+                                                   class="w-full py-2.5 px-4 bg-[#1e549e] hover:bg-[#3492cf] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 group/btn">
                                                     <span>Ver Detalle</span>
                                                     <span class="material-symbols-outlined text-[16px] group-hover/btn:translate-x-0.5 transition-transform">arrow_forward</span>
                                                 </a>
-
-                                                @if(in_array($pedido->estado, ['pagado', 'aprobado', 'completado_caja', 'en_ruta', 'entregado']))
-                                                    <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" 
-                                                       target="_blank" 
-                                                       title="Ticket Térmico (80mm)"
-                                                       class="size-10 rounded-xl bg-slate-50 text-slate-600 hover:text-[#1e549e] hover:bg-[#e5f2fb] border border-slate-200 flex items-center justify-center transition-colors shadow-2xs">
-                                                        <span class="material-symbols-outlined text-[18px]">receipt_long</span>
-                                                    </a>
-                                                    <a href="{{ route('perfil.pedido.factura', $pedido->id) }}" 
-                                                       target="_blank" 
-                                                       title="Factura Fiscal (A4 / PDF)"
-                                                       class="size-10 rounded-xl bg-emerald-50 text-emerald-700 hover:text-white hover:bg-emerald-600 border border-emerald-200 flex items-center justify-center transition-colors shadow-2xs">
-                                                        <span class="material-symbols-outlined text-[18px]">description</span>
-                                                    </a>
-                                                @endif
                                             </div>
                                         </div>
 

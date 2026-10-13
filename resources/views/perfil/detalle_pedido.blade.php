@@ -20,23 +20,6 @@
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Orden</span>
                     <span class="font-mono text-xs sm:text-sm font-black text-slate-900">#{{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }}</span>
                 </div>
-
-                @if(in_array($pedido->estado, ['pagado', 'aprobado', 'completado_caja', 'en_ruta', 'entregado']))
-                    <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" 
-                       target="_blank" 
-                       class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-[#e5f2fb] hover:bg-[#1e549e] hover:text-white text-[#1e549e] font-bold text-xs transition-colors shadow-2xs"
-                       title="Ticket Térmico (80mm)">
-                        <span class="material-symbols-outlined text-[15px] sm:text-[16px]">receipt_long</span>
-                        <span class="hidden xs:inline">Ticket</span>
-                    </a>
-                    <a href="{{ route('perfil.pedido.factura', $pedido->id) }}" 
-                       target="_blank" 
-                       class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-700 font-bold text-xs transition-colors shadow-2xs border border-emerald-200/60"
-                       title="Factura Fiscal A4 / PDF">
-                        <span class="material-symbols-outlined text-[15px] sm:text-[16px]">description</span>
-                        <span class="hidden xs:inline">Factura</span>
-                    </a>
-                @endif
             </div>
         </div>
     </div>
@@ -413,26 +396,6 @@
                                 </span>
                             </div>
                         </div>
-
-                        {{-- Botones Ticket / Factura --}}
-                        @if(in_array($pedido->estado, ['pagado', 'aprobado', 'completado_caja', 'en_ruta', 'entregado']))
-                            <div class="mt-4 grid grid-cols-2 gap-2">
-                                <a href="{{ route('perfil.pedido.ticket', $pedido->id) }}" 
-                                   target="_blank" 
-                                   class="py-3 px-2 bg-[#1e549e] hover:bg-[#164079] text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 active:scale-95"
-                                   title="Imprimir Ticket Térmico 80mm">
-                                    <span class="material-symbols-outlined text-[17px]">receipt_long</span>
-                                    <span>Ticket (80mm)</span>
-                                </a>
-                                <a href="{{ route('perfil.pedido.factura', $pedido->id) }}" 
-                                   target="_blank" 
-                                   class="py-3 px-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 hover:border-emerald-600 hover:text-emerald-700"
-                                   title="Imprimir Factura Fiscal A4 / Guardar PDF">
-                                    <span class="material-symbols-outlined text-[17px] text-emerald-600">description</span>
-                                    <span>Factura (A4)</span>
-                                </a>
-                            </div>
-                        @endif
 
                         {{-- Botón de Soporte WhatsApp --}}
                         <a href="{{ \App\Models\ConfiguracionTienda::whatsappUrl('Hola, ' . ($configTienda->nombre_empresa ?? \App\Models\ConfiguracionTienda::nombre()) . '. Necesito asistencia con mi pedido #' . $pedido->id) }}" 
