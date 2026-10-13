@@ -237,7 +237,7 @@
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            @foreach($metodosPago->where('activo', 1)->take(6) as $metodo)
+                            @foreach($metodosPago->where('activo', 1) as $metodo)
                                 @php
                                     $icon = match($metodo->tipo_metodo) {
                                         'pago_movil' => 'phone_iphone', 
@@ -329,14 +329,6 @@
                             @endforeach
                         </div>
 
-                        @if($metodosPago->where('activo', 1)->count() > 6)
-                            <button type="button" 
-                                    onclick="window.CheckoutConfig.toggleModal('modal-todos-pagos')" 
-                                    class="mt-3.5 w-full py-2.5 text-xs font-bold text-slate-600 bg-slate-50 rounded-xl hover:bg-slate-100 hover:text-[#1e549e] transition-colors flex items-center justify-center gap-1.5 border border-slate-200">
-                                <span class="material-symbols-outlined text-[18px]">apps</span>
-                                Ver todos los métodos de pago disponibles ({{ $metodosPago->where('activo', 1)->count() }})
-                            </button>
-                        @endif
                         @error('metodo_pago_id') 
                             <span class="text-xs text-rose-500 font-bold flex items-center gap-1 mt-2.5">
                                 <span class="material-symbols-outlined text-sm">error</span> Debes seleccionar una forma de pago
@@ -657,114 +649,6 @@
                             </label>
                         @endforeach
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- MODAL: TODOS LOS MÉTODOS DE PAGO --}}
-<div id="modal-todos-pagos" class="fixed inset-0 z-[120] hidden" aria-labelledby="modal-pago-title" role="dialog" aria-modal="true">
-    <div class="fixed inset-0 bg-[#0f2347]/50 backdrop-blur-xs transition-opacity opacity-0" id="modal-todos-pagos-backdrop" onclick="window.CheckoutConfig.toggleModal('modal-todos-pagos')"></div>
-    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4 text-center">
-            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl opacity-0 translate-y-6 sm:translate-y-0 sm:scale-95 flex flex-col max-h-[85vh] border border-slate-100" id="modal-todos-pagos-panel">
-                <div class="bg-white px-6 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 z-10">
-                    <h3 class="text-base font-black text-slate-900 flex items-center gap-2" id="modal-pago-title">
-                        <span class="material-symbols-outlined text-[#1e549e]">payments</span> Todos los Métodos de Pago
-                    </h3>
-                    <button type="button" onclick="window.CheckoutConfig.toggleModal('modal-todos-pagos')" class="size-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">close</span>
-                    </button>
-                </div>
-                <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
-                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        @foreach($metodosPago->where('activo', 1) as $metodo)
-                            @php
-                                $icon = match($metodo->tipo_metodo) {
-                                    'pago_movil' => 'phone_iphone', 
-                                    'zelle' => 'zelle_svg', 
-                                    'transferencia' => 'account_balance',
-                                    'efectivo_usd', 'efectivo_bs' => 'attach_money', 
-                                    'binance' => 'binance_svg', 
-                                    'punto_venta', 'biopago' => 'point_of_sale',
-                                    'cashea' => 'shopping_bag',
-                                    default => 'payments'
-                                };
-                                $iconColor = match($metodo->tipo_metodo) {
-                                    'pago_movil', 'transferencia' => 'text-[#1e549e] bg-[#e5f2fb]', 
-                                    'zelle' => 'text-[#5800FD] bg-[#5800FD]/10',
-                                    'efectivo_usd', 'efectivo_bs' => 'text-emerald-700 bg-emerald-50', 
-                                    'binance' => 'text-[#F3BA2F] bg-[#F3BA2F]/10',
-                                    'cashea' => 'text-amber-800 bg-amber-100',
-                                    default => 'text-slate-600 bg-slate-100'
-                                };
-                                $modalidad = $metodo->modalidad_pago ?? 'divisas';
-                                $recargoPct = $metodo->getRecargoPorcentaje('web');
-                            @endphp
-                             <label class="relative cursor-pointer payment-card-radio block">
-                                <input type="radio" 
-                                       name="metodo_pago_id_modal" 
-                                       value="{{ $metodo->id }}" 
-                                       class="peer sr-only"
-                                       data-tipo="{{ $metodo->tipo_metodo }}"
-                                       data-modalidad="{{ $modalidad }}"
-                                       data-recargo-pct="{{ $recargoPct }}"
-                                       data-cuenta="{{ json_encode([
-                                           'id' => $metodo->id,
-                                           'tipo' => $metodo->tipo_metodo,
-                                           'modalidad' => $modalidad,
-                                           'recargo_pct' => (float)$recargoPct,
-                                           'nombre' => $metodo->nombre,
-                                           'banco' => $metodo->banco_entidad,
-                                           'cuenta' => $metodo->numero_cuenta,
-                                           'telefono' => $metodo->telefono,
-                                           'identificacion' => $metodo->identificacion,
-                                           'email' => $metodo->email,
-                                           'titular' => $metodo->nombre_titular,
-                                           'instrucciones' => $metodo->instrucciones_adicionales,
-                                           'icono' => $icon,
-                                           'icono_url' => in_array($icon, ['zelle_svg', 'binance_svg']) ? ($icon === 'zelle_svg' ? asset('img/pagos/zelle.png') : asset('img/pagos/binance.png')) : null
-                                       ]) }}"
-                                       onclick="window.CheckoutConfig.seleccionarPagoDesdeModal(this)">
-                                
-                                <div class="rounded-2xl border-2 border-slate-200 bg-white p-3.5 flex flex-col items-center justify-center gap-2 text-center h-full hover:border-slate-300 transition-all relative overflow-hidden peer-checked:border-[#3492cf] peer-checked:bg-[#e5f2fb]/40 shadow-2xs">
-                                    <div class="absolute top-2 right-2 text-white bg-[#1e549e] rounded-full size-4 flex items-center justify-center opacity-0 scale-50 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100">
-                                        <span class="material-symbols-outlined text-[12px] font-bold">check</span>
-                                    </div>
-                                    
-                                    <div class="size-11 rounded-2xl flex items-center justify-center {{ $iconColor }} mb-0.5 overflow-hidden">
-                                        @if($icon === 'zelle_svg') 
-                                            <img src="{{ asset('img/pagos/zelle.png') }}" class="w-full h-full object-contain p-2">
-                                        @elseif($icon === 'binance_svg') 
-                                            <img src="{{ asset('img/pagos/binance.png') }}" class="w-full h-full object-contain p-2">
-                                        @else 
-                                            <span class="material-symbols-outlined text-[24px]">{{ $icon }}</span> 
-                                        @endif
-                                    </div>
-                                    <span class="text-xs font-bold text-slate-800 leading-tight">{{ $metodo->nombre }}</span>
-
-                                    <div class="flex items-center gap-1 flex-wrap justify-center mt-0.5">
-                                        @if($recargoPct > 0)
-                                            <span class="inline-flex items-center gap-0.5 text-[9.5px] font-black text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded-full border border-amber-200">
-                                                +{{ number_format($recargoPct, 1) }}%
-                                            </span>
-                                        @elseif($recargoPct < 0)
-                                            <span class="inline-flex items-center gap-0.5 text-[9.5px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
-                                                {{ number_format($recargoPct, 1) }}%
-                                            </span>
-                                        @endif
-
-                                        @if(in_array($metodo->tipo_metodo, ['punto_venta', 'biopago']))
-                                            <span class="badge-solo-sede hidden text-[9px] font-black uppercase text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 mt-0.5">
-                                                Solo en Sede
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </label>
-                        @endforeach
-                     </div>
                 </div>
             </div>
         </div>
