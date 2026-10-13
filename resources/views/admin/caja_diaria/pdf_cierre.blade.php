@@ -145,23 +145,35 @@
             color: #991b1b;
         }
         .signatures-table {
-            margin-top: 36px;
+            width: 100%;
+            margin-top: 60px;
             page-break-inside: avoid;
         }
-        .signature-line {
-            border-top: 1px solid #64748b;
-            width: 80%;
-            margin: 0 auto;
-            padding-top: 5px;
+        .signatures-table td {
+            width: 50%;
             text-align: center;
-            font-size: 9.5px;
-            color: #334155;
+            vertical-align: bottom;
+            padding: 0 35px;
+        }
+        .signature-space {
+            height: 60px; /* Espacio vertical amplio para firma manuscrita y sello */
+        }
+        .signature-line {
+            border-top: 1.5px solid #475569;
+            width: 100%;
+            margin: 0 auto;
+            padding-top: 6px;
+            text-align: center;
+            font-size: 10px;
+            color: #0f172a;
             font-weight: bold;
         }
         .signature-sub {
             font-size: 8.5px;
             color: #64748b;
             text-align: center;
+            margin-top: 2px;
+            line-height: 1.35;
         }
     </style>
 </head>
@@ -348,7 +360,8 @@
     {{-- FIRMAS DE RESPONSABILIDAD --}}
     <table class="signatures-table">
         <tr>
-            <td style="width: 50%;">
+            <td>
+                <div class="signature-space"></div>
                 <div class="signature-line">
                     {{ $sesion->cajero ? trim($sesion->cajero->nombre . ' ' . $sesion->cajero->apellido) : 'Cajero Responsable' }}
                 </div>
@@ -356,7 +369,8 @@
                     Firma del Cajero • C.I: {{ $sesion->cajero && $sesion->cajero->documento_identidad ? $sesion->cajero->documento_identidad : '____________________' }}
                 </div>
             </td>
-            <td style="width: 50%;">
+            <td>
+                <div class="signature-space"></div>
                 <div class="signature-line">
                     Administrador / Auditor de Caja
                 </div>
