@@ -138,14 +138,64 @@
                     {{-- Sección de Totales --}}
                     <tr>
                         <td style="padding-top: 8px; padding-bottom: 8px;">
+                            @php
+                                $subtotalNeto = (float) ($factura->subtotal_usd ?? 0);
+                                $impuestoMonto = (float) ($factura->impuesto_usd ?? ($factura->monto_iva_usd ?? 0));
+                                
+                                $costoDelivery = (float) ($factura->pedido->costo_delivery_usd ?? 0);
+                                $recargoMonto = (float) ($factura->pedido->recargo_usd ?? 0);
+                                $recargoPct = (float) ($factura->pedido->recargo_porcentaje ?? 0);
+                                $descuentoMonto = (float) ($factura->pedido->descuento_usd ?? 0);
+
+                                // Determinar % de IVA:
+                                $porcentajeIva = (float) ($config->iva_porcentaje ?? ($factura->iva_porcentaje ?? 16.0));
+                                if ($porcentajeIva <= 0) {
+                                    $porcentajeIva = 16.0;
+                                }
+
+                                // Si en facturas históricas el impuesto_usd sumó el recargo, normalizarlo
+                                if ($recargoMonto > 0 && abs($impuestoMonto - round($subtotalNeto * ($porcentajeIva / 100), 2)) > 0.05) {
+                                    $montoIvaEstimado = round($subtotalNeto * ($porcentajeIva / 100), 2);
+                                    if (abs(($montoIvaEstimado + $recargoMonto) - $impuestoMonto) < 0.05) {
+                                        $impuestoMonto = $montoIvaEstimado;
+                                    }
+                                }
+
+                                // Si por algún motivo el impuesto sigue en 0 pero el total excede al subtotal
+                                if ($impuestoMonto <= 0 && $factura->total_usd > $subtotalNeto) {
+                                    $impuestoMonto = max(0, (float)$factura->total_usd - $subtotalNeto - $costoDelivery - $recargoMonto + $descuentoMonto);
+                                }
+                            @endphp
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="font-size: 10.5px; line-height: 1.45;">
                                 <tr>
                                     <td style="color: #475569;">Subtotal Neto:</td>
-                                    <td align="right" style="font-weight: bold;">${{ number_format($factura->subtotal_usd, 2) }}</td>
+                                    <td align="right" style="font-weight: bold;">${{ number_format($subtotalNeto, 2) }}</td>
                                 </tr>
+
+                                @if($descuentoMonto > 0)
                                 <tr>
-                                    <td style="color: #475569;">IVA ({{ (float)$factura->iva_porcentaje }}%):</td>
-                                    <td align="right" style="font-weight: bold;">${{ number_format($factura->monto_iva_usd, 2) }}</td>
+                                    <td style="color: #dc2626;">Descuento:</td>
+                                    <td align="right" style="font-weight: bold; color: #dc2626;">-${{ number_format($descuentoMonto, 2) }}</td>
+                                </tr>
+                                @endif
+
+                                @if($costoDelivery > 0)
+                                <tr>
+                                    <td style="color: #475569;">Delivery / Flete:</td>
+                                    <td align="right" style="font-weight: bold;">${{ number_format($costoDelivery, 2) }}</td>
+                                </tr>
+                                @endif
+
+                                @if($recargoMonto > 0)
+                                <tr>
+                                    <td style="color: #475569;">Recargo Modalidad ({{ (float)$recargoPct }}%):</td>
+                                    <td align="right" style="font-weight: bold;">${{ number_format($recargoMonto, 2) }}</td>
+                                </tr>
+                                @endif
+
+                                <tr>
+                                    <td style="color: #475569;">IVA ({{ (float)$porcentajeIva }}%):</td>
+                                    <td align="right" style="font-weight: bold;">${{ number_format($impuestoMonto, 2) }}</td>
                                 </tr>
                                 
                                 {{-- Total Dólares --}}
@@ -161,7 +211,7 @@
 
                                 {{-- Tasa y Total Bolívares --}}
                                 @php
-                                    $tasaAplicada = (float)($factura->tasa_cambio_historica ?: ($factura->pedido && $factura->pedido->tasaCambio ? $factura->pedido->tasaCambio->valor_tasa : 1));
+                                    $tasaAplicada = (float)($factura->valor_tasa_bcv ?: ($factura->tasa_cambio_historica ?: ($factura->pedido && $factura->pedido->tasaCambio ? $factura->pedido->tasaCambio->valor_tasa : 1)));
                                     $totalVesCalc = (float)($factura->total_ves ?: ($factura->total_usd * $tasaAplicada));
                                 @endphp
                                 <tr>

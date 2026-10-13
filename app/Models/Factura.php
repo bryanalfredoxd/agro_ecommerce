@@ -21,6 +21,12 @@ class Factura extends Model
         'impuesto_usd', 'total_usd', 'valor_tasa_bcv', 'total_ves', 'estado'
     ];
 
+    protected $appends = [
+        'monto_iva_usd',
+        'iva_porcentaje',
+        'tasa_cambio_historica'
+    ];
+
     public function pedido()
     {
         return $this->belongsTo(Pedido::class, 'pedido_id');
@@ -34,6 +40,39 @@ class Factura extends Model
     public function devolucion()
     {
         return $this->hasOne(Devolucion::class, 'factura_id')->latestOfMany('id');
+    }
+
+    // ==========================================
+    // ACCESORES DE COMPATIBILIDAD Y AUDITORÍA
+    // ==========================================
+    public function getMontoIvaUsdAttribute(): float
+    {
+        if ($this->impuesto_usd !== null) {
+            return (float) $this->impuesto_usd;
+        }
+        return (float) max(0, (float)($this->total_usd ?? 0) - (float)($this->subtotal_usd ?? 0));
+    }
+
+    public function getIvaPorcentajeAttribute(): float
+    {
+        $subtotal = (float) ($this->subtotal_usd ?? 0);
+        $montoIva = $this->monto_iva_usd;
+
+        if ($subtotal > 0 && $montoIva > 0) {
+            return (float) round(($montoIva / $subtotal) * 100, 1);
+        }
+
+        if ($montoIva == 0 && $subtotal > 0) {
+            return 0.0;
+        }
+
+        $config = ConfiguracionTienda::first();
+        return (float) ($config->iva_porcentaje ?? 16.00);
+    }
+
+    public function getTasaCambioHistoricaAttribute(): float
+    {
+        return (float) ($this->valor_tasa_bcv ?? 1.0);
     }
 
     // ==========================================
@@ -84,8 +123,13 @@ class Factura extends Model
             : ($pedido->direccion_texto ?? 'Compra en Tienda Física');
 
         // 3. Extraer cálculos monetarios
-        $subtotal = $pedido->subtotal_usd ?? $pedido->total_usd;
-        $impuesto = $pedido->total_usd - $subtotal;
+        $subtotal = (float) ($pedido->subtotal_usd ?? $pedido->total_usd);
+        $recargo = (float) ($pedido->recargo_usd ?? 0);
+        $delivery = (float) ($pedido->costo_delivery_usd ?? 0);
+        $descuento = (float) ($pedido->descuento_usd ?? 0);
+
+        // El impuesto (IVA) puro corresponde al total menos (subtotal + recargo + delivery - descuento)
+        $impuesto = max(0, (float)$pedido->total_usd - $subtotal - $delivery - $recargo + $descuento);
         
         // Calcular la tasa exacta aplicada en ese momento
         $tasa = $pedido->total_usd > 0 ? ($pedido->total_ves_calculado / $pedido->total_usd) : 1;

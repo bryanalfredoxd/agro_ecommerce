@@ -281,15 +281,40 @@
                 <span>SUBTOTAL USD:</span>
                 <span>${{ number_format($factura->subtotal_usd, 2) }}</span>
             </div>
+            @if($factura->pedido && $factura->pedido->descuento_usd > 0)
+            <div class="total-row" style="color: #dc2626;">
+                <span>DESCUENTO:</span>
+                <span>-${{ number_format($factura->pedido->descuento_usd, 2) }}</span>
+            </div>
+            @endif
             @if($factura->pedido && $factura->pedido->costo_delivery_usd > 0)
             <div class="total-row">
                 <span>DELIVERY:</span>
                 <span>${{ number_format($factura->pedido->costo_delivery_usd, 2) }}</span>
             </div>
             @endif
+            @if($factura->pedido && $factura->pedido->recargo_usd > 0)
             <div class="total-row">
-                <span>IVA ({{ (float)($config->iva_porcentaje ?? 16) }}%):</span>
-                <span>${{ number_format($factura->impuesto_usd, 2) }}</span>
+                <span>RECARGO ({{ (float)$factura->pedido->recargo_porcentaje }}%):</span>
+                <span>${{ number_format($factura->pedido->recargo_usd, 2) }}</span>
+            </div>
+            @endif
+            @php
+                $subtotalNeto = (float) ($factura->subtotal_usd ?? 0);
+                $impuestoMonto = (float) ($factura->impuesto_usd ?? ($factura->monto_iva_usd ?? 0));
+                $porcentajeIva = (float) ($config->iva_porcentaje ?? ($factura->iva_porcentaje ?? 16.0));
+                if ($porcentajeIva <= 0) $porcentajeIva = 16.0;
+                $recargoMonto = (float) ($factura->pedido->recargo_usd ?? 0);
+                if ($recargoMonto > 0 && abs($impuestoMonto - round($subtotalNeto * ($porcentajeIva / 100), 2)) > 0.05) {
+                    $montoIvaEst = round($subtotalNeto * ($porcentajeIva / 100), 2);
+                    if (abs(($montoIvaEst + $recargoMonto) - $impuestoMonto) < 0.05) {
+                        $impuestoMonto = $montoIvaEst;
+                    }
+                }
+            @endphp
+            <div class="total-row">
+                <span>IVA ({{ (float)$porcentajeIva }}%):</span>
+                <span>${{ number_format($impuestoMonto, 2) }}</span>
             </div>
             <div class="total-row total-highlight">
                 <span>TOTAL USD:</span>
