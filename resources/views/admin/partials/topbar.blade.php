@@ -21,12 +21,15 @@
                 </span>
             </button>
 
-            {{-- Panel Desplegable de Notificaciones --}}
-            <div id="panelNotificaciones" class="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-sm sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-100 hidden opacity-0 translate-y-3 transition-all duration-200 z-50 overflow-hidden">
+            {{-- Panel Desplegable de Notificaciones (Centrado y simétrico en celulares, anclado en escritorio) --}}
+            <div id="panelNotificaciones" class="fixed inset-x-3 sm:inset-x-auto sm:right-0 top-[68px] sm:top-full sm:absolute sm:mt-2 sm:w-96 max-w-sm sm:max-w-none mx-auto sm:mx-0 bg-white rounded-2xl shadow-2xl border border-slate-200/80 hidden opacity-0 translate-y-4 transition-all duration-200 z-50 overflow-hidden">
                 
-                <div class="px-5 py-3.5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                    <h3 class="font-bold text-[#1e549e] text-sm">Notificaciones del Sistema</h3>
-                    <span id="notificaciones-count-text" class="text-[10px] font-bold bg-[#e5f2fb] text-[#1e549e] px-2 py-0.5 rounded-full">0 Nuevas</span>
+                <div class="px-4 sm:px-5 py-3 sm:py-3.5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px] text-[#1e549e]">notifications</span>
+                        <h3 class="font-bold text-[#1e549e] text-xs sm:text-sm">Notificaciones del Sistema</h3>
+                    </div>
+                    <span id="notificaciones-count-text" class="text-[10px] font-bold bg-[#e5f2fb] text-[#1e549e] px-2.5 py-0.5 rounded-full">0 Nuevas</span>
                 </div>
 
                 {{-- Banner de Notificaciones de Escritorio (Windows / Navegador) --}}

@@ -36,26 +36,26 @@
 
             {{-- CABECERA PRINCIPAL --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-3.5">
-                    <a href="{{ route('admin.dashboard') }}" class="size-10 flex-shrink-0 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-200 transition-colors shadow-2xs" title="Volver al Panel">
+                <div class="flex items-start sm:items-center gap-3 sm:gap-3.5">
+                    <a href="{{ route('admin.dashboard') }}" class="size-10 shrink-0 bg-white border border-gray-200/90 rounded-xl flex items-center justify-center text-gray-500 hover:text-[#1e549e] hover:border-blue-200 transition-colors shadow-2xs mt-0.5 sm:mt-0" title="Volver al Panel">
                         <span class="material-symbols-outlined text-[20px]">arrow_back</span>
                     </a>
-                    <div>
+                    <div class="min-w-0">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[28px] text-[#1e549e]">pin_drop</span>
-                            <h1 class="text-xl sm:text-2xl font-black text-[#0b1d38] tracking-tight">Gestión de Zonas de Delivery</h1>
+                            <span class="material-symbols-outlined text-[24px] sm:text-[28px] text-[#1e549e] shrink-0">pin_drop</span>
+                            <h1 class="text-lg sm:text-2xl font-black text-[#0b1d38] tracking-tight leading-tight">Gestión de Zonas de Delivery</h1>
                         </div>
-                        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+                        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1 leading-relaxed">
                             Configura áreas de cobertura geográfica, tarifas en USD y tiempos de entrega mediante mapa satelital e interactivo.
                         </p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center justify-center sm:justify-end w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
                     @if(Auth::user()->tienePermiso('gestionar_zonas_delivery'))
-                    <button onclick="abrirModalCrear()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#1e549e] hover:bg-[#164079] text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-[#1e549e]/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                    <button onclick="abrirModalCrear()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1e549e] hover:bg-[#164079] text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-[#1e549e]/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
                         <span class="material-symbols-outlined text-[20px]">add_location_alt</span>
-                        Nueva Zona de Envío
+                        <span>Nueva Zona de Envío</span>
                     </button>
                     @endif
                 </div>
@@ -63,29 +63,29 @@
 
     {{-- INTERRUPTOR MAESTRO DEL SERVICIO DE DELIVERY --}}
     <div class="p-4 sm:p-5 rounded-2xl border transition-all {{ $deliveryActivo ? 'bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-white border-emerald-300' : 'bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-white border-amber-300' }} shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4" id="bannerMasterDelivery">
-        <div class="flex items-center gap-3.5">
-            <div class="size-12 rounded-xl {{ $deliveryActivo ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white' }} flex items-center justify-center shrink-0 shadow-xs" id="iconMasterDelivery">
-                <span class="material-symbols-outlined text-[26px]">{{ $deliveryActivo ? 'local_shipping' : 'pause_circle' }}</span>
+        <div class="flex items-start sm:items-center gap-3.5 min-w-0">
+            <div class="size-11 sm:size-12 rounded-xl {{ $deliveryActivo ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white' }} flex items-center justify-center shrink-0 shadow-xs mt-0.5 sm:mt-0" id="iconMasterDelivery">
+                <span class="material-symbols-outlined text-[24px] sm:text-[26px]">{{ $deliveryActivo ? 'local_shipping' : 'pause_circle' }}</span>
             </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <h3 class="font-black text-slate-800 text-sm sm:text-base">Servicio de Envíos / Delivery en Tienda Web</h3>
-                    <span id="badgeMasterDelivery" class="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider {{ $deliveryActivo ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300' }}">
+            <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="font-black text-slate-800 text-sm sm:text-base leading-tight">Servicio de Envíos / Delivery en Tienda Web</h3>
+                    <span id="badgeMasterDelivery" class="inline-flex items-center text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shrink-0 {{ $deliveryActivo ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300' }}">
                         {{ $deliveryActivo ? 'Activo en Línea' : 'Pausado Temporalmente' }}
                     </span>
                 </div>
-                <p id="descMasterDelivery" class="text-xs text-slate-600 mt-0.5 font-medium">
+                <p id="descMasterDelivery" class="text-xs text-slate-600 mt-1 font-medium leading-relaxed">
                     {{ $deliveryActivo ? 'Los clientes pueden seleccionar Delivery y calcular flete según su ubicación geográfica.' : 'El servicio está pausado: en el checkout los clientes solo podrán elegir "Retiro en Sede".' }}
                 </p>
             </div>
         </div>
         
         @if(Auth::user()->tienePermiso('gestionar_zonas_delivery'))
-        <div>
+        <div class="w-full sm:w-auto shrink-0">
             <button type="button" 
                     onclick="toggleMasterDelivery()" 
                     id="btnToggleMasterDelivery"
-                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs transition-all shadow-xs {{ $deliveryActivo ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20' }}">
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs transition-all shadow-xs cursor-pointer {{ $deliveryActivo ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20' }}">
                 <span class="material-symbols-outlined text-[18px]">{{ $deliveryActivo ? 'pause' : 'play_arrow' }}</span>
                 <span id="btnTextMasterDelivery">{{ $deliveryActivo ? 'Pausar Servicio de Delivery' : 'Activar Servicio de Delivery' }}</span>
             </button>
@@ -141,17 +141,17 @@
 
         {{-- COLUMNA IZQUIERDA: MAPA INTERACTIVO LEAFLET (7 cols) --}}
         <div class="xl:col-span-7 bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
-            <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
-                <div class="flex items-center gap-2">
+            <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+                <div class="flex items-center justify-center sm:justify-start gap-2">
                     <span class="material-symbols-outlined text-[#1e549e] text-[22px]">explore</span>
                     <h3 class="font-black text-slate-800 text-sm sm:text-base">Mapa de Cobertura en Tiempo Real</h3>
                 </div>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <div id="indicadorCentroTienda" class="flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200/90 rounded-xl text-xs font-bold text-slate-700 shadow-2xs">
+                <div class="flex items-center justify-center sm:justify-end gap-2 flex-wrap w-full sm:w-auto">
+                    <div id="indicadorCentroTienda" class="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/90 rounded-xl text-xs font-bold text-slate-700 shadow-2xs">
                         <span class="inline-block size-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span id="textoCentroTienda">Centro: Sede Tienda</span>
                     </div>
-                    <button type="button" onclick="detectarYFijarUbicacionGPS(true)" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1e549e] hover:bg-[#164079] text-white text-xs font-bold rounded-xl shadow-xs transition-all hover:scale-105 active:scale-95" title="Detectar mi ubicación real por GPS y fijarla como centro de la tienda">
+                    <button type="button" onclick="detectarYFijarUbicacionGPS(true)" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#1e549e] hover:bg-[#164079] text-white text-xs font-bold rounded-xl shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer" title="Detectar mi ubicación real por GPS y fijarla como centro de la tienda">
                         <span class="material-symbols-outlined text-[16px]">my_location</span>
                         <span>Fijar mi GPS</span>
                     </button>
@@ -216,8 +216,8 @@
                          </div>
 
                          {{-- Metadata adicional: tiempo, vehiculo, radio --}}
-                         <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-                             <div class="flex items-center gap-3">
+                         <div class="mt-3 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-slate-500">
+                             <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
                                  <span class="flex items-center gap-1 font-medium" title="Tiempo estimado">
                                      <span class="material-symbols-outlined text-[16px] text-slate-400">schedule</span>
                                      {{ $zona->tiempo_estimado_minutos ? $zona->tiempo_estimado_minutos . ' min' : '30-45 min' }}
@@ -234,7 +234,7 @@
                              </div>
 
                              {{-- Acciones --}}
-                             <div class="flex items-center gap-1">
+                             <div class="flex items-center justify-center sm:justify-end gap-1.5 w-full sm:w-auto pt-1 sm:pt-0">
                                  <button onclick="enfocarZona({{ $zona->id }}, {{ $zona->latitud ?? 8.7622 }}, {{ $zona->longitud ?? -70.4106 }})" class="p-1.5 text-slate-400 hover:text-[#1e549e] hover:bg-slate-100 rounded-lg transition-colors" title="Ver en el Mapa">
                                      <span class="material-symbols-outlined text-[18px]">visibility</span>
                                  </button>
@@ -272,118 +272,121 @@
 <div id="modalZona" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity opacity-0" id="modalBackdrop" onclick="cerrarModal()"></div>
 
-    <div class="fixed inset-0 z-10 flex justify-center items-center p-4">
-        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-xl opacity-0 scale-95" id="modalPanel">
+    <div class="fixed inset-0 z-10 overflow-y-auto p-2 sm:p-4 flex min-h-full items-end sm:items-center justify-center">
+        <div class="relative transform overflow-hidden rounded-t-3xl sm:rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-xl max-h-[92vh] sm:max-h-[90vh] flex flex-col opacity-0 scale-95 my-0 sm:my-8" id="modalPanel">
             
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <div class="flex items-center gap-3">
+            <div class="px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+                <div class="flex items-center gap-2.5">
                     <span class="material-symbols-outlined text-[#1e549e] text-2xl" id="modalIcon">add_location</span>
-                    <h3 class="text-lg font-black text-slate-800" id="modalTitle">Nueva Zona de Delivery</h3>
+                    <h3 class="text-base sm:text-lg font-black text-slate-800" id="modalTitle">Nueva Zona de Delivery</h3>
                 </div>
-                <button type="button" onclick="cerrarModal()" class="text-slate-400 hover:text-rose-500 p-1.5 rounded-lg transition-colors">
+                <button type="button" onclick="cerrarModal()" class="text-slate-400 hover:text-rose-500 p-1.5 rounded-lg transition-colors cursor-pointer">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
 
-            <form id="formZona" onsubmit="guardarZona(event)" class="p-6 space-y-4">
+            <form id="formZona" onsubmit="guardarZona(event)" class="flex flex-col flex-1 overflow-hidden min-h-0">
                 <input type="hidden" id="zona_id" name="id">
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nombre de la Zona *</label>
-                    <input type="text" id="nombre_zona" name="nombre_zona" required placeholder="Ej. Sector El Cacao / Alto Barinas" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-hidden focus:border-[#1e549e] focus:ring-2 focus:ring-[#1e549e]/10">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1 custom-scrollbar">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Precio Delivery (USD) *</label>
-                        <div class="relative">
-                            <span class="absolute left-3.5 top-2.5 text-slate-400 font-bold">$</span>
-                            <input type="number" step="0.01" min="0" id="precio_delivery_usd" name="precio_delivery_usd" required placeholder="3.50" class="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:outline-hidden focus:border-[#1e549e] focus:ring-2 focus:ring-[#1e549e]/10">
-                        </div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nombre de la Zona *</label>
+                        <input type="text" id="nombre_zona" name="nombre_zona" required placeholder="Ej. Sector El Cacao / Alto Barinas" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-hidden focus:border-[#1e549e] focus:ring-2 focus:ring-[#1e549e]/10">
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Tiempo Estimado (Minutos)</label>
-                        <div class="relative">
-                            <input type="number" min="5" max="300" id="tiempo_estimado_minutos" name="tiempo_estimado_minutos" placeholder="30" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-hidden focus:border-[#1e549e] focus:ring-2 focus:ring-[#1e549e]/10">
-                            <span class="absolute right-3.5 top-2.5 text-slate-400 text-xs font-bold">min</span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- COORDENADAS Y MAPA --}}
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-black text-[#1e549e] uppercase tracking-wider flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[18px]">location_on</span>
-                            Geolocalización & Cobertura
-                        </span>
-                        <span class="text-[11px] text-slate-500 font-medium">(Haz clic en el mapa para fijar)</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Latitud</label>
-                            <input type="number" step="0.0000001" id="latitud" name="latitud" value="8.7622000" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:outline-hidden focus:border-[#1e549e]">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Precio Delivery (USD) *</label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-2.5 text-slate-400 font-bold">$</span>
+                                <input type="number" step="0.01" min="0" id="precio_delivery_usd" name="precio_delivery_usd" required placeholder="3.50" class="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:outline-hidden focus:border-[#1e549e] focus:ring-2 focus:ring-[#1e549e]/10">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Longitud</label>
-                            <input type="number" step="0.0000001" id="longitud" name="longitud" value="-70.4106000" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:outline-hidden focus:border-[#1e549e]">
-                        </div>
-                    </div>
 
-                    {{-- Accesos rápidos de ubicación central --}}
-                    <div class="flex items-center gap-2 pt-1">
-                        <button type="button" onclick="usarUbicacionTiendaEnFormulario()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:border-[#1e549e] hover:bg-blue-50/50 text-[#1e549e] text-[11px] font-bold shadow-2xs transition-colors">
-                            <span class="material-symbols-outlined text-[15px]">storefront</span>
-                            Centrar en mi Tienda
-                        </button>
-                        <button type="button" onclick="detectarYFijarUbicacionGPS(false)" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:border-emerald-600 hover:bg-emerald-50/50 text-emerald-700 text-[11px] font-bold shadow-2xs transition-colors">
-                            <span class="material-symbols-outlined text-[15px]">my_location</span>
-                            Obtener GPS Actual
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Radio Cobertura (Km)</label>
-                            <input type="number" step="0.1" min="0.2" max="100" id="radio_km" name="radio_km" value="3.0" oninput="actualizarRadioPreview(this.value)" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-800 focus:outline-hidden focus:border-[#1e549e]">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Color del Círculo</label>
-                            <div class="flex items-center gap-2">
-                                <input type="color" id="color_mapa" name="color_mapa" value="#1e549e" class="size-8 rounded-lg border border-slate-200 cursor-pointer p-0.5">
-                                <span id="color_hex_text" class="text-xs font-mono text-slate-500">#1e549e</span>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Tiempo Estimado (Minutos)</label>
+                            <div class="relative">
+                                <input type="number" min="5" max="300" id="tiempo_estimado_minutos" name="tiempo_estimado_minutos" placeholder="30" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-hidden focus:border-[#1e549e] focus:ring-2 focus:ring-[#1e549e]/10">
+                                <span class="absolute right-3.5 top-2.5 text-slate-400 text-xs font-bold">min</span>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Descripción o Indicaciones de Ruta</label>
-                    <textarea id="descripcion" name="descripcion" rows="2" placeholder="Detalles de sectores cubiertos, accesos o restricciones..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-hidden focus:border-[#1e549e]"></textarea>
-                </div>
+                    {{-- COORDENADAS Y MAPA --}}
+                    <div class="bg-slate-50 p-3 sm:p-4 rounded-2xl border border-slate-200/80 space-y-2.5 sm:space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-1">
+                            <span class="text-xs font-black text-[#1e549e] uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[18px]">location_on</span>
+                                Geolocalización & Cobertura
+                            </span>
+                            <span class="text-[11px] text-slate-500 font-medium">(Haz clic en el mapa para fijar)</span>
+                        </div>
 
-                <div class="flex items-center justify-between pt-2">
-                    <label class="flex items-center gap-2 cursor-pointer select-none">
-                        <input type="checkbox" id="requiere_vehiculo_carga" name="requiere_vehiculo_carga" value="1" class="size-4 rounded text-[#1e549e] border-slate-300 focus:ring-[#1e549e]">
-                        <span class="text-xs font-bold text-slate-700">Requiere Camioneta / Vehículo Pesado</span>
-                    </label>
+                        <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">Latitud</label>
+                                <input type="number" step="0.0000001" id="latitud" name="latitud" value="8.7622000" class="w-full px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:outline-hidden focus:border-[#1e549e]">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">Longitud</label>
+                                <input type="number" step="0.0000001" id="longitud" name="longitud" value="-70.4106000" class="w-full px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:outline-hidden focus:border-[#1e549e]">
+                            </div>
+                        </div>
 
-                    <div class="flex items-center gap-2">
-                        <span id="activa_badge_preview" class="text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">Activa</span>
-                        <label class="relative inline-flex items-center cursor-pointer select-none" title="Cambiar estado Activa / Pausada">
-                            <input type="checkbox" id="activa" name="activa" value="1" checked onchange="actualizarToggleModal(this.checked)" class="sr-only peer">
-                            <div class="w-11 h-6 bg-amber-400 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
+                        {{-- Accesos rápidos de ubicación central --}}
+                        <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
+                            <button type="button" onclick="usarUbicacionTiendaEnFormulario()" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-[#1e549e] hover:bg-blue-50/50 text-[#1e549e] text-[11px] font-bold shadow-2xs transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[15px]">storefront</span>
+                                Centrar en mi Tienda
+                            </button>
+                            <button type="button" onclick="detectarYFijarUbicacionGPS(false)" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-emerald-600 hover:bg-emerald-50/50 text-emerald-700 text-[11px] font-bold shadow-2xs transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[15px]">my_location</span>
+                                Obtener GPS Actual
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">Radio Cobertura (Km)</label>
+                                <input type="number" step="0.1" min="0.2" max="100" id="radio_km" name="radio_km" value="3.0" oninput="actualizarRadioPreview(this.value)" class="w-full px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-800 focus:outline-hidden focus:border-[#1e549e]">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">Color del Círculo</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="color_mapa" name="color_mapa" value="#1e549e" class="size-8 rounded-lg border border-slate-200 cursor-pointer p-0.5">
+                                    <span id="color_hex_text" class="text-xs font-mono text-slate-500">#1e549e</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Descripción o Indicaciones de Ruta</label>
+                        <textarea id="descripcion" name="descripcion" rows="2" placeholder="Detalles de sectores cubiertos, accesos o restricciones..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-hidden focus:border-[#1e549e]"></textarea>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" id="requiere_vehiculo_carga" name="requiere_vehiculo_carga" value="1" class="size-4 rounded text-[#1e549e] border-slate-300 focus:ring-[#1e549e]">
+                            <span class="text-xs font-bold text-slate-700">Requiere Camioneta / Vehículo Pesado</span>
                         </label>
+
+                        <div class="flex items-center gap-2">
+                            <span id="activa_badge_preview" class="text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">Activa</span>
+                            <label class="relative inline-flex items-center cursor-pointer select-none" title="Cambiar estado Activa / Pausada">
+                                <input type="checkbox" id="activa" name="activa" value="1" checked onchange="actualizarToggleModal(this.checked)" class="sr-only peer">
+                                <div class="w-11 h-6 bg-amber-400 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-                    <button type="button" onclick="cerrarModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+                {{-- Pie del modal fijado al fondo --}}
+                <div class="p-3.5 sm:px-6 sm:py-4 border-t border-slate-100 flex items-center justify-end gap-2.5 sm:gap-3 bg-slate-50/90 shrink-0">
+                    <button type="button" onclick="cerrarModal()" class="px-4 py-2 sm:py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-white transition-colors cursor-pointer">
                         Cancelar
                     </button>
-                    <button type="submit" id="btnGuardar" class="px-5 py-2.5 rounded-xl bg-[#1e549e] hover:bg-[#164079] text-white text-xs font-bold shadow-md shadow-[#1e549e]/20 transition-all flex items-center gap-2">
+                    <button type="submit" id="btnGuardar" class="px-5 py-2 sm:py-2.5 rounded-xl bg-[#1e549e] hover:bg-[#164079] text-white text-xs font-bold shadow-md shadow-[#1e549e]/20 transition-all flex items-center gap-2 cursor-pointer">
                         <span class="material-symbols-outlined text-[18px]">save</span>
                         <span id="btnGuardarText">Guardar Zona</span>
                     </button>

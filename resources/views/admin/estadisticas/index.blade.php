@@ -19,24 +19,24 @@
 
             {{-- CABECERA Y FILTROS INTERACTIVOS --}}
             <div class="bg-white rounded-3xl p-5 sm:p-7 border border-gray-100 shadow-sm relative overflow-hidden">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-                    <div>
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#0b1d38] to-[#1e549e] text-white flex items-center justify-center shadow-md shadow-[#1e549e]/20">
-                                <span class="material-symbols-outlined text-[26px]">query_stats</span>
+                <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+                    <div class="min-w-0 max-w-2xl">
+                        <div class="flex items-start sm:items-center gap-3 sm:gap-4">
+                            <div class="size-11 sm:size-12 rounded-2xl bg-gradient-to-tr from-[#0b1d38] to-[#1e549e] text-white flex items-center justify-center shadow-md shadow-[#1e549e]/20 shrink-0 mt-0.5 sm:mt-0">
+                                <span class="material-symbols-outlined text-[24px] sm:text-[26px]">query_stats</span>
                             </div>
-                            <div>
-                                <h1 class="text-2xl sm:text-3xl font-black text-agro-dark tracking-tight">Centro de Analítica y Estadísticas</h1>
-                                <p class="text-xs sm:text-sm text-gray-500 font-medium">Monitoreo comercial en vivo, productos más vendidos, métodos de pago y logística</p>
+                            <div class="min-w-0">
+                                <h1 class="text-xl sm:text-2xl lg:text-3xl font-black text-agro-dark tracking-tight leading-tight">Centro de Analítica y Estadísticas</h1>
+                                <p class="text-xs sm:text-sm text-gray-500 font-medium mt-1 leading-relaxed">Monitoreo comercial en vivo, productos más vendidos, métodos de pago y logística</p>
                             </div>
                         </div>
                     </div>
 
                     {{-- Formulario y Selectores de Filtro --}}
-                    <form method="GET" action="{{ route('admin.estadisticas.index') }}" id="formFiltros" class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                        {{-- Selector de Período --}}
+                    <form method="GET" action="{{ route('admin.estadisticas.index') }}" id="formFiltros" class="flex flex-col sm:flex-row sm:items-center sm:flex-nowrap gap-2.5 sm:gap-3 w-full xl:w-auto shrink-0">
+                        {{-- Selector de Período (Ancho completo en móvil, fijo y simétrico en PC) --}}
                         <div class="relative w-full sm:w-auto sm:min-w-[170px]">
-                            <select name="periodo" id="filtroPeriodo" onchange="cambiarPeriodoFiltro(this.value)" class="w-full bg-gray-50 hover:bg-gray-100/80 text-agro-dark text-xs font-bold rounded-2xl border border-gray-200/80 px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+                            <select name="periodo" id="filtroPeriodo" onchange="cambiarPeriodoFiltro(this.value)" class="w-full h-11 bg-gray-50 hover:bg-gray-100/80 text-agro-dark text-xs font-bold rounded-2xl border border-gray-200/80 px-3.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
                                 <option value="hoy" {{ $periodo === 'hoy' ? 'selected' : '' }}>📅 Hoy</option>
                                 <option value="semana" {{ $periodo === 'semana' ? 'selected' : '' }}>📊 Esta Semana</option>
                                 <option value="mes" {{ $periodo === 'mes' ? 'selected' : '' }}>📈 Este Mes</option>
@@ -48,49 +48,54 @@
                             </select>
                         </div>
 
-                        {{-- Selector de Canal --}}
-                        <div class="relative w-full sm:w-auto sm:min-w-[160px]">
-                            <select name="canal" id="filtroCanal" onchange="document.getElementById('formFiltros').submit()" class="w-full bg-gray-50 hover:bg-gray-100/80 text-agro-dark text-xs font-bold rounded-2xl border border-gray-200/80 px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
-                                <option value="todos" {{ $canal === 'todos' ? 'selected' : '' }}>🏪 Todos los Canales</option>
-                                <option value="web" {{ $canal === 'web' ? 'selected' : '' }}>🌐 Solo Tienda Web</option>
-                                <option value="tienda_fisica" {{ $canal === 'tienda_fisica' ? 'selected' : '' }}>🛒 Solo POS (Mostrador)</option>
-                            </select>
+                        {{-- Selector de Canal y Botón Reset (En móvil van en 2da fila; en PC se alinean en la misma fila con sm:flex-nowrap) --}}
+                        <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto shrink-0">
+                            <div class="relative flex-1 sm:flex-none sm:w-auto sm:min-w-[170px]">
+                                <select name="canal" id="filtroCanal" onchange="document.getElementById('formFiltros').submit()" class="w-full h-11 bg-gray-50 hover:bg-gray-100/80 text-agro-dark text-xs font-bold rounded-2xl border border-gray-200/80 px-3.5 outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+                                    <option value="todos" {{ $canal === 'todos' ? 'selected' : '' }}>🏪 Todos los Canales</option>
+                                    <option value="web" {{ $canal === 'web' ? 'selected' : '' }}>🌐 Solo Tienda Web</option>
+                                    <option value="tienda_fisica" {{ $canal === 'tienda_fisica' ? 'selected' : '' }}>🛒 Solo POS (Mostrador)</option>
+                                </select>
+                            </div>
+
+                            {{-- Botón de recarga / reset --}}
+                            <a href="{{ route('admin.estadisticas.index') }}" class="size-11 rounded-2xl bg-gray-100 hover:bg-gray-200/80 text-gray-600 transition-colors flex items-center justify-center shadow-2xs shrink-0" title="Restablecer filtros">
+                                <span class="material-symbols-outlined text-[20px]">refresh</span>
+                            </a>
                         </div>
 
                         {{-- Campos de Fechas Personalizadas (Condicional) --}}
-                        <div id="cajaFechasPersonalizadas" class="{{ $periodo === 'personalizado' ? 'flex' : 'hidden' }} items-center gap-1.5 flex-wrap">
-                            <input type="date" name="fecha_desde" value="{{ $fecha_desde }}" class="bg-gray-50 text-xs font-bold text-gray-700 rounded-xl border border-gray-200 px-2.5 py-2 outline-none">
-                            <span class="text-xs text-gray-400 font-bold">-</span>
-                            <input type="date" name="fecha_hasta" value="{{ $fecha_hasta }}" class="bg-gray-50 text-xs font-bold text-gray-700 rounded-xl border border-gray-200 px-2.5 py-2 outline-none">
-                            <button type="submit" class="px-3 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-secondary transition-colors">
+                        <div id="cajaFechasPersonalizadas" class="{{ $periodo === 'personalizado' ? 'flex' : 'hidden' }} flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto pt-1 sm:pt-0">
+                            <div class="flex items-center gap-1.5 flex-1 sm:flex-initial">
+                                <input type="date" name="fecha_desde" value="{{ $fecha_desde }}" class="bg-gray-50 text-xs font-bold text-gray-700 rounded-xl border border-gray-200 px-3 h-11 outline-none w-full sm:w-auto focus:ring-2 focus:ring-primary/20">
+                                <span class="text-xs text-gray-400 font-bold">-</span>
+                                <input type="date" name="fecha_hasta" value="{{ $fecha_hasta }}" class="bg-gray-50 text-xs font-bold text-gray-700 rounded-xl border border-gray-200 px-3 h-11 outline-none w-full sm:w-auto focus:ring-2 focus:ring-primary/20">
+                            </div>
+                            <button type="submit" class="h-11 px-4 rounded-xl bg-primary text-white text-xs font-bold hover:bg-secondary transition-colors shrink-0 shadow-xs">
                                 Filtrar
                             </button>
                         </div>
-
-                        {{-- Botón de recarga / reset --}}
-                        <a href="{{ route('admin.estadisticas.index') }}" class="p-2.5 rounded-2xl bg-gray-100 hover:bg-gray-200/80 text-gray-600 transition-colors flex items-center justify-center shadow-2xs" title="Restablecer filtros">
-                            <span class="material-symbols-outlined text-[20px]">refresh</span>
-                        </a>
                     </form>
                 </div>
 
                 {{-- Badges de Resumen del Filtro Activo --}}
-                <div class="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between text-xs gap-2.5">
+                <div class="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="inline-flex items-center gap-1.5 font-bold text-teal-800 bg-teal-50/90 px-3 py-1 rounded-xl border border-teal-200/60 shadow-2xs">
+                        <span class="inline-flex items-center gap-1.5 font-bold text-teal-800 bg-teal-50/90 px-3 py-1.5 rounded-xl border border-teal-200/60 shadow-2xs">
                             <span class="material-symbols-outlined text-[16px] text-teal-600">event_available</span>
                             <span>{{ $etiqueta_periodo }}</span>
                         </span>
 
-                        <span class="inline-flex items-center gap-1.5 font-bold text-blue-800 bg-blue-50/90 px-3 py-1 rounded-xl border border-blue-200/60 shadow-2xs">
+                        <span class="inline-flex items-center gap-1.5 font-bold text-blue-800 bg-blue-50/90 px-3 py-1.5 rounded-xl border border-blue-200/60 shadow-2xs">
                             <span class="material-symbols-outlined text-[16px] text-blue-600">storefront</span>
                             <span>{{ $canal === 'todos' ? 'Todos los canales' : ($canal === 'web' ? 'Canal Web' : 'Canal POS Mostrador') }}</span>
                         </span>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <span class="font-mono text-gray-700 bg-gray-100 px-3 py-1 rounded-xl border border-gray-200/70 text-xs shadow-2xs">
-                            Tasa BCV del Día: <strong class="text-agro-dark font-black">Bs. {{ number_format($tasa_bcv, 2) }}</strong>
+                    <div class="flex items-center self-start sm:self-auto">
+                        <span class="font-mono text-gray-700 bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/70 text-xs shadow-2xs flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-gray-500">currency_exchange</span>
+                            <span>Tasa BCV del Día: <strong class="text-agro-dark font-black">Bs. {{ number_format($tasa_bcv, 2) }}</strong></span>
                         </span>
                     </div>
                 </div>

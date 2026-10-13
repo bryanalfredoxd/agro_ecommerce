@@ -99,13 +99,20 @@
                             </p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                    <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2 w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
                         <a href="{{ \App\Models\ConfiguracionTienda::whatsappUrl('Hola, deseo consultar sobre una devolución o garantía de mi pedido.') }}" 
                            target="_blank" 
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs transition-colors">
+                           class="inline-flex items-center justify-center gap-1.5 px-4 py-2 sm:px-3 sm:py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs transition-colors">
                             <span class="material-symbols-outlined text-[15px]">chat</span>
                             <span>WhatsApp Tienda</span>
                         </a>
+                        @if(\App\Models\ConfiguracionTienda::telefono())
+                        <a href="tel:{{ \App\Models\ConfiguracionTienda::telefono() }}" 
+                           class="inline-flex items-center justify-center gap-1.5 px-4 py-2 sm:px-3 sm:py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs shadow-2xs transition-colors">
+                            <span class="material-symbols-outlined text-[15px]">call</span>
+                            <span>Llamar: {{ \App\Models\ConfiguracionTienda::telefono() }}</span>
+                        </a>
+                        @endif
                     </div>
                 </div>
 

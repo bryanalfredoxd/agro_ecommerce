@@ -31,9 +31,9 @@
                         <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         Inventario Oficial Disponible
                     </div>
-                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight flex items-center gap-3">
-                        <span class="material-symbols-outlined text-[#3492cf] text-[32px] sm:text-[38px]">inventory_2</span>
-                        Catálogo de <span class="text-[#aad6f3]">Insumos y Soluciones</span>
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight flex items-start sm:items-center gap-2.5 sm:gap-3">
+                        <span class="material-symbols-outlined text-[#3492cf] text-[30px] sm:text-[38px] shrink-0 mt-0.5 sm:mt-0">inventory_2</span>
+                        <span>Catálogo de <span class="text-[#aad6f3]">Insumos y Soluciones</span></span>
                     </h1>
                     <p class="text-sm sm:text-base text-slate-200 mt-2 max-w-2xl leading-relaxed">
                         Semillas certificadas, fertilizantes, medicina veterinaria, nutrición y herramientas con garantía de calidad y despacho nacional.
@@ -41,27 +41,27 @@
                 </div>
 
                 {{-- Badges de confianza en cabecera --}}
-                <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0">
-                    <div class="bg-white/10 backdrop-blur-md border border-white/15 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-xs">
-                        <div class="size-10 rounded-xl bg-[#3492cf]/20 flex items-center justify-center text-[#aad6f3]">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-nowrap items-center gap-2.5 sm:gap-3 shrink-0 w-full sm:w-auto">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/15 px-4 py-2.5 sm:py-3 rounded-2xl flex items-center gap-3 shadow-xs">
+                        <div class="size-10 rounded-xl bg-[#3492cf]/20 flex items-center justify-center text-[#aad6f3] shrink-0">
                             <span class="material-symbols-outlined text-[22px]">currency_exchange</span>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-300">Tasa Oficial BCV</div>
-                            <div class="text-sm font-black text-white">1 USD = Bs. {{ number_format($tasaDolar, 2, ',', '.') }}</div>
+                            <div class="text-sm font-black text-white truncate">1 USD = Bs. {{ number_format($tasaDolar, 2, ',', '.') }}</div>
                         </div>
                     </div>
 
                     @php
                         $deliveryActivoCatalogo = \App\Models\ConfiguracionTienda::deliveryHabilitado();
                     @endphp
-                    <div class="hidden sm:flex bg-white/10 backdrop-blur-md border border-white/15 px-4 py-3 rounded-2xl items-center gap-3 shadow-xs">
-                        <div class="size-10 rounded-xl {{ $deliveryActivoCatalogo ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300' }} flex items-center justify-center">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/15 px-4 py-2.5 sm:py-3 rounded-2xl flex items-center gap-3 shadow-xs">
+                        <div class="size-10 rounded-xl {{ $deliveryActivoCatalogo ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300' }} flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-[22px]">local_shipping</span>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-300">Despacho</div>
-                            <div class="text-sm font-black text-white">{{ $deliveryActivoCatalogo ? 'Disponible' : 'No Disponible' }}</div>
+                            <div class="text-sm font-black text-white truncate">{{ $deliveryActivoCatalogo ? 'Disponible' : 'No Disponible' }}</div>
                         </div>
                     </div>
                 </div>

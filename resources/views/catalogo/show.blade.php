@@ -182,11 +182,11 @@
                                 @endif
                             </div>
 
-                            {{-- Botón Favorito Funcional --}}
+                            {{-- Botón Favorito Funcional (Círculo perfecto) --}}
                             <button type="button" 
                                     id="btnFavoritoDetalle"
                                     onclick="toggleFavoritoDetalle({{ $producto->id }})"
-                                    class="size-11 rounded-2xl flex items-center justify-center transition-all border {{ $esFavorito ? 'bg-rose-50 text-rose-500 border-rose-200 shadow-sm' : 'bg-white text-slate-400 border-slate-200 hover:text-rose-500 hover:border-rose-200' }}"
+                                    class="size-11 rounded-full shrink-0 aspect-square flex items-center justify-center transition-all border {{ $esFavorito ? 'bg-rose-50 text-rose-500 border-rose-200 shadow-sm' : 'bg-white text-slate-400 border-slate-200 hover:text-rose-500 hover:border-rose-200' }}"
                                     title="{{ $esFavorito ? 'Quitar de favoritos' : 'Guardar en favoritos' }}">
                                 <span id="iconoFavoritoDetalle" class="material-symbols-outlined text-[24px] {{ $esFavorito ? 'fill-1 text-rose-500' : '' }}">favorite</span>
                             </button>
@@ -267,61 +267,123 @@
                             </div>
 
                             {{-- DESGLOSE DE LAS 3 MODALIDADES DE PAGO --}}
-                            <div class="mt-4 pt-3.5 border-t border-slate-200/70 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                                {{-- 1. Divisas --}}
-                                <div class="p-2.5 bg-white/90 rounded-2xl border border-emerald-200/70 shadow-2xs flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <div class="size-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-xs">
-                                            $
-                                        </div>
-                                        <div>
-                                            <span class="text-[10px] font-black text-slate-700 block leading-tight">Divisas</span>
-                                            <span class="text-[9px] text-slate-400 font-bold">Zelle, Binance, Efectivo</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="text-xs font-black text-emerald-800">${{ number_format($precioFinalPvp, 2) }}</span>
-                                        @if($modalidades['divisas']['recargo_pct'] > 0)
-                                            <span class="block text-[8px] font-bold text-emerald-700">+{{ $modalidades['divisas']['recargo_pct'] }}%</span>
-                                        @endif
-                                    </div>
+                            <div class="mt-4 pt-3.5 border-t border-slate-200/70">
+                                <div class="flex items-center justify-between mb-2.5">
+                                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[15px] text-[#1e549e]">payments</span>
+                                        Modalidades de Pago y Precios
+                                    </span>
                                 </div>
 
-                                {{-- 2. Bolívares --}}
-                                <div class="p-2.5 bg-white/90 rounded-2xl border border-blue-200/70 shadow-2xs flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <div class="size-6 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-black text-xs">
-                                            Bs
-                                        </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                                    {{-- 1. Divisas --}}
+                                    <div class="p-3 bg-white/95 rounded-2xl border border-emerald-200/90 shadow-2xs hover:border-emerald-300 transition-all flex flex-col justify-between gap-2">
                                         <div>
-                                            <span class="text-[10px] font-black text-slate-700 block leading-tight">Bolívares</span>
-                                            <span class="text-[9px] text-slate-400 font-bold">Pago Móvil, Punto</span>
+                                            <div class="flex items-center justify-between gap-1 mb-1">
+                                                <div class="flex items-center gap-1.5 min-w-0">
+                                                    <div class="size-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-xs shrink-0">
+                                                        $
+                                                    </div>
+                                                    <span class="text-xs font-black text-slate-800 truncate">Divisas</span>
+                                                </div>
+                                                @if($modalidades['divisas']['recargo_pct'] > 0)
+                                                    <span class="text-[9.5px] font-black text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200 shrink-0">
+                                                        +{{ number_format($modalidades['divisas']['recargo_pct'], 1) }}%
+                                                    </span>
+                                                @elseif($modalidades['divisas']['recargo_pct'] < 0)
+                                                    <span class="text-[9.5px] font-black text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200 shrink-0">
+                                                        {{ number_format($modalidades['divisas']['recargo_pct'], 1) }}%
+                                                    </span>
+                                                @else
+                                                    <span class="text-[9.5px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md shrink-0">
+                                                        Base
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <span class="text-[10px] text-slate-400 font-medium block leading-tight truncate" title="Zelle, Binance, Efectivo">
+                                                Zelle, Binance, Efectivo
+                                            </span>
                                         </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="text-xs font-black text-blue-800">Bs. {{ number_format($precioBs, 2, ',', '.') }}</span>
-                                        @if($modalidades['bolivares']['recargo_pct'] > 0)
-                                            <span class="block text-[8px] font-bold text-blue-700">+{{ $modalidades['bolivares']['recargo_pct'] }}% (${{ number_format($modalidades['bolivares']['usd_ref'], 2) }})</span>
-                                        @endif
-                                    </div>
-                                </div>
 
-                                {{-- 3. Cashea --}}
-                                <div class="p-2.5 bg-white/90 rounded-2xl border border-purple-200/70 shadow-2xs flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <div class="size-6 rounded-lg bg-purple-100 text-purple-900 flex items-center justify-center font-black text-xs">
-                                            C
-                                        </div>
-                                        <div>
-                                            <span class="text-[10px] font-black text-purple-950 block leading-tight">Cashea</span>
-                                            <span class="text-[9px] text-purple-700 font-bold">Cuotas / Financiado</span>
+                                        <div class="pt-2 border-t border-slate-100 flex items-baseline justify-between mt-auto">
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
+                                            <span class="text-sm font-black text-emerald-700 tracking-tight">
+                                                ${{ number_format($precioFinalPvp, 2) }}
+                                            </span>
                                         </div>
                                     </div>
-                                    <div class="text-right">
-                                        <span class="text-xs font-black text-purple-900">${{ number_format($precioCashea, 2) }}</span>
-                                        @if($modalidades['cashea']['recargo_pct'] > 0)
-                                            <span class="block text-[8px] font-bold text-purple-700">+{{ $modalidades['cashea']['recargo_pct'] }}%</span>
-                                        @endif
+
+                                    {{-- 2. Bolívares --}}
+                                    <div class="p-3 bg-white/95 rounded-2xl border border-blue-200/90 shadow-2xs hover:border-[#1e549e]/40 transition-all flex flex-col justify-between gap-2">
+                                        <div>
+                                            <div class="flex items-center justify-between gap-1 mb-1">
+                                                <div class="flex items-center gap-1.5 min-w-0">
+                                                    <div class="size-6 rounded-lg bg-blue-100 text-[#1e549e] flex items-center justify-center font-black text-[11px] shrink-0">
+                                                        Bs
+                                                    </div>
+                                                    <span class="text-xs font-black text-slate-800 truncate">Bolívares</span>
+                                                </div>
+                                                @if($modalidades['bolivares']['recargo_pct'] > 0)
+                                                    <span class="text-[9.5px] font-black text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-200 shrink-0">
+                                                        +{{ number_format($modalidades['bolivares']['recargo_pct'], 1) }}%
+                                                    </span>
+                                                @elseif($modalidades['bolivares']['recargo_pct'] < 0)
+                                                    <span class="text-[9.5px] font-black text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-200 shrink-0">
+                                                        {{ number_format($modalidades['bolivares']['recargo_pct'], 1) }}%
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <span class="text-[10px] text-slate-400 font-medium block leading-tight truncate" title="Pago Móvil, Punto, Transferencia">
+                                                Pago Móvil, Punto
+                                            </span>
+                                        </div>
+
+                                        <div class="pt-2 border-t border-slate-100 flex items-baseline justify-between mt-auto">
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
+                                            <div class="text-right">
+                                                <span class="text-sm font-black text-[#1e549e] tracking-tight block">
+                                                    Bs. {{ number_format($precioBs, 2, ',', '.') }}
+                                                </span>
+                                                @if($modalidades['bolivares']['recargo_pct'] > 0)
+                                                    <span class="text-[9px] text-slate-400 font-semibold block -mt-0.5">
+                                                        Ref: ${{ number_format($modalidades['bolivares']['usd_ref'], 2) }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- 3. Cashea --}}
+                                    <div class="p-3 bg-white/95 rounded-2xl border border-purple-200/90 shadow-2xs hover:border-purple-300 transition-all flex flex-col justify-between gap-2">
+                                        <div>
+                                            <div class="flex items-center justify-between gap-1 mb-1">
+                                                <div class="flex items-center gap-1.5 min-w-0">
+                                                    <div class="size-6 rounded-lg bg-purple-100 text-purple-900 flex items-center justify-center font-black text-xs shrink-0">
+                                                        C
+                                                    </div>
+                                                    <span class="text-xs font-black text-slate-800 truncate">Cashea</span>
+                                                </div>
+                                                @if($modalidades['cashea']['recargo_pct'] > 0)
+                                                    <span class="text-[9.5px] font-black text-purple-900 bg-purple-50 px-1.5 py-0.5 rounded-md border border-purple-200 shrink-0">
+                                                        +{{ number_format($modalidades['cashea']['recargo_pct'], 1) }}%
+                                                    </span>
+                                                @elseif($modalidades['cashea']['recargo_pct'] < 0)
+                                                    <span class="text-[9.5px] font-black text-purple-900 bg-purple-50 px-1.5 py-0.5 rounded-md border border-purple-200 shrink-0">
+                                                        {{ number_format($modalidades['cashea']['recargo_pct'], 1) }}%
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <span class="text-[10px] text-purple-700/80 font-medium block leading-tight truncate" title="Cuotas / Financiado">
+                                                Cuotas / Financiado
+                                            </span>
+                                        </div>
+
+                                        <div class="pt-2 border-t border-slate-100 flex items-baseline justify-between mt-auto">
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
+                                            <span class="text-sm font-black text-purple-900 tracking-tight">
+                                                ${{ number_format($precioCashea, 2) }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -370,10 +432,10 @@
 
                         {{-- SELECTOR DE CANTIDAD Y BOTONES DE COMPRA --}}
                         @if($producto->stock_total > 0)
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-8">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-8">
                                 
                                 {{-- Control de Cantidad --}}
-                                <div class="flex items-center justify-between border border-slate-200 rounded-2xl bg-slate-50 p-1 w-full sm:w-40 shrink-0 shadow-2xs">
+                                <div class="flex items-center justify-between border border-slate-200 rounded-2xl bg-slate-50 p-1 w-full sm:w-40 shrink-0 shadow-2xs h-12">
                                     <button type="button" 
                                             onclick="modificarCantidad(-1)" 
                                             class="size-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center font-black transition-colors shadow-2xs active:scale-95" 
@@ -400,7 +462,7 @@
                                 <button type="button" 
                                         id="btnAddToCart"
                                         onclick="ejecutarAgregarCarrito()"
-                                        class="flex-1 h-12 px-6 rounded-2xl bg-[#1e549e] hover:bg-[#163f77] text-white font-extrabold text-sm transition-all flex items-center justify-center gap-2.5 shadow-md shadow-[#1e549e]/20 active:scale-98">
+                                        class="w-full sm:w-auto sm:flex-1 h-12 min-h-[48px] px-6 rounded-2xl bg-[#1e549e] hover:bg-[#163f77] text-white font-extrabold text-sm transition-all flex items-center justify-center gap-2.5 shadow-md shadow-[#1e549e]/20 active:scale-98">
                                     <span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
                                     <span>Añadir al Carrito</span>
                                 </button>
@@ -408,7 +470,7 @@
                                 {{-- Botón Comprar Directo --}}
                                 <button type="button" 
                                         onclick="comprarAhora()"
-                                        class="h-12 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-98">
+                                        class="w-full sm:w-auto h-12 min-h-[48px] px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-98">
                                     <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
                                     <span>Comprar Ahora</span>
                                 </button>
@@ -541,7 +603,7 @@
         {{-- 4. PRODUCTOS RELACIONADOS --}}
         @if(isset($relacionados) && $relacionados->count() > 0)
             <div class="mb-12">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6">
                     <div>
                         <h2 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
                             <span class="material-symbols-outlined text-[#1e549e]">category</span>
@@ -549,8 +611,9 @@
                         </h2>
                         <p class="text-xs text-slate-500 mt-1">Otros insumos de la misma categoría o marca para complementar tu compra</p>
                     </div>
-                    <a href="{{ route('catalogo') }}" class="text-xs font-bold text-[#1e549e] hover:underline flex items-center gap-1">
-                        Ver todo el catálogo <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    <a href="{{ route('catalogo') }}" class="self-start sm:self-auto inline-flex items-center gap-1.5 text-xs font-bold text-[#1e549e] hover:text-[#163f77] bg-[#e5f2fb] sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-xl sm:rounded-none shrink-0 transition-all hover:underline group">
+                        <span>Ver todo el catálogo</span>
+                        <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
                     </a>
                 </div>
 
@@ -774,11 +837,11 @@
         .then(data => {
             if (data && data.status === 'success') {
                 if (data.is_favorite) {
-                    btn.className = 'size-11 rounded-2xl flex items-center justify-center transition-all border bg-rose-50 text-rose-500 border-rose-200 shadow-sm';
+                    btn.className = 'size-11 rounded-full shrink-0 aspect-square flex items-center justify-center transition-all border bg-rose-50 text-rose-500 border-rose-200 shadow-sm';
                     icono.className = 'material-symbols-outlined text-[24px] fill-1 text-rose-500';
                     mostrarToastDetalle(data.message || 'Añadido a tus favoritos', 'success');
                 } else {
-                    btn.className = 'size-11 rounded-2xl flex items-center justify-center transition-all border bg-white text-slate-400 border-slate-200 hover:text-rose-500 hover:border-rose-200';
+                    btn.className = 'size-11 rounded-full shrink-0 aspect-square flex items-center justify-center transition-all border bg-white text-slate-400 border-slate-200 hover:text-rose-500 hover:border-rose-200';
                     icono.className = 'material-symbols-outlined text-[24px]';
                     mostrarToastDetalle(data.message || 'Eliminado de tus favoritos', 'info');
                 }

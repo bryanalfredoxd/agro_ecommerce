@@ -15,24 +15,24 @@
             {{-- ENCABEZADO PRINCIPAL --}}
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h2 class="text-2xl sm:text-3xl font-black text-agro-dark flex items-center gap-2.5">
-                        <span class="material-symbols-outlined text-[#1e549e] text-[34px]">receipt_long</span>
-                        Gestión de Pedidos y Pagos
+                    <h2 class="text-xl sm:text-2xl lg:text-3xl font-black text-agro-dark flex items-center gap-2.5 tracking-tight leading-tight">
+                        <span class="material-symbols-outlined text-[#1e549e] text-[30px] sm:text-[34px] shrink-0">receipt_long</span>
+                        <span>Gestión de Pedidos y Pagos</span>
                     </h2>
-                    <p class="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
+                    <p class="text-xs sm:text-sm text-gray-500 mt-1 font-medium leading-relaxed">
                         Monitorea ventas en vivo, audita transferencias bancarias y coordina el despacho logístico en una sola pantalla.
                     </p>
                 </div>
                 
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="fetchData(1)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 shadow-2xs transition-all active:scale-95" title="Actualizar datos">
-                        <span class="material-symbols-outlined text-[17px] text-blue-600">sync</span>
-                        Refrescar
+                <div class="flex flex-wrap items-center justify-center sm:justify-start md:justify-end gap-2.5 w-full md:w-auto pt-1 md:pt-0">
+                    <button type="button" onclick="fetchData(1)" class="h-10 px-4 rounded-xl text-xs font-bold text-gray-700 bg-white border border-gray-200/90 hover:bg-gray-50 shadow-xs hover:shadow-sm transition-all active:scale-95 inline-flex items-center justify-center gap-2 cursor-pointer shrink-0" title="Actualizar datos">
+                        <span class="material-symbols-outlined text-[18px] text-blue-600">sync</span>
+                        <span>Refrescar</span>
                     </button>
                     @if(Auth::user()->tienePermiso('crear_venta_manual'))
-                        <a href="{{ route('admin.pos.index') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all hover:scale-105 active:scale-95">
-                            <span class="material-symbols-outlined text-[17px]">point_of_sale</span>
-                            Terminal POS
+                        <a href="{{ route('admin.pos.index') }}" class="h-10 px-4 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xs hover:shadow-md transition-all active:scale-95 inline-flex items-center justify-center gap-2 shrink-0">
+                            <span class="material-symbols-outlined text-[18px]">point_of_sale</span>
+                            <span>Terminal POS</span>
                         </a>
                     @endif
                 </div>

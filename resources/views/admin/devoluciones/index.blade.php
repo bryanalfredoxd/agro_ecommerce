@@ -213,7 +213,7 @@
     <div class="fixed inset-0 z-10 flex justify-center items-center p-3 sm:p-4">
         <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-xl max-h-[92vh] flex flex-col opacity-0 scale-95" id="devolucionPanel">
             
-            <div class="px-5 py-3.5 border-b border-slate-200 flex justify-between items-center bg-slate-100 sticky top-0 z-20">
+            <div class="px-4 sm:px-5 py-3 sm:py-3.5 border-b border-slate-200 flex justify-between items-center bg-slate-100 sticky top-0 z-20">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-amber-600 text-2xl">assignment_return</span>
                     <h3 class="text-sm font-black text-slate-900">Auditoría de Devolución</h3>
@@ -223,7 +223,7 @@
                 </button>
             </div>
 
-            <div class="overflow-y-auto custom-scrollbar flex-1 p-5 relative bg-white">
+            <div class="overflow-y-auto custom-scrollbar flex-1 p-4 sm:p-5 relative bg-white">
                 <div id="devolucionLoader" class="absolute inset-0 bg-white/95 z-10 flex flex-col items-center justify-center">
                     <span class="material-symbols-outlined animate-spin text-amber-600 text-3xl mb-2">sync</span>
                     <p class="font-bold text-xs text-slate-600">Cargando devolución...</p>

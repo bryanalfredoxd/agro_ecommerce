@@ -97,24 +97,27 @@
     #kpi-grid[data-size="mini"] .kpi-footer { display: none; }
 </style>
 {{-- CONTROLES DEL DASHBOARD --}}
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-4 animate-fade-in-up">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 mb-5 animate-fade-in-up">
     <div>
-        <h2 class="text-xl font-black text-agro-dark">Indicadores de Rendimiento</h2>
+        <h2 class="text-xl sm:text-2xl font-black text-agro-dark tracking-tight">Indicadores de Rendimiento</h2>
         <p class="text-xs text-gray-500 font-medium mt-0.5">Métricas operativas del día e ingresos</p>
     </div>
     
-    <div class="flex items-center gap-3">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
         @if(Auth::user()->esAdmin() || Auth::user()->tienePermiso('ver_dashboard') || Auth::user()->tienePermiso('ver_kpis_financieros') || Auth::user()->tienePermiso('ver_pedidos'))
-        <a href="{{ route('admin.estadisticas.index') }}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#0b1d38] to-[#1e549e] hover:from-[#1e549e] hover:to-[#3492cf] text-white text-xs font-bold shadow-xs hover:shadow-md transition-all">
-            <span class="material-symbols-outlined text-[17px] text-[#aad6f3]">query_stats</span>
+        <a href="{{ route('admin.estadisticas.index') }}" class="h-10 px-3.5 sm:px-4 rounded-xl bg-gradient-to-r from-[#0b1d38] to-[#1e549e] hover:from-[#1e549e] hover:to-[#3492cf] text-white text-xs font-bold shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 shrink-0 border border-transparent">
+            <span class="material-symbols-outlined text-[18px] text-[#aad6f3] shrink-0">query_stats</span>
             <span>Ver Analítica y Gráficos</span>
         </a>
         @endif
 
-        {{-- Selector de Tamaño de KPIs --}}
-        <div class="flex flex-col items-end gap-1">
-            <label for="kpiSize" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Tamaño de Tarjetas</label>
-            <select id="kpiSize" onchange="window.DashboardConfig.changeKpiSize(this.value)" class="bg-white border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-primary focus:border-primary px-3 py-1.5 shadow-sm font-medium cursor-pointer transition-all hover:bg-gray-50 outline-none">
+        {{-- Selector de Tamaño de KPIs (Completamente simétrico con el botón en PC y Celular) --}}
+        <div class="h-10 px-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 shadow-xs transition-all flex items-center justify-between sm:justify-start gap-2 shrink-0">
+            <div class="flex items-center gap-1.5 shrink-0">
+                <span class="material-symbols-outlined text-[18px] text-slate-400 shrink-0">view_quilt</span>
+                <label for="kpiSize" class="text-xs font-bold text-slate-600 whitespace-nowrap">Tarjetas:</label>
+            </div>
+            <select id="kpiSize" onchange="window.DashboardConfig.changeKpiSize(this.value)" class="bg-transparent text-slate-800 text-xs font-bold cursor-pointer outline-none border-none pr-1 py-1 text-right sm:text-left focus:ring-0 grow sm:grow-0">
                 <option value="original">Original (100%)</option>
                 <option value="compacto">Compacto (-20%)</option>
                 <option value="pequeno">Pequeño (-40%)</option>

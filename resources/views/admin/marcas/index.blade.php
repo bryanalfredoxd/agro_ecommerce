@@ -227,10 +227,12 @@
                     </div>
 
                     <div class="pt-1">
-                        <label class="relative flex items-center p-3.5 bg-gray-50/80 rounded-xl border border-gray-200 cursor-pointer hover:border-blue-300 transition-all">
-                            <input type="checkbox" id="activo" name="activo" class="sr-only peer" checked>
-                            <div class="w-10 h-5.5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[16px] after:left-[16px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-emerald-500"></div>
-                            <div class="ml-3.5">
+                        <label for="activo" class="flex items-center gap-3.5 p-3.5 bg-gray-50/80 rounded-xl border border-gray-200 cursor-pointer hover:border-blue-300 hover:bg-blue-50/20 transition-all select-none">
+                            <div class="relative inline-flex items-center shrink-0">
+                                <input type="checkbox" id="activo" name="activo" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
+                            </div>
+                            <div>
                                 <span class="block text-xs font-black text-gray-800">Marca Activa</span>
                                 <span class="block text-[11px] text-gray-500">Visible en filtros y ficha de productos de la tienda</span>
                             </div>
