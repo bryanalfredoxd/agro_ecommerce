@@ -135,11 +135,29 @@ if ($logParaInspeccionar) {
     echo "[OK] Detalle inspeccionado en JSON:\n";
     echo "  - Success: " . ($dataShow['success'] ? 'true' : 'false') . "\n";
     echo "  - Módulo: {$dataShow['modulo']}\n";
-    echo "  - Evento: {$dataShow['evento']}\n";
-    echo "  - Tabla: {$dataShow['tabla']}\n";
+    echo "  - Evento Técnico: {$dataShow['evento']}\n";
+    echo "  - Evento Criollo: " . ($dataShow['evento_amigable'] ?? 'N/A') . "\n";
+    echo "  - Pantalla: " . ($dataShow['pantalla_amigable'] ?? 'N/A') . "\n";
+    echo "  - Dispositivo: " . ($dataShow['dispositivo_amigable'] ?? 'N/A') . "\n";
     echo "  - Descripción: {$dataShow['descripcion']}\n";
-    echo "  - Fecha Formateada: {$dataShow['fecha']}\n";
-    echo "  - Badge Color: {$dataShow['badge_color']}\n";
+    echo "  - Cambios Amigables:\n";
+    foreach ($dataShow['cambios_amigables'] as $c) {
+        echo "     * [{$c['tipo']}] {$c['nombre']}: Antes='{$c['antes']}' -> Después='{$c['despues']}'\n";
+    }
+}
+
+// 6.1 Probar un log de modificación de datos (ej. Cambio de precio o estado)
+$logModificado = AuditoriaLog::where('evento', 'MODIFICAR_PRECIO_PRODUCTO')->latest('id')->first();
+if ($logModificado) {
+    echo "\n--> Probando AuditoriaLogController::show({$logModificado->id}) [Modificación de Precio]...\n";
+    $respMod = $controller->show($logModificado->id);
+    $dataMod = $respMod->getData(true);
+    echo "  - Evento Criollo: " . ($dataMod['evento_amigable'] ?? 'N/A') . "\n";
+    echo "  - Descripción: {$dataMod['descripcion']}\n";
+    echo "  - Cambios Amigables:\n";
+    foreach ($dataMod['cambios_amigables'] as $c) {
+        echo "     * [{$c['tipo']}] {$c['nombre']}: Antes='{$c['antes']}' -> Después='{$c['despues']}'\n";
+    }
 }
 
 // 7. Probar AuditoriaLogController::exportar (CSV Stream)

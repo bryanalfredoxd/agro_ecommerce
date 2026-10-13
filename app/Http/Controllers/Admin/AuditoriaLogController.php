@@ -135,7 +135,10 @@ class AuditoriaLogController extends Controller
             'success' => true,
             'id' => $log->id,
             'evento' => $log->evento,
+            'evento_amigable' => $log->evento_amigable,
             'modulo' => $log->modulo_nombre,
+            'pantalla_amigable' => $log->pantalla_amigable,
+            'dispositivo_amigable' => $log->dispositivo_amigable,
             'tabla' => $log->tabla_afectada,
             'registro_id' => $log->registro_id,
             'descripcion' => $log->descripcion,
@@ -151,6 +154,7 @@ class AuditoriaLogController extends Controller
                 'email' => $log->usuario->email,
                 'rol' => $log->usuario->rol->nombre ?? 'Sin rol'
             ] : null,
+            'cambios_amigables' => $log->lista_cambios_amigables,
             'valores_anteriores' => $log->valores_anteriores_array,
             'valores_nuevos' => $log->valores_nuevos_array,
             'badge_color' => $log->badge_color,

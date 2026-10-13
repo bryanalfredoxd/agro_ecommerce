@@ -16,16 +16,15 @@
 
         {{-- Área de Contenido --}}
         <div class="p-4 sm:p-8 animate-fade-in-up pb-24">
-            
-            {{-- Encabezado de la Sección con Botones de Acción --}}
+                      {{-- Encabezado de la Sección con Botones de Acción --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div>
                     <h2 class="text-2xl font-black text-agro-dark flex items-center gap-2">
                         <span class="material-symbols-outlined text-indigo-600 text-[32px]">manage_search</span>
-                        Logs y Auditoría Forense
+                        Historial de Actividades y Movimientos
                     </h2>
                     <p class="text-sm text-gray-500 mt-1">
-                        Trazabilidad exhaustiva de cualquier cambio en la base de datos, eventos de seguridad y acciones operativas.
+                        Aquí puedes ver de forma clara y sencilla todo lo que pasa en el negocio: quién cambió un precio, quién cobró un pedido, quién borró algo y qué valor tenía antes.
                     </p>
                 </div>
                 
@@ -33,7 +32,7 @@
                 <div class="flex items-center gap-2.5 flex-wrap">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold shadow-2xs">
                         <span class="material-symbols-outlined text-[16px] text-emerald-600">verified_user</span>
-                        <span>Auditoría Inmutable</span>
+                        <span>Registro Protegido (Inmutable)</span>
                     </span>
 
                     {{-- Exportar CSV --}}
@@ -41,7 +40,7 @@
                             onclick="exportarLogsCSV()" 
                             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-gray-50 text-gray-700 hover:text-indigo-600 font-bold text-xs border border-gray-200 transition-all shadow-2xs hover:scale-105 active:scale-95">
                         <span class="material-symbols-outlined text-[18px] text-indigo-600">download</span>
-                        <span>Exportar CSV</span>
+                        <span>Descargar Reporte Excel</span>
                     </button>
                 </div>
             </div>
@@ -52,7 +51,7 @@
                 {{-- KPI 1: Total Eventos --}}
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all">
                     <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Histórico Total</span>
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total de Movimientos</span>
                         <div class="size-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[18px]">database</span>
                         </div>
@@ -66,42 +65,42 @@
                 {{-- KPI 2: Modificaciones Hoy --}}
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all">
                     <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Eventos de Hoy</span>
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Movimientos de Hoy</span>
                         <div class="size-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[18px]">today</span>
                         </div>
                     </div>
                     <div class="mt-2 flex items-baseline gap-2">
                         <span class="text-2xl font-black text-emerald-600 leading-none">{{ number_format($logsHoy) }}</span>
-                        <span class="text-[10px] text-emerald-700 font-bold uppercase">En 24h</span>
+                        <span class="text-[10px] text-emerald-700 font-bold uppercase">En 24 horas</span>
                     </div>
                 </div>
 
                 {{-- KPI 3: Usuarios Activos Auditados --}}
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all">
                     <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Personal Activo Hoy</span>
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Personas Trabajando Hoy</span>
                         <div class="size-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[18px]">group</span>
                         </div>
                     </div>
                     <div class="mt-2 flex items-baseline gap-2">
                         <span class="text-2xl font-black text-gray-900 leading-none">{{ $usuariosAuditadosHoy }}</span>
-                        <span class="text-[10px] text-sky-600 font-bold uppercase">Operadores</span>
+                        <span class="text-[10px] text-sky-600 font-bold uppercase">Colaboradores</span>
                     </div>
                 </div>
 
                 {{-- KPI 4: Acciones Críticas / Seguridad --}}
                 <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs hover:shadow-md transition-all">
                     <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Acciones Críticas</span>
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Acciones Delicadas</span>
                         <div class="size-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
                             <span class="material-symbols-outlined text-[18px]">security</span>
                         </div>
                     </div>
                     <div class="mt-2 flex items-baseline gap-2">
                         <span class="text-2xl font-black text-rose-600 leading-none">{{ number_format($accionesCriticas) }}</span>
-                        <span class="text-[10px] text-rose-700 font-bold uppercase">Auditadas</span>
+                        <span class="text-[10px] text-rose-700 font-bold uppercase">Borrados / Roles</span>
                     </div>
                 </div>
 
@@ -116,11 +115,11 @@
                     <div class="flex-1 relative group">
                         <span class="material-symbols-outlined absolute left-3.5 top-2.5 text-gray-400 group-focus-within:text-indigo-600 text-[20px] transition-colors pointer-events-none">search</span>
                         <input type="text" 
-                               id="buscarLogInput" 
-                               value="{{ request('buscar', '') }}"
-                               autocomplete="off"
-                               class="w-full pl-10 pr-20 py-2.5 bg-gray-50/60 border border-gray-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none font-medium text-gray-800 placeholder-gray-400" 
-                               placeholder="Buscar por descripción, tabla, ID de registro, IP, usuario o evento...">
+                                id="buscarLogInput" 
+                                value="{{ request('buscar', '') }}"
+                                autocomplete="off"
+                                class="w-full pl-10 pr-20 py-2.5 bg-gray-50/60 border border-gray-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none font-medium text-gray-800 placeholder-gray-400" 
+                                placeholder="Escribe el nombre de alguien, un producto, pedido o lo que pasó...">
                         
                         <div class="absolute right-2.5 top-2.5 flex items-center gap-1.5">
                             <span id="log_search_spinner" style="display: none;" class="material-symbols-outlined text-indigo-600 text-[18px] animate-spin">progress_activity</span>
@@ -136,11 +135,11 @@
                         </div>
                     </div>
 
-                    {{-- 2. Selector Módulo / Tabla --}}
-                    <div class="w-full sm:w-auto lg:w-48 flex items-center gap-2 px-3 py-2 bg-gray-50/60 border border-gray-200 rounded-xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500">
+                    {{-- 2. Selector Módulo / Pantalla --}}
+                    <div class="w-full sm:w-auto lg:w-52 flex items-center gap-2 px-3 py-2 bg-gray-50/60 border border-gray-200 rounded-xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500">
                         <span class="material-symbols-outlined text-gray-400 text-[18px] shrink-0 pointer-events-none">folder_open</span>
                         <select id="filtroModulo" class="w-full bg-transparent border-none p-0 outline-none focus:ring-0 text-xs font-bold text-gray-700 cursor-pointer">
-                            <option value="todos" {{ request('modulo') === 'todos' ? 'selected' : '' }}>Todos los Módulos</option>
+                            <option value="todos" {{ request('modulo') === 'todos' ? 'selected' : '' }}>En cualquier pantalla</option>
                             @foreach($modulosDisponibles as $mod)
                                 <option value="{{ $mod }}" {{ request('modulo') === $mod ? 'selected' : '' }}>
                                     {{ ucfirst(str_replace('_', ' ', $mod)) }}
@@ -149,24 +148,24 @@
                         </select>
                     </div>
 
-                    {{-- 3. Selector Tipo de Evento --}}
-                    <div class="w-full sm:w-auto lg:w-48 flex items-center gap-2 px-3 py-2 bg-gray-50/60 border border-gray-200 rounded-xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500">
+                    {{-- 3. Selector Tipo de Acción --}}
+                    <div class="w-full sm:w-auto lg:w-52 flex items-center gap-2 px-3 py-2 bg-gray-50/60 border border-gray-200 rounded-xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500">
                         <span class="material-symbols-outlined text-gray-400 text-[18px] shrink-0 pointer-events-none">tune</span>
                         <select id="filtroEvento" class="w-full bg-transparent border-none p-0 outline-none focus:ring-0 text-xs font-bold text-gray-700 cursor-pointer">
-                            <option value="todos" {{ request('evento') === 'todos' ? 'selected' : '' }}>Todas las Acciones</option>
-                            <option value="CREAR" {{ request('evento') === 'CREAR' ? 'selected' : '' }}>Creaciones / Inserción</option>
-                            <option value="ACTUALIZAR" {{ request('evento') === 'ACTUALIZAR' ? 'selected' : '' }}>Modificaciones / Edición</option>
-                            <option value="ELIMINAR" {{ request('evento') === 'ELIMINAR' ? 'selected' : '' }}>Eliminaciones / Purga</option>
-                            <option value="SEGURIDAD" {{ request('evento') === 'SEGURIDAD' ? 'selected' : '' }}>Seguridad, Roles & Login</option>
-                            <option value="ESTADO" {{ request('evento') === 'ESTADO' ? 'selected' : '' }}>Cambios de Estado</option>
+                            <option value="todos" {{ request('evento') === 'todos' ? 'selected' : '' }}>Cualquier tipo de acción</option>
+                            <option value="CREAR" {{ request('evento') === 'CREAR' ? 'selected' : '' }}>Crearon algo nuevo</option>
+                            <option value="ACTUALIZAR" {{ request('evento') === 'ACTUALIZAR' ? 'selected' : '' }}>Modificaron datos</option>
+                            <option value="ELIMINAR" {{ request('evento') === 'ELIMINAR' ? 'selected' : '' }}>Borraron un registro</option>
+                            <option value="SEGURIDAD" {{ request('evento') === 'SEGURIDAD' ? 'selected' : '' }}>Seguridad e Inicios de Sesión</option>
+                            <option value="ESTADO" {{ request('evento') === 'ESTADO' ? 'selected' : '' }}>Cambiaron un estado</option>
                         </select>
                     </div>
 
-                    {{-- 4. Selector Usuario Responsable --}}
+                    {{-- 4. Selector Persona Responsable --}}
                     <div class="w-full sm:w-auto lg:w-48 flex items-center gap-2 px-3 py-2 bg-gray-50/60 border border-gray-200 rounded-xl transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500">
                         <span class="material-symbols-outlined text-gray-400 text-[18px] shrink-0 pointer-events-none">person</span>
                         <select id="filtroUsuario" class="w-full bg-transparent border-none p-0 outline-none focus:ring-0 text-xs font-bold text-gray-700 cursor-pointer">
-                            <option value="todos" {{ request('usuario_id') === 'todos' ? 'selected' : '' }}>Cualquier Usuario</option>
+                            <option value="todos" {{ request('usuario_id') === 'todos' ? 'selected' : '' }}>Cualquier persona</option>
                             @foreach($usuariosAuditados as $u)
                                 <option value="{{ $u->id }}" {{ (string)request('usuario_id') === (string)$u->id ? 'selected' : '' }}>
                                     {{ $u->nombre }} {{ $u->apellido }}
@@ -181,7 +180,7 @@
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-gray-100">
                     <div class="flex items-center gap-2 flex-wrap text-xs font-bold text-gray-500">
                         <span class="flex items-center gap-1 text-[11px] font-black uppercase text-gray-400">
-                            <span class="material-symbols-outlined text-[16px]">calendar_month</span> Fecha:
+                            <span class="material-symbols-outlined text-[16px]">calendar_month</span> Fechas:
                         </span>
                         <input type="date" id="filtroFechaDesde" value="{{ request('fecha_desde', '') }}" class="px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold focus:bg-white outline-none">
                         <span>a</span>
@@ -193,7 +192,7 @@
                             onclick="resetearTodosFiltros()" 
                             class="inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-all self-end sm:self-auto">
                         <span class="material-symbols-outlined text-[16px]">filter_alt_off</span>
-                        <span>Limpiar Filtros</span>
+                        <span>Quitar filtros</span>
                     </button>
                 </div>
 
@@ -220,26 +219,26 @@
 </div>
 
 {{-- ========================================================================= --}}
-{{-- MODAL DE INSPECCIÓN FORENSE DETALLADA (SIDE-BY-SIDE DIFF)                --}}
+{{-- MODAL AMIGABLE DE DETALLE DEL MOVIMIENTO (EXPLICACIÓN FÁCIL Y VISUAL)     --}}
 {{-- ========================================================================= --}}
 <div id="modalDetalleLog" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="backdropLog" onclick="cerrarModalLog()"></div>
 
     <div class="flex min-h-full items-center justify-center p-3 sm:p-4 text-center">
-        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-4xl opacity-0 scale-95 flex flex-col max-h-[92vh]" id="panelLog">
+        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-3xl opacity-0 scale-95 flex flex-col max-h-[92vh]" id="panelLog">
             
             {{-- Encabezado Modal --}}
             <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
                 <div class="flex items-center gap-3">
-                    <div id="modalLogIconWrap" class="size-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                        <span id="modalLogIcon" class="material-symbols-outlined text-[22px]">manage_search</span>
+                    <div id="modalLogIconWrap" class="size-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                        <span id="modalLogIcon" class="material-symbols-outlined text-[24px]">manage_search</span>
                     </div>
                     <div>
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-lg font-black text-gray-900" id="modalLogTitle">Inspección de Auditoría</h3>
-                            <span id="modalLogBadge" class="text-[10px] font-black uppercase px-2 py-0.5 rounded-md border">EVENTO</span>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h3 class="text-lg font-black text-gray-900" id="modalLogTitle">Detalle de la Actividad</h3>
+                            <span id="modalLogBadge" class="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-lg border">Acción</span>
                         </div>
-                        <p class="text-xs text-gray-400 mt-0.5" id="modalLogSubtitle">Registro #0 &bull; Fecha</p>
+                        <p class="text-xs text-gray-500 mt-0.5" id="modalLogSubtitle">Fecha y hora del movimiento</p>
                     </div>
                 </div>
 
@@ -251,108 +250,123 @@
             {{-- Cuerpo Modal Scrollable --}}
             <div class="px-6 py-5 overflow-y-auto custom-scrollbar flex-1 space-y-5">
                 
-                {{-- Banner Descripción --}}
-                <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-200/80">
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Descripción del Cambio</span>
-                    <p class="text-sm font-semibold text-gray-900" id="modalLogDesc">-</p>
+                {{-- Banner: Explicación de lo que pasó en criollo --}}
+                <div class="p-4 bg-blue-50/70 rounded-2xl border border-blue-100 flex items-start gap-3">
+                    <div class="size-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                        <span class="material-symbols-outlined text-[20px]">info</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-0.5">¿Qué ocurrió en el sistema?</span>
+                        <p class="text-sm font-bold text-blue-950 leading-snug" id="modalLogDesc">-</p>
+                    </div>
                 </div>
 
-                {{-- Metadatos del Usuario y Contexto de Petición --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{-- Tarjetas: ¿Quién lo hizo? y ¿Desde dónde? --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     
                     {{-- Tarjeta 1: Usuario Responsable --}}
-                    <div class="p-4 bg-slate-50/70 rounded-2xl border border-slate-200/70 space-y-2">
-                        <span class="text-[10px] font-black text-indigo-700 uppercase tracking-wider flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">person</span> Autor de la Acción
+                    <div class="p-4 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-2.5">
+                        <span class="text-[10px] font-black text-indigo-800 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-indigo-600">person</span> ¿Quién lo hizo?
                         </span>
                         <div class="flex items-center gap-3">
-                            <div class="size-10 rounded-xl bg-slate-900 text-white font-black text-sm flex items-center justify-center shrink-0" id="modalLogUserAvatar">
+                            <div class="size-10 rounded-xl bg-slate-900 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-2xs" id="modalLogUserAvatar">
                                 U
                             </div>
                             <div class="flex flex-col min-w-0">
-                                <span class="text-xs font-black text-gray-900 truncate" id="modalLogUserName">Usuario Anónimo</span>
+                                <span class="text-xs font-black text-gray-900 truncate" id="modalLogUserName">Usuario</span>
                                 <span class="text-[11px] text-gray-500 truncate" id="modalLogUserEmail">-</span>
-                                <span class="text-[10px] font-bold text-indigo-600 mt-0.5" id="modalLogUserRole">Rol</span>
+                                <div class="mt-1">
+                                    <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100" id="modalLogUserRole">Rol</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Tarjeta 2: Red y Dispositivo --}}
-                    <div class="p-4 bg-slate-50/70 rounded-2xl border border-slate-200/70 space-y-2 text-xs">
-                        <span class="text-[10px] font-black text-indigo-700 uppercase tracking-wider flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">public</span> Contexto de Conexión
+                    {{-- Tarjeta 2: Dónde y desde qué equipo --}}
+                    <div class="p-4 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-2 text-xs">
+                        <span class="text-[10px] font-black text-indigo-800 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-indigo-600">devices</span> ¿Desde dónde se hizo?
                         </span>
-                        <div class="space-y-1 font-mono text-[11px]">
-                            <div class="flex justify-between">
-                                <span class="text-gray-400">Dirección IP:</span>
-                                <span class="font-bold text-gray-800" id="modalLogIp">-</span>
+                        <div class="space-y-1.5 text-[11px]">
+                            <div class="flex items-start gap-1.5">
+                                <span class="text-gray-400 font-medium shrink-0">Pantalla:</span>
+                                <span class="font-bold text-gray-800" id="modalLogPantalla">-</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400">Método HTTP:</span>
-                                <span class="font-bold text-indigo-600" id="modalLogMethod">-</span>
+                            <div class="flex items-start gap-1.5">
+                                <span class="text-gray-400 font-medium shrink-0">Equipo:</span>
+                                <span class="font-semibold text-gray-700" id="modalLogDispositivo">-</span>
                             </div>
-                            <div class="flex justify-between gap-2">
-                                <span class="text-gray-400 shrink-0">Ruta URL:</span>
-                                <span class="font-medium text-gray-700 truncate text-right max-w-[220px]" id="modalLogUrl" title="">-</span>
+                            <div class="flex items-start gap-1.5">
+                                <span class="text-gray-400 font-medium shrink-0">Conexión / IP:</span>
+                                <span class="font-mono text-gray-600 font-medium" id="modalLogIp">-</span>
                             </div>
                         </div>
                     </div>
 
                 </div>
 
-                {{-- Visor Side-by-Side: Valores Anteriores vs Nuevos --}}
-                <div class="space-y-2">
-                    <span class="text-[11px] font-black text-gray-600 uppercase tracking-wider flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[16px] text-indigo-600">compare</span> Comparativa de Valores en Base de Datos
-                    </span>
+                {{-- SECCIÓN PRINCIPAL: ¿QUÉ VALORES CAMBIARON? (Visual y Criollo) --}}
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-black text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[17px] text-indigo-600">checklist</span> 
+                            ¿Qué datos cambiaron exactamente?
+                        </span>
+                        <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md" id="modalLogCambiosConteo">0 cambios</span>
+                    </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        
-                        {{-- Columna Izquierda: Valores Anteriores --}}
-                        <div class="bg-rose-50/40 rounded-2xl border border-rose-200/80 p-3.5 flex flex-col">
-                            <div class="flex items-center justify-between pb-2 mb-2 border-b border-rose-200/60">
-                                <span class="text-xs font-black text-rose-800 flex items-center gap-1">
-                                    <span class="size-2 rounded-full bg-rose-500"></span> Valores Anteriores (Pre-modificación)
-                                </span>
-                                <span class="text-[10px] font-mono text-rose-600 font-bold" id="modalLogPrevCount">0 campos</span>
-                            </div>
-                            <pre id="modalLogPrevJson" class="text-[11px] font-mono bg-white p-3 rounded-xl border border-rose-100 overflow-x-auto text-rose-950 flex-1 max-h-64 custom-scrollbar">Sin valores previos</pre>
-                        </div>
-
-                        {{-- Columna Derecha: Valores Nuevos --}}
-                        <div class="bg-emerald-50/40 rounded-2xl border border-emerald-200/80 p-3.5 flex flex-col">
-                            <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-200/60">
-                                <span class="text-xs font-black text-emerald-800 flex items-center gap-1">
-                                    <span class="size-2 rounded-full bg-emerald-500"></span> Valores Nuevos (Post-modificación)
-                                </span>
-                                <span class="text-[10px] font-mono text-emerald-600 font-bold" id="modalLogNewCount">0 campos</span>
-                            </div>
-                            <pre id="modalLogNewJson" class="text-[11px] font-mono bg-white p-3 rounded-xl border border-emerald-100 overflow-x-auto text-emerald-950 flex-1 max-h-64 custom-scrollbar">Sin valores nuevos</pre>
-                        </div>
-
+                    {{-- Lista Dinámica de Cambios Amigables --}}
+                    <div id="modalLogCambiosLista" class="space-y-2.5">
+                        {{-- Generado por JavaScript --}}
                     </div>
                 </div>
 
-                {{-- User Agent --}}
-                <div class="p-3 bg-gray-50 rounded-xl border border-gray-200/60 text-[10px] text-gray-500 font-mono">
-                    <span class="font-bold text-gray-700">Dispositivo / User-Agent:</span>
-                    <span id="modalLogUserAgent" class="block mt-0.5 break-all">-</span>
+                {{-- SECCIÓN COLAPSABLE: Datos Técnicos para Desarrolladores (Oculto por defecto) --}}
+                <div class="pt-2 border-t border-gray-100">
+                    <button type="button" 
+                            onclick="toggleDetallesTecnicos()" 
+                            class="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-indigo-600 transition-colors py-1 group/tech">
+                        <span class="material-symbols-outlined text-[18px] text-gray-400 group-hover/tech:text-indigo-600 transition-transform" id="iconDetallesTecnicos">expand_more</span>
+                        <span>Ver detalles técnicos avanzados (JSON / Programadores)</span>
+                    </button>
+
+                    <div id="bloqueDetallesTecnicos" class="hidden mt-3 p-3.5 bg-gray-900 text-gray-100 rounded-2xl text-[11px] font-mono space-y-3">
+                        <div class="flex items-center justify-between text-gray-400 text-[10px] pb-2 border-b border-gray-800 flex-wrap gap-2">
+                            <span>Método: <strong class="text-sky-400" id="modalLogMethod">-</strong></span>
+                            <span>URL: <span class="text-gray-300 break-all" id="modalLogUrl">-</span></span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[10px]">
+                            <div>
+                                <span class="text-rose-400 font-bold block mb-1">JSON Valores Anteriores:</span>
+                                <pre id="modalLogPrevJson" class="bg-black/50 p-2.5 rounded-xl border border-gray-800 overflow-x-auto text-rose-300 max-h-48 custom-scrollbar">{}</pre>
+                            </div>
+                            <div>
+                                <span class="text-emerald-400 font-bold block mb-1">JSON Valores Nuevos:</span>
+                                <pre id="modalLogNewJson" class="bg-black/50 p-2.5 rounded-xl border border-gray-800 overflow-x-auto text-emerald-300 max-h-48 custom-scrollbar">{}</pre>
+                            </div>
+                        </div>
+
+                        <div class="text-[10px] text-gray-500 pt-1 border-t border-gray-800">
+                            <span>User-Agent: </span>
+                            <span id="modalLogUserAgent" class="text-gray-400 break-all">-</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>
 
             {{-- Footer Modal --}}
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end shrink-0">
-                <button type="button" onclick="cerrarModalLog()" class="px-5 py-2.5 rounded-xl font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 transition-colors text-xs">
-                    Cerrar Detalle
+                <button type="button" onclick="cerrarModalLog()" class="px-5 py-2.5 rounded-xl font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 transition-colors text-xs shadow-2xs">
+                    Entendido, Cerrar
                 </button>
             </div>
 
         </div>
     </div>
 </div>
-
-
 
 @endsection
 
@@ -455,20 +469,20 @@
         }
     });
 
-    // INSPECCIONAR DETALLE FORENSE (MODAL)
+    // INSPECCIONAR DETALLE DE LA ACTIVIDAD (MODAL AMIGABLE)
     function inspeccionarLog(id) {
         fetch(`{{ url('admin/logs') }}/${id}`)
         .then(res => res.json())
         .then(data => {
             if (!data.success) throw new Error('No se pudo cargar el log');
 
-            // Asignar textos
-            document.getElementById('modalLogTitle').innerText = data.modulo;
-            document.getElementById('modalLogSubtitle').innerText = `ID Registro #${data.id} • Tabla '${data.tabla}' • ${data.fecha} (${data.fecha_relativa})`;
-            document.getElementById('modalLogBadge').innerText = data.evento;
-            document.getElementById('modalLogBadge').className = `text-[10px] font-black uppercase px-2 py-0.5 rounded-md border ${data.badge_color}`;
+            // Asignar textos amigables
+            document.getElementById('modalLogTitle').innerText = data.modulo || 'Actividad';
+            document.getElementById('modalLogSubtitle').innerText = `${data.fecha} • Hace ${data.fecha_relativa}`;
+            document.getElementById('modalLogBadge').innerText = data.evento_amigable || data.evento;
+            document.getElementById('modalLogBadge').className = `text-[11px] font-black uppercase px-2.5 py-0.5 rounded-lg border ${data.badge_color}`;
             document.getElementById('modalLogIcon').innerText = data.icono;
-            document.getElementById('modalLogDesc').innerText = data.descripcion || 'Acción en base de datos';
+            document.getElementById('modalLogDesc').innerText = data.descripcion || 'Acción registrada en el sistema.';
 
             // Usuario
             if (data.usuario) {
@@ -478,40 +492,99 @@
                 document.getElementById('modalLogUserRole').innerText = `Rol: ${data.usuario.rol}`;
             } else {
                 document.getElementById('modalLogUserAvatar').innerText = 'S';
-                document.getElementById('modalLogUserName').innerText = 'Sistema / Anónimo';
-                document.getElementById('modalLogUserEmail').innerText = 'Proceso Interno / CLI';
-                document.getElementById('modalLogUserRole').innerText = 'Sin usuario de sesión';
+                document.getElementById('modalLogUserName').innerText = 'Acción Automática del Sistema';
+                document.getElementById('modalLogUserEmail').innerText = 'Proceso Interno';
+                document.getElementById('modalLogUserRole').innerText = 'Sin operador humano';
             }
 
-            // Red
-            document.getElementById('modalLogIp').innerText = data.ip || '127.0.0.1';
-            document.getElementById('modalLogMethod').innerText = `[${data.metodo_http || 'GET'}]`;
+            // Dónde y desde qué equipo
+            document.getElementById('modalLogPantalla').innerText = data.pantalla_amigable || data.modulo;
+            document.getElementById('modalLogDispositivo').innerText = data.dispositivo_amigable || 'Dispositivo no identificado';
+            document.getElementById('modalLogIp').innerText = data.ip ? `${data.ip} (Conexión registrada)` : '127.0.0.1';
+
+            // Datos técnicos para programadores
+            document.getElementById('modalLogMethod').innerText = data.metodo_http || 'GET';
             document.getElementById('modalLogUrl').innerText = data.url || '-';
-            document.getElementById('modalLogUrl').title = data.url || '';
             document.getElementById('modalLogUserAgent').innerText = data.user_agent || '-';
 
-            // Diff Formateado JSON
+            // LISTA AMIGABLE DE CAMBIOS (Visual y Criolla)
+            const cambiosLista = document.getElementById('modalLogCambiosLista');
+            cambiosLista.innerHTML = '';
+            
+            const cambios = data.cambios_amigables || [];
+            document.getElementById('modalLogCambiosConteo').innerText = `${cambios.length} ${cambios.length === 1 ? 'dato modificado' : 'datos modificados'}`;
+
+            if (cambios.length > 0) {
+                cambios.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'p-3 rounded-2xl border border-gray-100 bg-gray-50/70 transition-all hover:bg-white hover:shadow-xs';
+
+                    if (item.tipo === 'modificado') {
+                        row.innerHTML = `
+                            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+                                <span class="text-xs font-black text-gray-900 flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-indigo-500"></span>
+                                    ${item.nombre}
+                                </span>
+                                <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">Modificado</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                                <div class="p-2 rounded-xl bg-rose-50 border border-rose-100 text-xs">
+                                    <span class="text-[9px] font-black text-rose-800 uppercase tracking-wider block mb-0.5">Estaba en:</span>
+                                    <span class="font-bold text-rose-950 break-words">${item.antes ?? '(Vacío)'}</span>
+                                </div>
+                                <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-100 text-xs">
+                                    <span class="text-[9px] font-black text-emerald-800 uppercase tracking-wider block mb-0.5">Ahora quedó en:</span>
+                                    <span class="font-bold text-emerald-950 break-words">${item.despues ?? '(Vacío)'}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else if (item.tipo === 'nuevo') {
+                        row.innerHTML = `
+                            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+                                <span class="text-xs font-black text-gray-900 flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-emerald-500"></span>
+                                    ${item.nombre}
+                                </span>
+                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">Dato Registrado</span>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-100 text-xs">
+                                <span class="text-[9px] font-black text-emerald-800 uppercase tracking-wider block mb-0.5">Valor asignado:</span>
+                                <span class="font-bold text-emerald-950 break-words">${item.despues ?? '(Vacío)'}</span>
+                            </div>
+                        `;
+                    } else { // eliminado
+                        row.innerHTML = `
+                            <div class="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+                                <span class="text-xs font-black text-gray-900 flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-rose-500"></span>
+                                    ${item.nombre}
+                                </span>
+                                <span class="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">Dato Retirado</span>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-rose-50/80 border border-rose-100 text-xs">
+                                <span class="text-[9px] font-black text-rose-800 uppercase tracking-wider block mb-0.5">Valor que tenía:</span>
+                                <span class="font-bold text-rose-950 break-words">${item.antes ?? '(Vacío)'}</span>
+                            </div>
+                        `;
+                    }
+                    cambiosLista.appendChild(row);
+                });
+            } else {
+                cambiosLista.innerHTML = `
+                    <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 text-center">
+                        <span class="material-symbols-outlined text-2xl text-gray-400 block mb-1">done_all</span>
+                        <p class="text-xs font-bold text-gray-700">Esta acción no cambió datos numéricos ni textos individuales.</p>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Se trató de un evento general (como un inicio de sesión o consulta en pantalla).</p>
+                    </div>
+                `;
+            }
+
+            // JSON Raw para sección colapsable técnica
             const prev = data.valores_anteriores;
             const nuevo = data.valores_nuevos;
-
-            const prevElem = document.getElementById('modalLogPrevJson');
-            const newElem = document.getElementById('modalLogNewJson');
-
-            if (prev && Object.keys(prev).length > 0) {
-                document.getElementById('modalLogPrevCount').innerText = `${Object.keys(prev).length} campos`;
-                prevElem.innerText = JSON.stringify(prev, null, 2);
-            } else {
-                document.getElementById('modalLogPrevCount').innerText = `0 campos`;
-                prevElem.innerText = 'No aplica (Creación nueva o sin valores previos)';
-            }
-
-            if (nuevo && Object.keys(nuevo).length > 0) {
-                document.getElementById('modalLogNewCount').innerText = `${Object.keys(nuevo).length} campos`;
-                newElem.innerText = JSON.stringify(nuevo, null, 2);
-            } else {
-                document.getElementById('modalLogNewCount').innerText = `0 campos`;
-                newElem.innerText = 'No aplica (Eliminación o sin cambios nuevos)';
-            }
+            document.getElementById('modalLogPrevJson').innerText = prev ? JSON.stringify(prev, null, 2) : 'No aplica (Sin datos previos)';
+            document.getElementById('modalLogNewJson').innerText = nuevo ? JSON.stringify(nuevo, null, 2) : 'No aplica (Sin datos nuevos)';
 
             // Mostrar Modal con animación
             const modal = document.getElementById('modalDetalleLog');
@@ -529,9 +602,24 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'No fue posible consultar el registro de auditoría solicitado.'
+                text: 'No fue posible consultar el registro solicitado.'
             });
         });
+    }
+
+    function toggleDetallesTecnicos() {
+        const bloque = document.getElementById('bloqueDetallesTecnicos');
+        const icono = document.getElementById('iconDetallesTecnicos');
+        if (bloque) {
+            const estaOculto = bloque.classList.contains('hidden');
+            if (estaOculto) {
+                bloque.classList.remove('hidden');
+                icono.classList.add('rotate-180');
+            } else {
+                bloque.classList.add('hidden');
+                icono.classList.remove('rotate-180');
+            }
+        }
     }
 
     function cerrarModalLog() {
