@@ -42,25 +42,48 @@ class RegisterController extends Controller
         }
 
         $request->validate([
-            'nombre' => ['required', 'string', 'max:100'],
-            'apellido' => ['required', 'string', 'max:100'], 
+            'nombre' => ['required', 'string', 'min:2', 'max:100'],
+            'apellido' => ['required', 'string', 'min:2', 'max:100'], 
             'email' => $emailRule,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
             'codigo_pais' => ['required', 'string', 'max:10'], 
-            'telefono' => ['required', 'string', 'max:20'],
+            'telefono' => ['required', 'string', 'min:7', 'max:20'],
             'tipo_doc' => ['required', 'in:V,E,J,G'],
-            'documento_identidad' => ['required', 'string', 'max:20'],
+            'documento_identidad' => ['required', 'string', 'min:5', 'max:20'],
             'terms' => ['required', 'accepted'],
         ], [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'apellido.required' => 'El apellido es obligatorio.',
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.unique' => 'Este correo ya se encuentra registrado.',
-            'password.required' => 'La contraseña es obligatoria.',
-            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
-            'telefono.required' => 'El número de teléfono es obligatorio.',
-            'documento_identidad.required' => 'El número de cédula o documento es obligatorio.',
-            'terms.accepted' => 'Debes aceptar los términos y condiciones para continuar.'
+            'nombre.required' => 'El campo Nombre es obligatorio.',
+            'nombre.min' => 'El campo Nombre debe tener al menos :min caracteres.',
+            'nombre.max' => 'El campo Nombre no puede exceder los :max caracteres.',
+            
+            'apellido.required' => 'El campo Apellido es obligatorio.',
+            'apellido.min' => 'El campo Apellido debe tener al menos :min caracteres.',
+            'apellido.max' => 'El campo Apellido no puede exceder los :max caracteres.',
+            
+            'email.required' => 'El campo Correo Electrónico es obligatorio.',
+            'email.email' => 'El campo Correo Electrónico debe ser una dirección válida (ej: usuario@correo.com).',
+            'email.max' => 'El campo Correo Electrónico no puede exceder los :max caracteres.',
+            'email.unique' => 'El correo electrónico ingresado ya se encuentra registrado con otra cuenta.',
+            
+            'password.required' => 'El campo Contraseña es obligatorio.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide con la contraseña ingresada.',
+            'password.min' => 'La contraseña debe contener al menos :min caracteres.',
+            
+            'codigo_pais.required' => 'El código de país es obligatorio.',
+            
+            'telefono.required' => 'El campo Teléfono / WhatsApp es obligatorio.',
+            'telefono.min' => 'El número de teléfono debe tener al menos :min dígitos.',
+            'telefono.max' => 'El número de teléfono no puede exceder los :max caracteres.',
+            
+            'tipo_doc.required' => 'Debes seleccionar el tipo de documento (V, E, J o G).',
+            'tipo_doc.in' => 'El tipo de documento seleccionado no es válido (debe ser V, E, J o G).',
+            
+            'documento_identidad.required' => 'El campo Cédula / Documento es obligatorio.',
+            'documento_identidad.min' => 'El número de cédula o documento debe tener al menos :min dígitos.',
+            'documento_identidad.max' => 'El número de cédula o documento no puede exceder los :max caracteres.',
+            
+            'terms.required' => 'Debes aceptar los términos y condiciones para continuar.',
+            'terms.accepted' => 'Debes aceptar los términos y condiciones para continuar.',
         ]);
 
         $tipoCliente = 'natural';

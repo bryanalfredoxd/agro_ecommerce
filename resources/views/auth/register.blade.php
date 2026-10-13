@@ -19,11 +19,15 @@
         {{-- ALERTA DE ERRORES --}}
         @if (isset($errors) && $errors->any())
             <div class="mb-6 bg-red-50/95 backdrop-blur-md border-l-4 border-red-500 p-4 rounded-r-2xl shadow-lg">
-                <div class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-red-500 text-[24px]">error</span>
-                    <div>
-                        <h3 class="text-sm font-black text-red-800 uppercase tracking-wider">Por favor corrige los siguientes errores:</h3>
-                        <p class="text-xs text-red-700 font-medium">{{ $errors->first() }}</p>
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-red-500 text-[24px] mt-0.5 shrink-0">error</span>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-black text-red-800 uppercase tracking-wider">Por favor corrige los siguientes datos:</h3>
+                        <ul class="mt-1.5 space-y-1 text-xs text-red-700 font-semibold list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -98,7 +102,7 @@
                         <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">
                             Cédula / Documento <span class="text-rose-500">*</span>
                         </label>
-                        <div class="flex h-12 rounded-xl bg-gray-50 border @error('documento_identidad') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus-within:border-primary focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300 shadow-inner">
+                        <div class="flex h-12 rounded-xl bg-gray-50 border @if($errors->has('documento_identidad') || $errors->has('tipo_doc')) border-red-300 ring-2 ring-red-100 @else border-gray-200 @endif focus-within:border-primary focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300 shadow-inner">
                             <select name="tipo_doc" class="flex-none bg-transparent border-0 py-0 pl-4 pr-1 text-gray-600 font-bold focus:ring-0 text-sm cursor-pointer hover:text-agro-dark outline-none h-full">
                                 <option value="V" {{ old('tipo_doc', 'V') == 'V' ? 'selected' : '' }}>V</option>
                                 <option value="E" {{ old('tipo_doc') == 'E' ? 'selected' : '' }}>E</option>
@@ -116,6 +120,7 @@
                                    inputmode="numeric">
                         </div>
                         @error('documento_identidad') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
+                        @error('tipo_doc') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Teléfono / WhatsApp --}}
@@ -123,7 +128,7 @@
                         <label class="block text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5 ml-1 transition-colors group-focus-within:text-primary">
                             WhatsApp / Teléfono <span class="text-rose-500">*</span>
                         </label>
-                        <div class="flex h-12 rounded-xl bg-gray-50 border @error('telefono') border-red-300 ring-2 ring-red-100 @else border-gray-200 @enderror focus-within:border-primary focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300 shadow-inner relative">
+                        <div class="flex h-12 rounded-xl bg-gray-50 border @if($errors->has('telefono') || $errors->has('codigo_pais')) border-red-300 ring-2 ring-red-100 @else border-gray-200 @endif focus-within:border-primary focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300 shadow-inner relative">
                             <input type="tel" 
                                    id="phone" 
                                    class="w-full bg-transparent border-0 px-3 text-agro-dark font-bold focus:ring-0 text-sm placeholder:text-gray-400 outline-none h-full rounded-xl" 
@@ -133,6 +138,7 @@
                             <input type="hidden" name="codigo_pais" id="hidden_codigo_pais" value="{{ old('codigo_pais', '+58') }}">
                         </div>
                         @error('telefono') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
+                        @error('codigo_pais') <p class="mt-1 text-xs text-red-500 font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 

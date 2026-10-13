@@ -38,6 +38,7 @@ class ResetPasswordController extends Controller
             'email.email' => 'El formato del correo electrónico no es válido.',
             'password.required' => 'La nueva contraseña es obligatoria.',
             'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+            'password.min' => 'La nueva contraseña debe tener al menos :min caracteres.',
         ]);
 
         $user = User::where('email', $request->email)->first();

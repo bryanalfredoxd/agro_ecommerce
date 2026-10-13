@@ -23,6 +23,10 @@ class LoginController extends Controller
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+        ], [
+            'email.required' => 'El campo Correo Electrónico es obligatorio.',
+            'email.email' => 'El formato del Correo Electrónico no es válido (ej: usuario@correo.com).',
+            'password.required' => 'El campo Contraseña es obligatorio.',
         ]);
 
         // Buscar al usuario por su email
